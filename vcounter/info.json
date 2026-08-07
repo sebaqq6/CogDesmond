@@ -1,0 +1,20 @@
+{
+    "author": [
+        "YamiKaitou",
+        "Bobloy"
+    ],
+    "min_bot_version": "3.5.0",
+    "min_python_version": [3, 10, 0],
+    "description": "Update the name of a single, user-chosen voice channel with a live server count. Forked from InfoChannel.",
+    "hidden": false,
+    "install_msg": "Thank you for installing VCounter. Get started with `[p]vcounter channel <voice_channel>`, then `[p]vcounter toggle`.",
+    "short": "Live server count in your own voice channel",
+    "end_user_data_statement": "This cog does not store any End User Data",
+    "tags": [
+        "utils",
+        "stats",
+        "counter",
+        "voice",
+        "online"
+    ]
+}
