@@ -674,7 +674,7 @@ class Tickets(DashboardIntegration, Cog):
                 text_input_kwargs["style"] = discord.TextStyle(text_input_kwargs["style"])
                 text_input: discord.ui.TextInput = discord.ui.TextInput(**text_input_kwargs)
                 modal.add_item(text_input)
-                text_inputs.append(text_input)
+                text_inputs.append((text_input_kwargs["label"], text_input))
             if isinstance(ctx_interaction, discord.Interaction):
                 await ctx_interaction.response.send_modal(modal)
             else:
@@ -722,11 +722,11 @@ class Tickets(DashboardIntegration, Cog):
             if timeout:
                 return
             if creating_modal is None:
-                reason = text_inputs[0].value.strip() or None
+                reason = text_inputs[0][1].value.strip() or None
             else:
                 owner_answers = {
-                    text_input.label: text_input.value.strip()
-                    for text_input in text_inputs
+                    label: text_input.value.strip()
+                    for label, text_input in text_inputs
                     if text_input.value.strip()
                 }
         elif isinstance(ctx_interaction, discord.Interaction):
