@@ -417,19 +417,23 @@ class ReasonModal(discord.ui.Modal):
                     view: OwnerCloseConfirmation = OwnerCloseConfirmation(self.cog)
                     await view.start(self.ticket, interaction, reason=reason)
                     return
+                await interaction.response.defer(ephemeral=True)
                 await self.ticket.close(interaction.user, reason=reason)
-                await interaction.response.send_message(
+                await interaction.followup.send(
                     _("❌ This ticket has been closed!"),
                     ephemeral=True,
                 )
             else:
+                await interaction.response.defer(ephemeral=True)
                 await self.ticket.reopen(interaction.user, reason=reason)
-                await interaction.response.send_message(
+                await interaction.followup.send(
                     _("👐 This ticket has been reopened!"),
                     ephemeral=True,
                 )
         except RuntimeError as e:
-            await interaction.response.send_message(
+            if not interaction.response.is_done():
+                await interaction.response.defer(ephemeral=True)
+            await interaction.followup.send(
                 f"⛔ {e}",
                 ephemeral=True,
             )
