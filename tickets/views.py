@@ -153,6 +153,11 @@ class TicketView(discord.ui.View):
             self.approve_appeal.custom_id = f"Tickets_#{self.ticket.id}_approve_appeal"
         else:
             self.remove_item(self.approve_appeal)
+        if not config.get("show_members_button", True):
+            try:
+                self.remove_item(self.members)
+            except ValueError:
+                pass
         if edit_message:
             try:
                 await self._message.edit(view=self)

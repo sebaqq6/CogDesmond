@@ -109,6 +109,7 @@ class Tickets(DashboardIntegration, Cog):
                 "owner_can_reopen": True,
                 "owner_can_add_members": False,
                 "owner_can_remove_members": False,
+                "show_members_button": True,
                 "close_on_leave": True,
                 "close_after_dank_payout": False,
                 "auto_delete_on_close": None,
@@ -276,6 +277,11 @@ class Tickets(DashboardIntegration, Cog):
             "owner_can_remove_members": {
                 "converter": bool,
                 "description": "Whether the ticket owner can remove members from the ticket.",
+                "no_slash": True,
+            },
+            "show_members_button": {
+                "converter": bool,
+                "description": "Whether the `Members` button is shown in the ticket.",
                 "no_slash": True,
             },
             "close_on_leave": {
@@ -840,6 +846,7 @@ class Tickets(DashboardIntegration, Cog):
                     "- Owner Can Reopen: {owner_can_reopen}\n"
                     "- Owner Can Add Members: {owner_can_add_members}\n"
                     "- Owner Can Remove Members: {owner_can_remove_members}\n"
+                    "- Show Members Button: {show_members_button}\n"
                     "- Close On Leave: {close_on_leave}\n"
                     "- Auto Delete On Close: {auto_delete_on_close}\n\n"
                     "- Emoji Claim: {emoji_claim}\n"
@@ -947,6 +954,7 @@ class Tickets(DashboardIntegration, Cog):
                     owner_can_reopen=config["owner_can_reopen"],
                     owner_can_add_members=config["owner_can_add_members"],
                     owner_can_remove_members=config["owner_can_remove_members"],
+                    show_members_button=config["show_members_button"],
                     close_on_leave=config["close_on_leave"],
                     auto_delete_on_close=config["auto_delete_on_close"],
                     emoji_claim=config["emojis"]["claim"],
