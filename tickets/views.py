@@ -325,7 +325,7 @@ class MembersView(discord.ui.View):
         cls=discord.ui.UserSelect,
         min_values=0,
         max_values=10,
-        placeholder="Select the member(s) to add to the ticket.",
+        placeholder=_("Select the member(s) to add to the ticket."),
     )
     async def add(self, interaction: discord.Interaction, select: discord.ui.UserSelect) -> None:
         if not select.values:
@@ -354,7 +354,7 @@ class MembersView(discord.ui.View):
         cls=discord.ui.UserSelect,
         min_values=0,
         max_values=10,
-        placeholder="Select the member(s) to remove from the ticket.",
+        placeholder=_("Select the member(s) to remove from the ticket."),
     )
     async def remove(self, interaction: discord.Interaction, select: discord.ui.UserSelect) -> None:
         if not select.values:
