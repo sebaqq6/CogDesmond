@@ -3,6 +3,6 @@
     "install_msg": "Thank you for installing CogDesmond!",
     "name": "CogDesmond",
     "short": "Personal cogs for Red-DiscordBot.",
-    "description": "Personal cogs for Red-DiscordBot, including vcounter (live server count in your own voice channel).",
+    "description": "Personal cogs for Red-DiscordBot.",
     "tags": ["utility", "stats", "counter"]
 }
