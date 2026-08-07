@@ -7,17 +7,16 @@ Personal Red-DiscordBot cogs repo by Desmond.
 
 ### vcounter
 
-Update the name of a **single, user-chosen existing voice channel** with a live
-server count. Forked and reduced from
+Update the names of **your own existing voice channels** with live server counts.
+Forked and reduced from
 [YamiKaitou's InfoChannel](https://github.com/yamikaitou/YamiCogs) — unlike the
 original it does **not** create its own channels or a "Server Stats" category;
-it edits the channel you point it at, in place.
+it edits the channels you point it at, in place.
 
-Features:
+One counter per type, each bound to a channel of your choice:
 
-- set your own existing voice channel (`[p]vcounter channel #glosowy`)
 - count `members`, `humans`, `boosters`, `bots`, `online` or `offline`
-- custom name template with `{count}` (e.g. `Online: {count}`)
+- custom name template per counter with `{count}` (e.g. `Online: {count}`)
 - respects Discord's channel-rename rate limit (2 per 10 min)
 
 Installation:
@@ -26,8 +25,8 @@ Installation:
 [p]repo add cogdesmond https://github.com/<your-user>/CogDesmond
 [p]cog install cogdesmond vcounter
 [p]load vcounter
-[p]vcounter channel <voice_channel>
-[p]vcounter toggle
+[p]vcounter set online <voice_channel>
+[p]vcounter toggle online
 ```
 
 ## License
