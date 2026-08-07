@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2025-07-20 15:17+0200\n"
+"POT-Creation-Date: 2026-08-07 19:02+0200\n"
 "PO-Revision-Date: 2026-08-07 00:00+0200\n"
 "Last-Translator: Desmond <desmond@local>\n"
 "Language-Team: Polish <pl@example.com>\n"
@@ -13,371 +13,207 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
 "Generated-By: redgettext 3.4.2\n"
 
-#: tickets\converters.py:21 tickets\tickets.py:735
+#: converters.py:20 tickets.py:799
 msgid "This profile doesn't exist."
 msgstr "Ten profil nie istnieje."
 
-#: tickets\converters.py:40
+#: converters.py:40
 msgid "You must set the forum channel before setting a forum tag."
 msgstr "Musisz ustawić kanał forum przed ustawieniem tagu forum."
 
-#: tickets\converters.py:55
-msgid ""
-"The forum tag ID provided doesn't exist. The available tags are: "
-"{available_tags}."
-msgstr ""
-"Podany ID tagu forum nie istnieje. Dostępne tagi to: {available_tags}."
-
-#: tickets\converters.py:106
-msgid ""
-"I have to be the author of the message. You can use EmbedUtils by AAA3A to "
-"send one."
-msgstr ""
-"Muszę być autorem wiadomości. Możesz użyć EmbedUtils od AAA3A, aby ją "
-"wysłać."
-
-#: tickets\converters.py:121
-msgid ""
-"Error parsing YAML. Please make sure the format is valid (a YAML validator "
-"may help)"
-msgstr ""
-"Błąd parsowania YAML. Upewnij się, że format jest poprawny (walidator YAML "
-"może pomóc)"
-
-#: tickets\converters.py:135
+#: converters.py:139
 msgid "You can only have 5 text inputs."
 msgstr "Możesz mieć maksymalnie 5 pól tekstowych."
 
-#: tickets\converters.py:141
+#: converters.py:145
 msgid "The argument `/{count}/{arg}` is required in the YAML."
 msgstr "Argument `/{count}/{arg}` jest wymagany w YAML."
 
-#: tickets\converters.py:148
-msgid ""
-"The argument `/{count}/{arg}` is invalid in the YAML. Check the spelling."
-msgstr ""
-"Argument `/{count}/{arg}` jest nieprawidłowy w YAML. Sprawdź pisownię."
-
-#: tickets\converters.py:154
-msgid ""
-"The argument `/modal/{count}/label` must be less than 45 characters long."
-msgstr "Argument `/modal/{count}/label` musi być krótszy niż 45 znaków."
-
-#: tickets\converters.py:164 tickets\converters.py:170
+#: converters.py:169 converters.py:175
 msgid "The argument `/{count}/style` must be a number between 1 and 2."
 msgstr "Argument `/{count}/style` musi być liczbą od 1 do 2."
 
-#: tickets\converters.py:193
-msgid "The argument `/{count}/required` must be a boolean (True or False)."
-msgstr ""
-"Argument `/{count}/required` musi być wartością logiczną (True lub False)."
-
-#: tickets\converters.py:203
-msgid ""
-"The argument `/modal/{count}/default` must be less than 4000 characters "
-"long."
-msgstr "Argument `/modal/{count}/default` musi być krótszy niż 4000 znaków."
-
-#: tickets\converters.py:211
-msgid ""
-"The argument `/modal/{count}/placeholder` must be less than 100 characters "
-"long."
-msgstr ""
-"Argument `/modal/{count}/placeholder` musi być krótszy niż 100 znaków."
-
-#: tickets\converters.py:219
-msgid "The argument `/modal/{count}/min_length` must be between 0 and 1000."
-msgstr "Argument `/modal/{count}/min_length` musi być między 0 a 1000."
-
-#: tickets\converters.py:227
-msgid "The argument `/modal/{count}/max_length` must be between 0 and 1000."
-msgstr "Argument `/modal/{count}/max_length` musi być między 0 a 1000."
-
-#: tickets\tickets.py:45
+#: tickets.py:53
 msgid "Event not found."
 msgstr "Nie znaleziono wydarzenia."
 
-#: tickets\tickets.py:51
+#: tickets.py:59
 msgid "You don't have permission to view the channel of this ticket."
 msgstr "Nie masz uprawnień, aby zobaczyć kanał tego ticketa."
 
-#: tickets\tickets.py:58
+#: tickets.py:66
 #, docstring
 msgid "Configure and manage a tickets system for your server!"
 msgstr "Skonfiguruj i zarządzaj systemem ticketów dla swojego serwera!"
 
-#: tickets\tickets.py:547
+#: tickets.py:611
 msgid "Jump to Ticket"
 msgstr "Przejdź do Ticketa"
 
-#: tickets\tickets.py:596
+#: tickets.py:660
 msgid "Create a Ticket"
 msgstr "Utwórz Ticketa"
 
-#: tickets\tickets.py:619
+#: tickets.py:683
 msgid "Only the ticket owner can fill the answers."
 msgstr "Tylko właściciel ticketa może wypełnić odpowiedzi."
 
-#: tickets\tickets.py:636
+#: tickets.py:700
 msgid "Fill Answers"
 msgstr "Wypełnij Odpowiedzi"
 
-#: tickets\tickets.py:684
-msgid ""
-"❓ Your ticket has been created! Please wait for a staff member to assist you"
-" in {channel.mention}."
-msgstr ""
-"❓ Twój ticket został utworzony! Poczekaj, aż członek zespołu Ci pomoże w "
-"{channel.mention}."
-
-#: tickets\tickets.py:704
+#: tickets.py:768
 #, docstring
 msgid "Create a ticket."
 msgstr "Utwórz ticketa."
 
-#: tickets\tickets.py:717
+#: tickets.py:781
 #, docstring
 msgid "Create a ticket for a member."
 msgstr "Utwórz ticketa dla członka."
 
-#: tickets\tickets.py:724
+#: tickets.py:788
 #, docstring
 msgid "Show Tickets settings."
 msgstr "Pokaż ustawienia Tickets."
 
-#: tickets\tickets.py:728
+#: tickets.py:792
 msgid "Tickets — Settings — Profiles"
 msgstr "Tickets — Ustawienia — Profile"
 
-#: tickets\tickets.py:739
+#: tickets.py:803
 msgid "Tickets — Settings — Profile `{profile}`"
 msgstr "Tickets — Ustawienia — Profil `{profile}`"
 
-#: tickets\tickets.py:750
+#: tickets.py:814
 msgid "Settings:"
 msgstr "Ustawienia:"
 
-#: tickets\tickets.py:751
-msgid ""
-"- Enabled: {enabled}\n"
-"- Max Open Tickets By Member: {max_open_tickets_by_member}\n"
-"- Creating Modal: {creating_modal}\n"
-"- Channel Name: {channel_name}\n"
-"- Welcome Message: {welcome_message}\n"
-"- Custom Message: {custom_message}\n"
-"- Close/Reopen Reason Modal: {close_reopen_reason_modal}\n"
-"- Create Modlog Case: {create_modlog_case}\n"
-"- Transcripts: {transcripts}\n"
-"- Always Include Item Label: {always_include_item_label}\n"
-"- Disable Default Open Modal: {disable_default_open_modal}\n"
-"\n"
-"- Support Roles: {support_roles}\n"
-"- Ping Roles: {ping_roles}\n"
-"- Speak Roles: {speak_roles}\n"
-"- View Roles: {view_roles}\n"
-"- Whitelist Roles: {whitelist_roles}\n"
-"- Blacklist Roles: {blacklist_roles}\n"
-"\n"
-"- Forum Channel: {forum_channel}\n"
-"- Forum Tags: {forum_tags}\n"
-"- Category Open: {category_open}\n"
-"- Category Closed: {category_closed}\n"
-"- Logs Channel: {logs_channel}\n"
-"\n"
-"- Owner Close Confirmation: {owner_close_confirmation}\n"
-"- Owner Can Close: {owner_can_close}\n"
-"- Owner Can Reopen: {owner_can_reopen}\n"
-"- Owner Can Add Members: {owner_can_add_members}\n"
-"- Owner Can Remove Members: {owner_can_remove_members}\n"
-"- Close On Leave: {close_on_leave}\n"
-"- Auto Delete On Close: {auto_delete_on_close}\n"
-"\n"
-"- Emoji Claim: {emoji_claim}\n"
-"- Emoji Unclaim: {emoji_unclaim}\n"
-"- Emoji Close: {emoji_close}\n"
-"- Emoji Reopen: {emoji_reopen}\n"
-"- Emoji Lock: {emoji_lock}\n"
-"- Emoji Unlock: {emoji_unlock}\n"
-"- Emoji Transcript: {emoji_transcript}\n"
-"- Emoji Delete: {emoji_delete}"
-msgstr ""
-"- Włączony: {enabled}\n"
-"- Maks. otwartych ticketów na członka: {max_open_tickets_by_member}\n"
-"- Modal tworzenia: {creating_modal}\n"
-"- Nazwa kanału: {channel_name}\n"
-"- Wiadomość powitalna: {welcome_message}\n"
-"- Własna wiadomość: {custom_message}\n"
-"- Modal powodu zamknięcia/otwarcia: {close_reopen_reason_modal}\n"
-"- Utwórz sprawę w modlogu: {create_modlog_case}\n"
-"- Transkrypty: {transcripts}\n"
-"- Zawsze dołączaj etykietę: {always_include_item_label}\n"
-"- Wyłącz domyślny modal otwierania: {disable_default_open_modal}\n"
-"\n"
-"- Role wsparcia: {support_roles}\n"
-"- Role pingowane: {ping_roles}\n"
-"- Role mówiące: {speak_roles}\n"
-"- Role podglądu: {view_roles}\n"
-"- Role na liście dozwolonych: {whitelist_roles}\n"
-"- Role na liście zablokowanych: {blacklist_roles}\n"
-"\n"
-"- Kanał forum: {forum_channel}\n"
-"- Tagi forum: {forum_tags}\n"
-"- Kategoria otwarta: {category_open}\n"
-"- Kategoria zamknięta: {category_closed}\n"
-"- Kanał logów: {logs_channel}\n"
-"\n"
-"- Potwierdzenie zamknięcia przez właściciela: {owner_close_confirmation}\n"
-"- Właściciel może zamknąć: {owner_can_close}\n"
-"- Właściciel może otworzyć ponownie: {owner_can_reopen}\n"
-"- Właściciel może dodawać członków: {owner_can_add_members}\n"
-"- Właściciel może usuwać członków: {owner_can_remove_members}\n"
-"- Zamknij po wyjściu: {close_on_leave}\n"
-"- Auto-usuwanie po zamknięciu: {auto_delete_on_close}\n"
-"\n"
-"- Emoji Przejmij: {emoji_claim}\n"
-"- Emoji Oddaj: {emoji_unclaim}\n"
-"- Emoji Zamknij: {emoji_close}\n"
-"- Emoji Otwórz ponownie: {emoji_reopen}\n"
-"- Emoji Zablokuj: {emoji_lock}\n"
-"- Emoji Odblokuj: {emoji_unlock}\n"
-"- Emoji Transkrypt: {emoji_transcript}\n"
-"- Emoji Usuń: {emoji_delete}"
-
-#: tickets\tickets.py:792
+#: tickets.py:856
 msgid "Set."
 msgstr "Ustawiono."
 
-#: tickets\tickets.py:907
+#: tickets.py:973
 #, docstring
 msgid "Show a ticket."
 msgstr "Pokaż ticketa."
 
-#: tickets\tickets.py:917 tickets\tickets.py:935 tickets\tickets.py:1002
-#: tickets\tickets.py:1023 tickets\tickets.py:1044 tickets\tickets.py:1065
-#: tickets\tickets.py:1085 tickets\tickets.py:1106 tickets\tickets.py:1127
-#: tickets\tickets.py:1152 tickets\tickets.py:1177 tickets\tickets.py:1198
-#: tickets\tickets.py:1228
+#: tickets.py:984 tickets.py:1007 tickets.py:1080 tickets.py:1104
+#: tickets.py:1128 tickets.py:1152 tickets.py:1175 tickets.py:1199
+#: tickets.py:1223 tickets.py:1249 tickets.py:1275 tickets.py:1299
+#: tickets.py:1332
 msgid "No ticket found."
 msgstr "Nie znaleziono ticketa."
 
-#: tickets\tickets.py:933
+#: tickets.py:1005
 #, docstring
 msgid "List tickets."
 msgstr "Lista ticketów."
 
-#: tickets\tickets.py:964
+#: tickets.py:1039
 msgid "{len_tickets} Ticket{s}"
 msgstr "{len_tickets} Ticket(y/ów)"
 
-#: tickets\tickets.py:992
+#: tickets.py:1069
 #, docstring
 msgid "Close a ticket."
 msgstr "Zamknij ticketa."
 
-#: tickets\tickets.py:1013
+#: tickets.py:1093
 #, docstring
 msgid "Reopen a ticket."
 msgstr "Otwórz ponownie ticketa."
 
-#: tickets\tickets.py:1034
+#: tickets.py:1117
 #, docstring
 msgid "Claim a ticket."
 msgstr "Przejmij ticketa."
 
-#: tickets\tickets.py:1055
+#: tickets.py:1141
 #, docstring
 msgid "Unclaim a ticket."
 msgstr "Oddaj ticketa."
 
-#: tickets\tickets.py:1096
+#: tickets.py:1188
 #, docstring
 msgid "Unlock a ticket."
 msgstr "Odblokuj ticketa."
 
-#: tickets\tickets.py:1117
+#: tickets.py:1212
 #, docstring
 msgid "Approve an appeal."
 msgstr "Zatwierdź odwołanie."
 
-#: tickets\tickets.py:1142
+#: tickets.py:1238
 #, docstring
 msgid "Add a member to a ticket."
 msgstr "Dodaj członka do ticketa."
 
-#: tickets\tickets.py:1167
+#: tickets.py:1264
 #, docstring
 msgid "Remove a member from a ticket."
 msgstr "Usuń członka z ticketa."
 
-#: tickets\tickets.py:1188
+#: tickets.py:1288
 #, docstring
 msgid "Export a ticket."
 msgstr "Eksportuj ticketa."
 
-#: tickets\tickets.py:1201 tickets\views.py:629
+#: tickets.py:1302 views.py:645
 msgid "📜 Here is the transcript of this ticket!"
 msgstr "📜 Oto transkrypt tego ticketa!"
 
-#: tickets\tickets.py:1207 tickets\views.py:637
+#: tickets.py:1308 views.py:653
 msgid "View Transcript"
 msgstr "Zobacz Transkrypt"
 
-#: tickets\tickets.py:1241
+#: tickets.py:1343
+#, docstring
+msgid "Recover a ticket from a channel."
+msgstr "Przywróć ticketa z kanału."
+
+#: tickets.py:1352
+msgid "This channel is already linked to a ticket."
+msgstr "Ten kanał jest już powiązany z ticketem."
+
+#: tickets.py:1360
+msgid "No messages found in this channel."
+msgstr "Nie znaleziono wiadomości w tym kanale."
+
+#: tickets.py:1363
+msgid "The first message in this channel must be sent by me."
+msgstr "Pierwsza wiadomość w tym kanale musi być wysłana przeze mnie."
+
+#: tickets.py:1367
+msgid "The first message in this channel must contain an embed."
+msgstr "Pierwsza wiadomość w tym kanale musi zawierać embed."
+
+#: tickets.py:1381
+msgid "The profile of this ticket doesn't exist anymore."
+msgstr "Profil tego ticketa już nie istnieje."
+
+#: tickets.py:1383 types.py:510 types.py:1458 views.py:392 views.py:458
+msgid "Reason:"
+msgstr "Powód:"
+
+#: tickets.py:1425
+msgid "Reverting channel name and overwrites for ticket recovery."
+msgstr "Przywracanie nazwy kanału i uprawnień do odzyskania ticketa."
+
+#: tickets.py:1441
 #, docstring
 msgid "Help to setup Tickets."
 msgstr "Pomoc w konfiguracji Tickets."
 
-#: tickets\tickets.py:1245
+#: tickets.py:1445
 msgid "Getting Started (Required Steps):"
 msgstr "Pierwsze Kroki (Wymagane Kroki):"
 
-#: tickets\tickets.py:1246
-msgid ""
-"**1.** Enable the profile system with `{ctx.prefix}settickets enabled <profile> True`.\n"
-"**2.** Set the support roles with `{ctx.prefix}settickets supportroles <profile> <roles...>`.\n"
-"**3.** Set the forum channel/text channel with `{ctx.prefix}settickets forumchannel <profile> <channel>`.\n"
-"   **Or** set the open and closed (optional) categories with `{ctx.prefix}settickets categoryopen <profile> <category>` and `{ctx.prefix}settickets categoryclosed <profile> <category>`.\n"
-"**4.** Eventually, set the ping roles with `{ctx.prefix}settickets pingroles <profile> <roles...>`.\n"
-"**5.** Eventually, set the logs channel with `{ctx.prefix}settickets logschannel <profile> <channel>`.\n"
-"**6.** Eventually, set the whitelist or blacklist roles with `{ctx.prefix}settickets whitelistroles <profile> <roles...>` and `{ctx.prefix}settickets blacklistroles <profile> <roles...>`.\n"
-"**7.** Eventually, set the forum tags with `{ctx.prefix}settickets forumtags <profile> <tags...>`.\n"
-"**8.** Eventually, set the custom message with `{ctx.prefix}settickets custommessage <profile> <message>`.\n"
-"**9.** Eventually, set a creating modal with `{ctx.prefix}settickets creatingmodal <profile> <modal>`."
-msgstr ""
-"**1.** Włącz system profili za pomocą `{ctx.prefix}settickets enabled <profil> True`.\n"
-"**2.** Ustaw role wsparcia za pomocą `{ctx.prefix}settickets supportroles <profil> <role...>`.\n"
-"**3.** Ustaw kanał forum/kanał tekstowy za pomocą `{ctx.prefix}settickets forumchannel <profil> <kanał>`.\n"
-"   **Lub** ustaw kategorie otwartych i zamkniętych (opcjonalnie) ticketów za pomocą `{ctx.prefix}settickets categoryopen <profil> <kategoria>` i `{ctx.prefix}settickets categoryclosed <profil> <kategoria>`.\n"
-"**4.** Opcjonalnie ustaw role pingowane za pomocą `{ctx.prefix}settickets pingroles <profil> <role...>`.\n"
-"**5.** Opcjonalnie ustaw kanał logów za pomocą `{ctx.prefix}settickets logschannel <profil> <kanał>`.\n"
-"**6.** Opcjonalnie ustaw role z listy dozwolonych lub zablokowanych za pomocą `{ctx.prefix}settickets whitelistroles <profil> <role...>` i `{ctx.prefix}settickets blacklistroles <profil> <role...>`.\n"
-"**7.** Opcjonalnie ustaw tagi forum za pomocą `{ctx.prefix}settickets forumtags <profil> <tagi...>`.\n"
-"**8.** Opcjonalnie ustaw własną wiadomość za pomocą `{ctx.prefix}settickets custommessage <profil> <wiadomość>`.\n"
-"**9.** Opcjonalnie ustaw modal tworzenia za pomocą `{ctx.prefix}settickets creatingmodal <profil> <modal>`."
-
-#: tickets\tickets.py:1263
-msgid ""
-"Look at all the different settings with `{ctx.prefix}tickets settings`."
-msgstr ""
-"Sprawdź wszystkie ustawienia za pomocą `{ctx.prefix}tickets settings`."
-
-#: tickets\tickets.py:1271
+#: tickets.py:1471
 msgid "Buttons & Dropdowns:"
 msgstr "Przyciski i Listy Rozwijane:"
 
-#: tickets\tickets.py:1272
-msgid ""
-"You can add buttons and dropdowns to messages to create tickets.\n"
-"- Use `{ctx.clean_prefix}tickets addbutton <message> [profile=main] [emoji] [style=secondary] <label>` to add a button to a message.\n"
-"- Use `{ctx.clean_prefix}tickets adddropdownoption <message> [profile=main] [emoji] <label> [description]` to add an option to a dropdown.\n"
-"- Use `{ctx.clean_prefix}tickets clearmessage <message>` to remove them."
-msgstr ""
-"Możesz dodawać przyciski i listy rozwijane do wiadomości, aby tworzyć tickety.\n"
-"- Użyj `{ctx.clean_prefix}tickets addbutton <wiadomość> [profil=main] [emoji] [styl=secondary] <etykieta>`, aby dodać przycisk do wiadomości.\n"
-"- Użyj `{ctx.clean_prefix}tickets adddropdownoption <wiadomość> [profil=main] [emoji] <etykieta> [opis]`, aby dodać opcję do listy rozwijanej.\n"
-"- Użyj `{ctx.clean_prefix}tickets clearmessage <wiadomość>`, aby je usunąć."
-
-#: tickets\tickets.py:1294
+#: tickets.py:1494
 #, docstring
 msgid ""
 "Add a button to a message.\n"
@@ -410,346 +246,231 @@ msgstr ""
 "        • `red`: 4\n"
 "        "
 
-#: tickets\tickets.py:1311
+#: tickets.py:1511
 msgid "You have to specify at least an emoji or a label."
 msgstr "Musisz podać przynajmniej emoji lub etykietę."
 
-#: tickets\tickets.py:1316 tickets\tickets.py:1359
+#: tickets.py:1516 tickets.py:1559
 msgid "This message already has components."
 msgstr "Ta wiadomość ma już komponenty."
 
-#: tickets\tickets.py:1325
+#: tickets.py:1525
 msgid "You can't add more than 20 buttons for one message."
 msgstr "Nie możesz dodać więcej niż 20 przycisków do jednej wiadomości."
 
-#: tickets\tickets.py:1354
+#: tickets.py:1554
 #, docstring
 msgid "Add an option to the dropdown of a message."
 msgstr "Dodaj opcję do listy rozwijanej wiadomości."
 
-#: tickets\tickets.py:1368
+#: tickets.py:1568
 msgid "I can't add more than 25 options for one dropdown."
 msgstr "Nie mogę dodać więcej niż 25 opcji do jednej listy rozwijanej."
 
-#: tickets\tickets.py:1391
+#: tickets.py:1592
 #, docstring
 msgid "Clear the components of a message."
 msgstr "Wyczyść komponenty wiadomości."
 
-#: tickets\tickets.py:1395
+#: tickets.py:1596
 msgid "This message doesn't have components added with Tickets."
 msgstr "Ta wiadomość nie ma komponentów dodanych przez Tickets."
 
-#: tickets\tickets.py:1420
+#: tickets.py:1617
 #, docstring
 msgid "Configure the appeal feature."
 msgstr "Skonfiguruj funkcję odwołań."
 
-#: tickets\tickets.py:1424
+#: tickets.py:1621
 msgid "This guild doesn't exist or the bot isn't in it."
 msgstr "Ten serwer nie istnieje lub bota na nim nie ma."
 
-#: tickets\tickets.py:1428
+#: tickets.py:1625
 msgid "You can't configure appeal tickets for the same guild."
 msgstr ""
 "Nie możesz skonfigurować ticketów odwoławczych dla tego samego serwera."
 
-#: tickets\tickets.py:1432
+#: tickets.py:1629
 msgid "You must be in the guild to configure the appeal feature."
 msgstr "Musisz być na serwerze, aby skonfigurować funkcję odwołań."
 
-#: tickets\tickets.py:1436
-msgid ""
-"You must have the `Manage Server` and `Ban Members` permissions in the guild"
-" to configure the appeal feature."
-msgstr ""
-"Musisz mieć uprawnienia `Zarządzanie serwerem` i `Banowanie członków` na "
-"serwerze, aby skonfigurować funkcję odwołań."
-
-#: tickets\tickets.py:1442
+#: tickets.py:1639
 msgid "I need the `Ban Members` permission in the guild to unban users."
 msgstr ""
 "Potrzebuję uprawnienia `Banowanie członków` na serwerze, aby odbanować "
 "użytkowników."
 
-#: tickets\tickets.py:1449
+#: tickets.py:1646
 msgid "This invite doesn't exist."
 msgstr "To zaproszenie nie istnieje."
 
-#: tickets\tickets.py:1451
+#: tickets.py:1648
 msgid "This invite doesn't belong to the guild."
 msgstr "To zaproszenie nie należy do tego serwera."
 
-#: tickets\tickets.py:1507
+#: tickets.py:1704
 msgid "Appeal Ticket"
 msgstr "Ticket Odwoławczy"
 
-#: tickets\tickets.py:1508
-msgid ""
-"Click the button below to create an appeal ticket. If our team accepts your "
-"appeal, you will be unbanned from the server."
-msgstr ""
-"Kliknij przycisk poniżej, aby utworzyć ticket odwoławczy. Jeśli nasz zespół "
-"zaakceptuje Twoje odwołanie, zostaniesz odbanowany na serwerze."
-
-#: tickets\tickets.py:1521
+#: tickets.py:1718
 msgid "Appeal"
 msgstr "Odwołanie"
 
-#: tickets\tickets.py:1528
+#: tickets.py:1725
 #, docstring
 msgid "Get an embed for check loop status."
 msgstr "Pobierz embed ze statusem pętli."
 
-#: tickets\types.py:351
+#: types.py:391
 msgid "Ticket #{self.id} [{self.profile}]"
 msgstr "Ticket #{self.id} [{self.profile}]"
 
-#: tickets\types.py:379
-msgid ""
-"Claimed by: {claimed_by.mention}\n"
-"Claimed at: <t:{claimed_at}:F> (<t:{claimed_at}:R>)"
-msgstr ""
-"Przejął: {claimed_by.mention}\n"
-"Przejęto: <t:{claimed_at}:F> (<t:{claimed_at}:R>)"
+#: types.py:431 types.py:453 types.py:476 types.py:498
+msgid "Automatic"
+msgstr "Automatyczny"
 
-#: tickets\types.py:398
+#: types.py:438
 msgid "Not claimed."
 msgstr "Nie przejęto."
 
-#: tickets\types.py:401
-msgid ""
-"\n"
-"Closed by: {closed_by.mention}\n"
-"Closed at: <t:{closed_at}:F> (<t:{closed_at}:R>)"
-msgstr ""
-"\n"
-"Zamknięty przez: {closed_by.mention}\n"
-"Zamknięto: <t:{closed_at}:F> (<t:{closed_at}:R>)"
-
-#: tickets\types.py:423
-msgid ""
-"\n"
-"Appeal approved by: {appeal_approved_by.mention}\n"
-"Appeal approved at: <t:{appeal_approved_at}:F> (<t:{appeal_approved_at}:R>)"
-msgstr ""
-"\n"
-"Odwołanie zatwierdzone przez: {appeal_approved_by.mention}\n"
-"Zatwierdzono: <t:{appeal_approved_at}:F> (<t:{appeal_approved_at}:R>)"
-
-#: tickets\types.py:447 tickets\types.py:1387 tickets\views.py:382
-#: tickets\views.py:448
-msgid "Reason:"
-msgstr "Powód:"
-
-#: tickets\types.py:452
+#: types.py:515
 msgid "Opened at:"
 msgstr "Otwarto:"
 
-#: tickets\types.py:541
+#: types.py:604
 msgid "The creation of tickets is disabled for this profile."
 msgstr "Tworzenie ticketów jest wyłączone dla tego profilu."
 
-#: tickets\types.py:553
+#: types.py:616
 msgid "No forum channel or category open configured for this profile."
 msgstr ""
 "Dla tego profilu nie skonfigurowano kanału forum ani kategorii otwartych."
 
-#: tickets\types.py:567
+#: types.py:630
 msgid "You are not allowed to create a ticket with this profile."
 msgstr "Nie masz uprawnień, aby utworzyć ticketa w tym profilu."
 
-#: tickets\types.py:579
+#: types.py:642
 msgid "You have reached the maximum number of open tickets for this profile."
 msgstr "Osiągnąłeś maksymalną liczbę otwartych ticketów dla tego profilu."
 
-#: tickets\types.py:590
+#: types.py:653
 msgid "You are not banned from the server, so you can't create a ticket."
 msgstr "Nie jesteś zbanowany na serwerze, więc nie możesz utworzyć ticketa."
 
-#: tickets\types.py:595
-msgid ""
-"Ticket creation for {ticket.owner.display_name} ({ticket.owner.id}) (profile"
-" `{ticket.profile}`)."
-msgstr ""
-"Tworzenie ticketa dla {ticket.owner.display_name} ({ticket.owner.id}) "
-"(profil `{ticket.profile}`)."
-
-#: tickets\types.py:617
-msgid ""
-"I don't have the required permissions to create private threads in the "
-"forum/text channel configured."
-msgstr ""
-"Nie mam wymaganych uprawnień, aby tworzyć prywatne wątki w skonfigurowanym "
-"kanale forum/tekstowym."
-
-#: tickets\types.py:647
-msgid ""
-"I don't have the required permissions to create text channels in the "
-"category configured."
-msgstr ""
-"Nie mam wymaganych uprawnień, aby tworzyć kanały tekstowe w skonfigurowanej "
-"kategorii."
-
-#: tickets\types.py:763
+#: types.py:829
 msgid "This ticket is already closed."
 msgstr "Ten ticket jest już zamknięty."
 
-#: tickets\types.py:778
+#: types.py:844
 msgid "You aren't allowed to close this ticket!"
 msgstr "Nie masz uprawnień, aby zamknąć ten ticket!"
 
-#: tickets\types.py:788
+#: types.py:854
 msgid "❌ Ticket Closed"
 msgstr "❌ Ticket Zamknięty"
 
-#: tickets\types.py:793
+#: types.py:859
 msgid "Ticket closed (profile `{self.profile}`)."
 msgstr "Ticket zamknięty (profil `{self.profile}`)."
 
-#: tickets\types.py:795
-msgid ""
-"Ticket closed by {closer.display_name} ({closer.id}) (profile "
-"`{self.profile}`)."
-msgstr ""
-"Ticket zamknięty przez {closer.display_name} ({closer.id}) (profil "
-"`{self.profile}`)."
-
-#: tickets\types.py:846 tickets\views.py:670
+#: types.py:912 views.py:688
 msgid "🗑️ This ticket will be deleted in a few seconds..."
 msgstr "🗑️ Ten ticket zostanie usunięty za kilka sekund..."
 
-#: tickets\types.py:859
+#: types.py:925
 msgid "This ticket is not closed."
 msgstr "Ten ticket nie jest zamknięty."
 
-#: tickets\types.py:874
+#: types.py:940
 msgid "You aren't allowed to reopen this ticket!"
 msgstr "Nie masz uprawnień, aby ponownie otworzyć ten ticket!"
 
-#: tickets\types.py:883
+#: types.py:949
 msgid "Ticket reopened (profile `{self.profile}.`)"
 msgstr "Ticket otwarty ponownie (profil `{self.profile}.`)"
 
-#: tickets\types.py:885
-msgid ""
-"Ticket reopened by {reopener.display_name} ({reopener.id}) (profile "
-"`{self.profile}`)."
-msgstr ""
-"Ticket otwarty ponownie przez {reopener.display_name} ({reopener.id}) "
-"(profil `{self.profile}`)."
-
-#: tickets\types.py:918
+#: types.py:984
 msgid "👐 Ticket Reopened"
 msgstr "👐 Ticket Otworzony Ponownie"
 
-#: tickets\types.py:937
+#: types.py:1003
 msgid "This ticket is already claimed."
 msgstr "Ten ticket jest już przejęty."
 
-#: tickets\types.py:943
-msgid ""
-"Ticket claimed by {claimer.display_name} ({claimer.id}) (profile "
-"`{self.profile}`)."
-msgstr ""
-"Ticket przejęty przez {claimer.display_name} ({claimer.id}) (profil "
-"`{self.profile}`)."
-
-#: tickets\types.py:960
+#: types.py:1026
 msgid "👥 Ticket Claimed"
 msgstr "👥 Ticket Przejęty"
 
-#: tickets\types.py:977
+#: types.py:1043
 msgid "This ticket is not claimed."
 msgstr "Ten ticket nie jest przejęty."
 
-#: tickets\types.py:983
+#: types.py:1049
 msgid "Ticket unclaimed (profile `{self.profile}`)."
 msgstr "Ticket oddany (profil `{self.profile}`)."
 
-#: tickets\types.py:998
+#: types.py:1064
 msgid "👤 Ticket Unclaimed"
 msgstr "👤 Ticket Oddany"
 
-#: tickets\types.py:1014
+#: types.py:1080
 msgid "This ticket is already locked."
 msgstr "Ten ticket jest już zablokowany."
 
-#: tickets\types.py:1029
+#: types.py:1095
 msgid "You aren't allowed to lock this ticket!"
 msgstr "Nie masz uprawnień, aby zablokować ten ticket!"
 
-#: tickets\types.py:1036
+#: types.py:1102
 msgid "Ticket locked (profile `{self.profile}`)."
 msgstr "Ticket zablokowany (profil `{self.profile}`)."
 
-#: tickets\types.py:1038
-msgid ""
-"Ticket locked by {locker.display_name} ({locker.id}) (profile "
-"`{self.profile}`)."
-msgstr ""
-"Ticket zablokowany przez {locker.display_name} ({locker.id}) (profil "
-"`{self.profile}`)."
-
-#: tickets\types.py:1067
+#: types.py:1133
 msgid "🔒 Ticket Locked"
 msgstr "🔒 Ticket Zablokowany"
 
-#: tickets\types.py:1083
+#: types.py:1149
 msgid "This ticket is not locked."
 msgstr "Ten ticket nie jest zablokowany."
 
-#: tickets\types.py:1098
+#: types.py:1164
 msgid "You aren't allowed to unlock this ticket!"
 msgstr "Nie masz uprawnień, aby odblokować ten ticket!"
 
-#: tickets\types.py:1107
+#: types.py:1173
 msgid "Ticket unlocked (profile `{self.profile}`)."
 msgstr "Ticket odblokowany (profil `{self.profile}`)."
 
-#: tickets\types.py:1109
-msgid ""
-"Ticket unlocked by {unlocker.display_name} ({unlocker.id}) (profile "
-"`{self.profile}`)."
-msgstr ""
-"Ticket odblokowany przez {unlocker.display_name} ({unlocker.id}) (profil "
-"`{self.profile}`)."
-
-#: tickets\types.py:1138
+#: types.py:1204
 msgid "🔓 Ticket Unlocked"
 msgstr "🔓 Ticket Odblokowany"
 
-#: tickets\types.py:1154
+#: types.py:1220
 msgid "This ticket appeal is already approved."
 msgstr "To odwołanie ticketa jest już zatwierdzone."
 
-#: tickets\types.py:1157
+#: types.py:1223
 msgid "Appeals are not enabled for this profile."
 msgstr "Odwołania nie są włączone dla tego profilu."
 
-#: tickets\types.py:1159
+#: types.py:1225
 msgid "The server is not available."
 msgstr "Serwer jest niedostępny."
 
-#: tickets\types.py:1162
+#: types.py:1228
 msgid "I don't have the required permissions to unban users in the server."
 msgstr "Nie mam wymaganych uprawnień, aby odbanować użytkowników na serwerze."
 
-#: tickets\types.py:1170
+#: types.py:1236
 msgid "Ticket appeal approved."
 msgstr "Odwołanie ticketa zatwierdzone."
 
-#: tickets\types.py:1172
-msgid "Ticket appeal approved by {approver.display_name} ({approver.id})."
-msgstr ""
-"Odwołanie ticketa zatwierdzone przez {approver.display_name} "
-"({approver.id})."
-
-#: tickets\types.py:1184
+#: types.py:1250
 msgid "❌ The user has already been unbanned."
 msgstr "❌ Użytkownik został już odbanowany."
 
-#: tickets\types.py:1190
+#: types.py:1256
 msgid ""
 "I couldn't unban the user.\n"
 "{error}"
@@ -757,252 +478,188 @@ msgstr ""
 "Nie udało się odbanować użytkownika.\n"
 "{error}"
 
-#: tickets\types.py:1193
+#: types.py:1259
 msgid "🛡️ Ticket Appeal Approved"
 msgstr "🛡️ Odwołanie Ticketa Zatwierdzone"
 
-#: tickets\types.py:1197
-msgid ""
-"## 🛡️ **Congratulations!** Your appeal request got approved by our staff!\n"
-"\n"
-"You can use the invite url below to join the server again:\n"
-"https://discord.gg/{invite_code}\n"
-"*If you still encounter any issues to join the server, try restarting your Discord client.*\n"
-"\n"
-"Then, please close this ticket. Thank you!"
-msgstr ""
-"## 🛡️ **Gratulacje!** Twoje odwołanie zostało zatwierdzone przez nasz zespół!\n"
-"\n"
-"Możesz użyć poniższego adresu zaproszenia, aby ponownie dołączyć na serwer:\n"
-"https://discord.gg/{invite_code}\n"
-"*Jeśli nadal masz problemy z dołączeniem na serwer, spróbuj zrestartować klienta Discord.*\n"
-"\n"
-"Następnie prosimy o zamknięcie tego ticketa. Dziękujemy!"
-
-#: tickets\types.py:1254
+#: types.py:1322
 msgid "You aren't allowed to add members to this ticket!"
 msgstr "Nie masz uprawnień, aby dodawać członków do tego ticketa!"
 
-#: tickets\types.py:1256
+#: types.py:1324
 msgid "This member is already in the ticket."
 msgstr "Ten członek jest już w tickecie."
 
-#: tickets\types.py:1267
-msgid ""
-"This member has a role that allows them to access the ticket without being "
-"added manually."
-msgstr ""
-"Ten członek ma rolę, która pozwala mu uzyskać dostęp do ticketa bez ręcznego"
-" dodawania."
-
-#: tickets\types.py:1275
-msgid "Member added to the ticket: {member.display_name} ({member.id})."
-msgstr "Członek dodany do ticketa: {member.display_name} ({member.id})."
-
-#: tickets\types.py:1279
-msgid ""
-"Member added to the ticket by {author.display_name} ({author.id}): "
-"{member.display_name} ({member.id})."
-msgstr ""
-"Członek dodany do ticketa przez {author.display_name} ({author.id}): "
-"{member.display_name} ({member.id})."
-
-#: tickets\types.py:1292
+#: types.py:1360
 msgid "➕ Member Added"
 msgstr "➕ Członek Dodany"
 
-#: tickets\types.py:1324
+#: types.py:1394
 msgid "You aren't allowed to remove members from this ticket!"
 msgstr "Nie masz uprawnień, aby usuwać członków z tego ticketa!"
 
-#: tickets\types.py:1326
+#: types.py:1396
 msgid "This member is not in the ticket."
 msgstr "Ten członek nie jest w tickecie."
 
-#: tickets\types.py:1331
-msgid "Member removed from the ticket: {member.display_name} ({member.id})."
-msgstr "Członek usunięty z ticketa: {member.display_name} ({member.id})."
-
-#: tickets\types.py:1335
-msgid ""
-"Member removed from the ticket by {author.display_name} ({author.id}): "
-"{member.display_name} ({member.id})."
-msgstr ""
-"Członek usunięty z ticketa przez {author.display_name} ({author.id}): "
-"{member.display_name} ({member.id})."
-
-#: tickets\types.py:1350
+#: types.py:1420
 msgid "➖ Member Removed"
 msgstr "➖ Członek Usunięty"
 
-#: tickets\types.py:1374
-msgid "{action} by {author.mention}"
-msgstr "{action} przez {author.mention}"
+#: types.py:1445
+msgid " by {author.mention}"
+msgstr " przez {author.mention}"
 
-#: tickets\types.py:1381
+#: types.py:1452
 msgid "Target:"
 msgstr "Cel:"
 
-#: tickets\types.py:1450
+#: types.py:1524
 msgid "Ticket deleted (profile `{self.profile}`)."
 msgstr "Ticket usunięty (profil `{self.profile}`)."
 
-#: tickets\types.py:1452
-msgid ""
-"Ticket deleted by {deleter.display_name} ({deleter.id}) (profile "
-"`{self.profile}`)."
-msgstr ""
-"Ticket usunięty przez {deleter.display_name} ({deleter.id}) (profil "
-"`{self.profile}`)."
-
-#: tickets\types.py:1465
+#: types.py:1540
 msgid "🗑 Ticket Deleted"
 msgstr "🗑 Ticket Usunięty"
 
-#: tickets\types.py:1466
+#: types.py:1541
 msgid "<@{self.owner_id}>'s ticket has been deleted."
 msgstr "Ticket użytkownika <@{self.owner_id}> został usunięty."
 
-#: tickets\views.py:26 tickets\views.py:494 tickets\views.py:611
+#: views.py:26 views.py:505 views.py:626
 msgid "⛔ You aren't allowed to interact with this ticket!"
 msgstr "⛔ Nie masz uprawnień, aby wchodzić w interakcje z tym ticketem!"
 
-#: tickets\views.py:36
+#: views.py:36
 msgid "⛔ You aren't allowed to claim or unclaim this ticket!"
 msgstr "⛔ Nie masz uprawnień, aby przejmować lub oddawać ten ticket!"
 
-#: tickets\views.py:59
+#: views.py:59
 msgid "Lock"
 msgstr "Zablokuj"
 
-#: tickets\views.py:73
+#: views.py:73
 msgid "Unlock"
 msgstr "Odblokuj"
 
-#: tickets\views.py:88
+#: views.py:88
 msgid "Claim"
 msgstr "Przejmij"
 
-#: tickets\views.py:102
+#: views.py:102
 msgid "Unclaim"
 msgstr "Oddaj"
 
-#: tickets\views.py:119 tickets\views.py:430
+#: views.py:119 views.py:440
 msgid "Close"
 msgstr "Zamknij"
 
-#: tickets\views.py:135 tickets\views.py:542
+#: views.py:135 views.py:554
 msgid "Reopen"
 msgstr "Otwórz ponownie"
 
-#: tickets\views.py:151
+#: views.py:151
 msgid "Approve Appeal"
 msgstr "Zatwierdź Odwołanie"
 
-#: tickets\views.py:179
+#: views.py:179
 msgid "🔒 This ticket has been locked!"
 msgstr "🔒 Ten ticket został zablokowany!"
 
-#: tickets\views.py:184
+#: views.py:185
 msgid "🔓 This ticket has been unlocked!"
 msgstr "🔓 Ten ticket został odblokowany!"
 
-#: tickets\views.py:199
+#: views.py:201
 msgid "👥 You have claimed this ticket!"
 msgstr "👥 Przejąłeś ten ticket!"
 
-#: tickets\views.py:204
+#: views.py:207
 msgid "👤 You have unclaimed this ticket!"
 msgstr "👤 Oddałeś ten ticket!"
 
-#: tickets\views.py:259
+#: views.py:265
 msgid "✅ This ticket's appeal has been approved!"
 msgstr "✅ Odwołanie tego ticketa zostało zatwierdzone!"
 
-#: tickets\views.py:288
+#: views.py:296
 msgid "{total} Member{s}"
 msgstr "{total} Członek/członkowie"
 
-#: tickets\views.py:296
+#: views.py:304
 msgid "**{i}.** {member.mention} ({member.id})"
 msgstr "**{i}.** {member.mention} ({member.id})"
 
-#: tickets\views.py:305
+#: views.py:313
 msgid "Select the member(s) to add to the ticket."
 msgstr "Wybierz członka(ów) do dodania do ticketa."
 
-#: tickets\views.py:306
+#: views.py:314
 msgid "Select the member(s) to remove from the ticket."
 msgstr "Wybierz członka(ów) do usunięcia z ticketa."
 
-#: tickets\views.py:340
+#: views.py:348
 msgid "➕ Members have been added to the ticket!"
 msgstr "➕ Członkowie zostali dodani do ticketa!"
 
-#: tickets\views.py:369
+#: views.py:377
 msgid "➖ Members have been removed from the ticket!"
 msgstr "➖ Członkowie zostali usunięci z ticketa!"
 
-#: tickets\views.py:378 tickets\views.py:440
+#: views.py:388 views.py:450
 msgid "Close Ticket"
 msgstr "Zamknij Ticket"
 
-#: tickets\views.py:378
+#: views.py:388
 msgid "Reopen Ticket"
 msgstr "Otwórz Ticket Ponownie"
 
-#: tickets\views.py:384
+#: views.py:394
 msgid "Optional reason..."
 msgstr "Opcjonalny powód..."
 
-#: tickets\views.py:407 tickets\views.py:528
+#: views.py:417 views.py:539
 msgid "❌ This ticket has been closed!"
 msgstr "❌ Ten ticket został zamknięty!"
 
-#: tickets\views.py:413 tickets\views.py:654
+#: views.py:423 views.py:673
 msgid "👐 This ticket has been reopened!"
 msgstr "👐 Ten ticket został otwarty ponownie!"
 
-#: tickets\views.py:428
+#: views.py:438
 msgid "Cancel"
 msgstr "Anuluj"
 
-#: tickets\views.py:441
-msgid ""
-"If you would like to close this ticket, then just press the `Close` button. "
-"If you would like to keep this ticket open to get further assistance, you "
-"can click on the `Cancel` button."
-msgstr ""
-"Jeśli chcesz zamknąć ten ticket, po prostu naciśnij przycisk `Zamknij`. "
-"Jeśli chcesz pozostawić ten ticket otwarty, aby otrzymać dalszą pomoc, "
-"możesz kliknąć przycisk `Anuluj`."
-
-#: tickets\views.py:453
+#: views.py:463
 msgid "Note that if there is no response from you the ticket will be closed."
 msgstr ""
 "Zauważ, że jeśli nie otrzymamy od Ciebie odpowiedzi, ticket zostanie "
 "zamknięty."
 
-#: tickets\views.py:470
+#: views.py:480
 msgid "{owner.mention}, is there anything else we can help you with?"
 msgstr "{owner.mention}, czy możemy jeszcze w czymś pomóc?"
 
-#: tickets\views.py:487 tickets\views.py:602
+#: views.py:498 views.py:617
 msgid "⛔ This channel is not in the Config!"
 msgstr "⛔ Ten kanał nie znajduje się w konfiguracji!"
 
-#: tickets\views.py:507
+#: views.py:518
 msgid "👍 This ticket has not been closed!"
 msgstr "👍 Ten ticket nie został zamknięty!"
 
-#: tickets\views.py:541
+#: views.py:553
 msgid "Transcript"
 msgstr "Transkrypt"
 
-#: tickets\views.py:543
+#: views.py:555
 msgid "Delete"
 msgstr "Usuń"
 
-#: tickets\views.py:586
+#: views.py:600
 msgid "Closed Ticket Controls"
 msgstr "Kontrolki Zamkniętego Ticketa"
+
+#: views.py:162
+msgid "Members"
+msgstr "Członkowie"
