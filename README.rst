@@ -31,7 +31,7 @@ Installation:
 
 ### verify
 
-Fork of [Sharky The King's Verify](https://github.com/SharkyTheKing/Red-Cogs)
+Fork of [Sharky The King's Verify](https://github.com/SharkyTheKing/Sharky)
 with a fix: `ctx.message.delete()` is wrapped in a guard so verification still
 proceeds/logs when invoked from a button (mocked context) instead of aborting.
 
