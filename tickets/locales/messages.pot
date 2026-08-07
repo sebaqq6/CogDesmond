@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-08-07 19:02+0200\n"
+"POT-Creation-Date: 2026-08-07 21:32+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -11,7 +11,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: redgettext 3.4.2\n"
 
-#: converters.py:20 tickets.py:799
+#: converters.py:20 tickets.py:806
 msgid "This profile doesn't exist."
 msgstr ""
 
@@ -44,174 +44,174 @@ msgstr ""
 msgid "Configure and manage a tickets system for your server!"
 msgstr ""
 
-#: tickets.py:611
+#: tickets.py:617
 msgid "Jump to Ticket"
 msgstr ""
 
-#: tickets.py:660
+#: tickets.py:666
 msgid "Create a Ticket"
 msgstr ""
 
-#: tickets.py:683
+#: tickets.py:690
 msgid "Only the ticket owner can fill the answers."
 msgstr ""
 
-#: tickets.py:700
+#: tickets.py:707
 msgid "Fill Answers"
 msgstr ""
 
-#: tickets.py:768
+#: tickets.py:775
 #, docstring
 msgid "Create a ticket."
 msgstr ""
 
-#: tickets.py:781
+#: tickets.py:788
 #, docstring
 msgid "Create a ticket for a member."
 msgstr ""
 
-#: tickets.py:788
+#: tickets.py:795
 #, docstring
 msgid "Show Tickets settings."
 msgstr ""
 
-#: tickets.py:792
+#: tickets.py:799
 msgid "Tickets — Settings — Profiles"
 msgstr ""
 
-#: tickets.py:803
+#: tickets.py:810
 msgid "Tickets — Settings — Profile `{profile}`"
 msgstr ""
 
-#: tickets.py:814
+#: tickets.py:821
 msgid "Settings:"
 msgstr ""
 
-#: tickets.py:856
+#: tickets.py:864
 msgid "Set."
 msgstr ""
 
-#: tickets.py:973
+#: tickets.py:982
 #, docstring
 msgid "Show a ticket."
 msgstr ""
 
-#: tickets.py:984 tickets.py:1007 tickets.py:1080 tickets.py:1104
-#: tickets.py:1128 tickets.py:1152 tickets.py:1175 tickets.py:1199
-#: tickets.py:1223 tickets.py:1249 tickets.py:1275 tickets.py:1299
-#: tickets.py:1332
+#: tickets.py:993 tickets.py:1016 tickets.py:1089 tickets.py:1113
+#: tickets.py:1137 tickets.py:1161 tickets.py:1184 tickets.py:1208
+#: tickets.py:1232 tickets.py:1258 tickets.py:1284 tickets.py:1308
+#: tickets.py:1341
 msgid "No ticket found."
 msgstr ""
 
-#: tickets.py:1005
+#: tickets.py:1014
 #, docstring
 msgid "List tickets."
 msgstr ""
 
-#: tickets.py:1039
+#: tickets.py:1048
 msgid "{len_tickets} Ticket{s}"
 msgstr ""
 
-#: tickets.py:1069
+#: tickets.py:1078
 #, docstring
 msgid "Close a ticket."
 msgstr ""
 
-#: tickets.py:1093
+#: tickets.py:1102
 #, docstring
 msgid "Reopen a ticket."
 msgstr ""
 
-#: tickets.py:1117
+#: tickets.py:1126
 #, docstring
 msgid "Claim a ticket."
 msgstr ""
 
-#: tickets.py:1141
+#: tickets.py:1150
 #, docstring
 msgid "Unclaim a ticket."
 msgstr ""
 
-#: tickets.py:1188
+#: tickets.py:1197
 #, docstring
 msgid "Unlock a ticket."
 msgstr ""
 
-#: tickets.py:1212
+#: tickets.py:1221
 #, docstring
 msgid "Approve an appeal."
 msgstr ""
 
-#: tickets.py:1238
+#: tickets.py:1247
 #, docstring
 msgid "Add a member to a ticket."
 msgstr ""
 
-#: tickets.py:1264
+#: tickets.py:1273
 #, docstring
 msgid "Remove a member from a ticket."
 msgstr ""
 
-#: tickets.py:1288
+#: tickets.py:1297
 #, docstring
 msgid "Export a ticket."
 msgstr ""
 
-#: tickets.py:1302 views.py:645
+#: tickets.py:1311 views.py:654
 msgid "📜 Here is the transcript of this ticket!"
 msgstr ""
 
-#: tickets.py:1308 views.py:653
+#: tickets.py:1317 views.py:662
 msgid "View Transcript"
 msgstr ""
 
-#: tickets.py:1343
+#: tickets.py:1352
 #, docstring
 msgid "Recover a ticket from a channel."
 msgstr ""
 
-#: tickets.py:1352
+#: tickets.py:1361
 msgid "This channel is already linked to a ticket."
 msgstr ""
 
-#: tickets.py:1360
+#: tickets.py:1369
 msgid "No messages found in this channel."
 msgstr ""
 
-#: tickets.py:1363
+#: tickets.py:1372
 msgid "The first message in this channel must be sent by me."
 msgstr ""
 
-#: tickets.py:1367
+#: tickets.py:1376
 msgid "The first message in this channel must contain an embed."
 msgstr ""
 
-#: tickets.py:1381
+#: tickets.py:1390
 msgid "The profile of this ticket doesn't exist anymore."
 msgstr ""
 
-#: tickets.py:1383 types.py:510 types.py:1458 views.py:392 views.py:458
+#: tickets.py:1392 types.py:510 types.py:1458 views.py:397 views.py:467
 msgid "Reason:"
 msgstr ""
 
-#: tickets.py:1425
+#: tickets.py:1434
 msgid "Reverting channel name and overwrites for ticket recovery."
 msgstr ""
 
-#: tickets.py:1441
+#: tickets.py:1450
 #, docstring
 msgid "Help to setup Tickets."
 msgstr ""
 
-#: tickets.py:1445
+#: tickets.py:1454
 msgid "Getting Started (Required Steps):"
 msgstr ""
 
-#: tickets.py:1471
+#: tickets.py:1480
 msgid "Buttons & Dropdowns:"
 msgstr ""
 
-#: tickets.py:1494
+#: tickets.py:1503
 #, docstring
 msgid ""
 "Add a button to a message.\n"
@@ -230,74 +230,74 @@ msgid ""
 "        "
 msgstr ""
 
-#: tickets.py:1511
+#: tickets.py:1520
 msgid "You have to specify at least an emoji or a label."
 msgstr ""
 
-#: tickets.py:1516 tickets.py:1559
+#: tickets.py:1525 tickets.py:1568
 msgid "This message already has components."
 msgstr ""
 
-#: tickets.py:1525
+#: tickets.py:1534
 msgid "You can't add more than 20 buttons for one message."
 msgstr ""
 
-#: tickets.py:1554
+#: tickets.py:1563
 #, docstring
 msgid "Add an option to the dropdown of a message."
 msgstr ""
 
-#: tickets.py:1568
+#: tickets.py:1577
 msgid "I can't add more than 25 options for one dropdown."
 msgstr ""
 
-#: tickets.py:1592
+#: tickets.py:1601
 #, docstring
 msgid "Clear the components of a message."
 msgstr ""
 
-#: tickets.py:1596
+#: tickets.py:1605
 msgid "This message doesn't have components added with Tickets."
 msgstr ""
 
-#: tickets.py:1617
+#: tickets.py:1626
 #, docstring
 msgid "Configure the appeal feature."
 msgstr ""
 
-#: tickets.py:1621
+#: tickets.py:1630
 msgid "This guild doesn't exist or the bot isn't in it."
 msgstr ""
 
-#: tickets.py:1625
+#: tickets.py:1634
 msgid "You can't configure appeal tickets for the same guild."
 msgstr ""
 
-#: tickets.py:1629
+#: tickets.py:1638
 msgid "You must be in the guild to configure the appeal feature."
 msgstr ""
 
-#: tickets.py:1639
+#: tickets.py:1648
 msgid "I need the `Ban Members` permission in the guild to unban users."
 msgstr ""
 
-#: tickets.py:1646
+#: tickets.py:1655
 msgid "This invite doesn't exist."
 msgstr ""
 
-#: tickets.py:1648
+#: tickets.py:1657
 msgid "This invite doesn't belong to the guild."
 msgstr ""
 
-#: tickets.py:1704
+#: tickets.py:1713
 msgid "Appeal Ticket"
 msgstr ""
 
-#: tickets.py:1718
+#: tickets.py:1727
 msgid "Appeal"
 msgstr ""
 
-#: tickets.py:1725
+#: tickets.py:1734
 #, docstring
 msgid "Get an embed for check loop status."
 msgstr ""
@@ -354,7 +354,7 @@ msgstr ""
 msgid "Ticket closed (profile `{self.profile}`)."
 msgstr ""
 
-#: types.py:912 views.py:688
+#: types.py:912 views.py:697
 msgid "🗑️ This ticket will be deleted in a few seconds..."
 msgstr ""
 
@@ -504,7 +504,7 @@ msgstr ""
 msgid "<@{self.owner_id}>'s ticket has been deleted."
 msgstr ""
 
-#: views.py:26 views.py:505 views.py:626
+#: views.py:26 views.py:514 views.py:635
 msgid "⛔ You aren't allowed to interact with this ticket!"
 msgstr ""
 
@@ -528,11 +528,11 @@ msgstr ""
 msgid "Unclaim"
 msgstr ""
 
-#: views.py:119 views.py:440
+#: views.py:119 views.py:449
 msgid "Close"
 msgstr ""
 
-#: views.py:135 views.py:554
+#: views.py:135 views.py:563
 msgid "Reopen"
 msgstr ""
 
@@ -540,102 +540,104 @@ msgstr ""
 msgid "Approve Appeal"
 msgstr ""
 
-#: views.py:179
+#: views.py:184
 msgid "🔒 This ticket has been locked!"
 msgstr ""
 
-#: views.py:185
+#: views.py:190
 msgid "🔓 This ticket has been unlocked!"
 msgstr ""
 
-#: views.py:201
+#: views.py:206
 msgid "👥 You have claimed this ticket!"
 msgstr ""
 
-#: views.py:207
+#: views.py:212
 msgid "👤 You have unclaimed this ticket!"
 msgstr ""
 
-#: views.py:265
+#: views.py:270
 msgid "✅ This ticket's appeal has been approved!"
 msgstr ""
 
-#: views.py:296
+#: views.py:301
 msgid "{total} Member{s}"
 msgstr ""
 
-#: views.py:304
+#: views.py:309
 msgid "**{i}.** {member.mention} ({member.id})"
 msgstr ""
 
-#: views.py:313
+#: views.py:318
 msgid "Select the member(s) to add to the ticket."
 msgstr ""
 
-#: views.py:314
+#: views.py:319
 msgid "Select the member(s) to remove from the ticket."
 msgstr ""
 
-#: views.py:348
+#: views.py:353
 msgid "➕ Members have been added to the ticket!"
 msgstr ""
 
-#: views.py:377
+#: views.py:382
 msgid "➖ Members have been removed from the ticket!"
 msgstr ""
 
-#: views.py:388 views.py:450
+#: views.py:393 views.py:459
 msgid "Close Ticket"
 msgstr ""
 
-#: views.py:388
+#: views.py:393
 msgid "Reopen Ticket"
 msgstr ""
 
-#: views.py:394
+#: views.py:399
 msgid "Optional reason..."
 msgstr ""
 
-#: views.py:417 views.py:539
+#: views.py:423 views.py:548
 msgid "❌ This ticket has been closed!"
 msgstr ""
 
-#: views.py:423 views.py:673
+#: views.py:430 views.py:682
 msgid "👐 This ticket has been reopened!"
 msgstr ""
 
-#: views.py:438
+#: views.py:447
 msgid "Cancel"
 msgstr ""
 
-#: views.py:463
+#: views.py:472
 msgid "Note that if there is no response from you the ticket will be closed."
 msgstr ""
 
-#: views.py:480
+#: views.py:489
 msgid "{owner.mention}, is there anything else we can help you with?"
 msgstr ""
 
-#: views.py:498 views.py:617
+#: views.py:507 views.py:626
 msgid "⛔ This channel is not in the Config!"
 msgstr ""
 
-#: views.py:518
+#: views.py:527
 msgid "👍 This ticket has not been closed!"
 msgstr ""
 
-#: views.py:553
+#: views.py:562
 msgid "Transcript"
 msgstr ""
 
-#: views.py:555
+#: views.py:564
 msgid "Delete"
 msgstr ""
 
-#: views.py:600
+#: views.py:609
 msgid "Closed Ticket Controls"
 msgstr ""
 
-#: views.py:162
-msgid "Members"
+#: tickets.py:756
+msgid ""
+"✅ Twój ticket został utworzony! Poczekaj na odpowiedź zespołu w "
+"{channel.mention}."
 msgstr ""

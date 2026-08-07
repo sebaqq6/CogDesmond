@@ -753,7 +753,7 @@ class Tickets(DashboardIntegration, Cog):
         if isinstance(ctx_interaction, discord.Interaction):
             await ctx_interaction.followup.send(
                 _(
-                    "❓ Your ticket has been created! Please wait for a staff member to assist you in {channel.mention}.",
+                    "✅ Twój ticket został utworzony! Poczekaj na odpowiedź zespołu w {channel.mention}.",
                 ).format(channel=ticket.channel),
                 ephemeral=True,
             )

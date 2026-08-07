@@ -663,3 +663,11 @@ msgstr "Kontrolki Zamkniętego Ticketa"
 #: views.py:162
 msgid "Members"
 msgstr "Członkowie"
+
+#: tickets.py:756
+msgid ""
+"✅ Twój ticket został utworzony! Poczekaj na odpowiedź zespołu w "
+"{channel.mention}."
+msgstr ""
+"✅ Twój ticket został utworzony! Poczekaj na odpowiedź zespołu w "
+"{channel.mention}."
