@@ -42,6 +42,20 @@ Installation:
 [p]load verify
 ```
 
+### tickets
+
+Fork of [AAA3A's Tickets](https://github.com/AAA3A-AAA3A/AAA3A-cogs) with a
+**Polish translation** (`pl-PL.po`/`pl-PL.mo`, all 175 strings). Set the bot
+locale to Polish with `[p]set locale pl` and reload the cog.
+
+Installation:
+
+```
+[p]cog install cogdesmond tickets
+[p]load tickets
+[p]settickets setup
+```
+
 ## License
 
 MIT. The `vcounter` cog is derived from
