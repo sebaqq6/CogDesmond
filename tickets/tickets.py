@@ -664,7 +664,7 @@ class Tickets(DashboardIntegration, Cog):
         if final_modal is not None:
             modal: discord.ui.Modal = discord.ui.Modal(
                 title=_("Create a Ticket"),
-                timeout=3600,
+                timeout=60,
             )
             modal.on_submit = lambda interaction: interaction.response.defer()
             text_inputs = []
