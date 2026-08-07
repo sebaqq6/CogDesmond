@@ -29,6 +29,19 @@ Installation:
 [p]vcounter toggle online
 ```
 
+### verify
+
+Fork of [Sharky The King's Verify](https://github.com/SharkyTheKing/Red-Cogs)
+with a fix: `ctx.message.delete()` is wrapped in a guard so verification still
+proceeds/logs when invoked from a button (mocked context) instead of aborting.
+
+Installation:
+
+```
+[p]cog install cogdesmond verify
+[p]load verify
+```
+
 ## License
 
 MIT. The `vcounter` cog is derived from
