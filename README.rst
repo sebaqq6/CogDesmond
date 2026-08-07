@@ -22,7 +22,7 @@ One counter per type, each bound to a channel of your choice:
 Installation:
 
 ```
-[p]repo add cogdesmond https://github.com/<your-user>/CogDesmond
+[p]repo add cogdesmond https://github.com/sebaqq6/CogDesmond
 [p]cog install cogdesmond vcounter
 [p]load vcounter
 [p]vcounter set online <voice_channel>
