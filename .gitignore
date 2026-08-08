@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 *.egg-info/
+
+# Lokalne konfiguracje / referencje (nie commitować)
+tickets/modale-tickets.yaml
