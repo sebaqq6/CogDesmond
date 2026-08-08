@@ -242,6 +242,7 @@
 
     <div class="group-title">Konfiguracja</div>
     <a href="#dropdown">Przyciski vs Dropdown</a>
+    <a href="#profile">Profile</a>
     <a href="#set-ustawienia">Ustawienia profilu</a>
     <a href="#set-role">Role</a>
     <a href="#set-kanaly">Kanały</a>
@@ -514,8 +515,82 @@
       <div class="chip"><div class="name"><code>owner_can_remove_members</code></div><p>Czy właściciel może usuwać członków. <em>(domyślnie: False)</em></p></div>
       <div class="chip"><div class="name"><code>show_members_button</code></div><p>Pokazuje przycisk „Członkowie" w tickecie <span class="flag">modyfikacja Twojego forka</span>. <em>(domyślnie: True)</em></p></div>
       <div class="chip"><div class="name"><code>close_on_leave</code></div><p>Czy zamknąć ticket, gdy właściciel opuści serwer. <em>(domyślnie: True)</em></p></div>
+      <div class="chip"><div class="name"><code>hide_closed_ticket_from_owner</code></div><p>Ukrywa zamknięty ticket przed właścicielem i dodanymi członkami (znika im kanał). Po reopen dostęp wraca. <span class="flag">modyfikacja Twojego forka</span>. <em>(domyślnie: True)</em></p></div>
       <div class="chip"><div class="name"><code>close_after_dank_payout</code></div><p>Czy zamykać ticket po wypłacie Dank Memer. <em>(domyślnie: False)</em></p></div>
       <div class="chip"><div class="name"><code>auto_delete_on_close</code></div><p>Automatyczne usunięcie ticketa po zamknięciu — podaj czas w godzinach (0–720). 0 = natychmiast. <em>(domyślnie: brak / wyłączone)</em></p></div>
+    </div>
+  </section>
+
+  <section id="profile" class="anchor">
+    <h2><span class="icon">🗂️</span> Profile</h2>
+    <p class="section-lead">Profile pozwalają mieć kilka niezależnych konfiguracji ticketów na jednym serwerze (np. <code>main</code> — pomoc ogólna, <code>reklamacje</code>, <code>zwroty</code>). Każdy profil ma własne role, kanały, emoji, modal tworzenia, limity itd. Domyślny profil to <code>main</code>.</p>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr><th style="width:42%">Komenda</th><th style="width:14%">Dostęp</th><th>Opis</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>[p]settickets profileadd &lt;nazwa&gt;</code><span class="flag">alias: addprofile</span></td>
+            <td><span class="badge admin">admin</span></td>
+            <td>Tworzy nowy profil z ustawieniami domyślnymi.</td>
+          </tr>
+          <tr>
+            <td><code>[p]settickets profileclone &lt;stary_profil&gt; &lt;nowy_profil&gt;</code><span class="flag">alias: cloneprofile</span></td>
+            <td><span class="badge admin">admin</span></td>
+            <td>Kopiuje <strong>całą konfigurację</strong> istniejącego profilu do nowego (role, kanały, emoji, modal, limity…). Najszybszy sposób na przygotowanie nowego profilu bazując na istniejącym.</td>
+          </tr>
+          <tr>
+            <td><code>[p]settickets profilerename &lt;stary_profil&gt; &lt;nowy_profil&gt;</code><span class="flag">alias: renameprofile</span></td>
+            <td><span class="badge admin">admin</span></td>
+            <td>Zmienia nazwę profilu (aktualizuje też powiązane przyciski/dropdowny).</td>
+          </tr>
+          <tr>
+            <td><code>[p]settickets profileremove &lt;profil&gt;</code><span class="flag">alias: removeprofile</span></td>
+            <td><span class="badge admin">admin</span></td>
+            <td>Usuwa profil (wymaga potwierdzenia).</td>
+          </tr>
+          <tr>
+            <td><code>[p]settickets profileslist</code><span class="flag">alias: listprofiles</span></td>
+            <td><span class="badge admin">admin</span></td>
+            <td>Listuje istniejące profile.</td>
+          </tr>
+          <tr>
+            <td><code>[p]settickets showsettings &lt;profil&gt;</code></td>
+            <td><span class="badge admin">admin</span></td>
+            <td>Pokazuje wszystkie ustawienia wybranego profilu (wartości + domyślne).</td>
+          </tr>
+          <tr>
+            <td><code>[p]settickets resetsetting &lt;profil&gt; &lt;opcja&gt;</code></td>
+            <td><span class="badge admin">admin</span></td>
+            <td>Przywraca domyślną wartość pojedynczej opcji w profilu.</td>
+          </tr>
+          <tr>
+            <td><code>[p]settickets modalconfig &lt;profil&gt;</code><span class="flag">alias: configmodal</span></td>
+            <td><span class="badge admin">admin</span></td>
+            <td>Konfiguracja wszystkich ustawień profilu przez modale.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><strong>Przykłady:</strong></p>
+      <span class="cmd-line">[p]settickets profileslist</span>
+      <span class="cmd-line">[p]settickets profileclone main reklamacje</span>
+      <span class="cmd-line">[p]settickets enabled reklamacje true</span>
+      <span class="cmd-line">[p]settickets supportroles reklamacje @Support @Moderacja</span>
+      <span class="cmd-line">[p]settickets categoryopen reklamacje "🎫 Reklamacje"</span>
+      <span class="cmd-line">[p]settickets profileadd premium</span>
+      <span class="cmd-line">[p]settickets profilerename premium premium-plus</span>
+    </div>
+
+    <div class="card">
+      <h3>💡 Uwagi</h3>
+      <ul>
+        <li>Nazwy profili mają limit <strong>20 znaków</strong> i są przechowywane <strong>małymi literami</strong> (wyszukiwanie nie zwraca uwagi na wielkość liter).</li>
+        <li>Wszystkie komendy ustawień mają formę <code>[p]settickets &lt;opcja&gt; &lt;profil&gt; &lt;wartość&gt;</code> — najpierw wybiera się profil, potem ustawia wartość.</li>
+        <li>Przyciski i dropdowny (sekcja „Przyciski vs Dropdown") mogą wskazywać na dowolny profil — wybór opcji tworzy ticket z tego profilu.</li>
+        <li>Przy tworzeniu ticketa profilem z włączonym modalem, w <code>creating_modal</code> można zbierać odpowiedzi właściciela, które pojawią się w tickecie.</li>
+      </ul>
     </div>
   </section>
 
