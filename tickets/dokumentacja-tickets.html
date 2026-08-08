@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Tickets — Dokumentacja</title>
+<style>
+  :root {
+    --bg: #0f1220;
+    --bg-soft: #161a2e;
+    --panel: #1c2140;
+    --panel-2: #232a4e;
+    --border: #2e355c;
+    --text: #e8eaf6;
+    --text-dim: #9aa0c0;
+    --accent: #7c6cf0;
+    --accent-2: #4cc9f0;
+    --green: #2dd4a0;
+    --red: #f0646c;
+    --yellow: #f4c95d;
+    --code-bg: #0b0e1c;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    background: linear-gradient(160deg, var(--bg) 0%, #131630 100%) fixed;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: 290px;
+    background: var(--bg-soft);
+    border-right: 1px solid var(--border);
+    padding: 24px 20px;
+    overflow-y: auto;
+    z-index: 10;
+  }
+  .sidebar h1 {
+    font-size: 1.15rem;
+    margin: 0 0 4px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sidebar h1 .logo {
+    font-size: 1.4rem;
+  }
+  .sidebar .subtitle {
+    color: var(--text-dim);
+    font-size: .8rem;
+    margin-bottom: 22px;
+  }
+  .sidebar nav a {
+    display: block;
+    color: var(--text-dim);
+    text-decoration: none;
+    padding: 7px 10px;
+    border-radius: 8px;
+    font-size: .9rem;
+    border-left: 2px solid transparent;
+    transition: all .15s;
+  }
+  .sidebar nav a:hover,
+  .sidebar nav a.active {
+    color: #fff;
+    background: var(--panel);
+    border-left-color: var(--accent);
+  }
+  .sidebar nav .group-title {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--accent-2);
+    margin: 18px 0 6px;
+    padding-left: 10px;
+  }
+  main {
+    margin-left: 290px;
+    padding: 40px 56px 80px;
+    max-width: 1100px;
+  }
+  @media (max-width: 900px) {
+    .sidebar { position: static; width: auto; border-right: none; border-bottom: 1px solid var(--border); }
+    main { margin-left: 0; padding: 24px 18px 60px; }
+  }
+  h2 {
+    font-size: 1.7rem;
+    margin: 0 0 6px;
+    color: #fff;
+    scroll-margin-top: 20px;
+  }
+  h2 .icon { margin-right: 8px; }
+  .section-lead {
+    color: var(--text-dim);
+    margin: 0 0 24px;
+    font-size: .98rem;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    margin-bottom: 22px;
+  }
+  .card h3 {
+    margin: 0 0 14px;
+    font-size: 1.05rem;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .9rem;
+  }
+  th, td {
+    text-align: left;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th {
+    color: var(--accent-2);
+    font-weight: 600;
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    background: var(--panel-2);
+  }
+  tbody tr:hover { background: rgba(124, 108, 240, .06); }
+  tr:last-child td { border-bottom: none; }
+  code, .cmd {
+    font-family: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: .85em;
+    color: var(--accent-2);
+    white-space: nowrap;
+  }
+  .cmd-line {
+    display: block;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 10px 0;
+    font-family: "JetBrains Mono", Consolas, monospace;
+    font-size: .86rem;
+    color: var(--green);
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  td code {
+    white-space: normal;
+    word-break: break-word;
+  }
+  .badge {
+    display: inline-block;
+    font-size: .68rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    padding: 2px 9px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    vertical-align: middle;
+  }
+  .badge.admin { background: rgba(244, 201, 93, .15); color: var(--yellow); border: 1px solid rgba(244,201,93,.35); }
+  .badge.support { background: rgba(76, 201, 240, .12); color: var(--accent-2); border: 1px solid rgba(76,201,240,.35); }
+  .badge.all { background: rgba(45, 212, 160, .12); color: var(--green); border: 1px solid rgba(45,212,160,.35); }
+  .badge.owner { background: rgba(240, 100, 108, .12); color: var(--red); border: 1px solid rgba(240,100,108,.35); }
+  .flag {
+    display: inline-block;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 0 6px;
+    font-size: .72rem;
+    color: var(--text-dim);
+    margin-left: 6px;
+  }
+  .note {
+    background: rgba(76, 201, 240, .07);
+    border: 1px solid rgba(76, 201, 240, .25);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: .88rem;
+    color: var(--text);
+  }
+  .note strong { color: var(--accent-2); }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .chip {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: .85rem;
+  }
+  .chip .name { font-weight: 600; color: #fff; font-size: .92rem; }
+  .chip p { margin: 6px 0 0; color: var(--text-dim); }
+  footer {
+    margin-top: 40px;
+    color: var(--text-dim);
+    font-size: .8rem;
+    text-align: center;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+  }
+  .anchor { scroll-margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <h1><span class="logo">🎫</span> System Tickets</h1>
+  <div class="subtitle">Dokumentacja komend · fork CogDesmond</div>
+  <nav id="nav">
+    <div class="group-title">Start</div>
+    <a href="#start">Szybki start</a>
+    <a href="#konwencje">Konwencje</a>
+
+    <div class="group-title">Zarządzanie ticketami</div>
+    <a href="#tworzenie">Tworzenie</a>
+    <a href="#podglad">Podgląd i lista</a>
+    <a href="#akcje">Akcje (zamknij/claim…)</a>
+    <a href="#czlonkowie">Członkowie</a>
+    <a href="#transkrypty">Transkrypty i odzysk</a>
+
+    <div class="group-title">Konfiguracja</div>
+    <a href="#dropdown">Przyciski vs Dropdown</a>
+    <a href="#set-ustawienia">Ustawienia profilu</a>
+    <a href="#set-role">Role</a>
+    <a href="#set-kanaly">Kanały</a>
+    <a href="#set-emoji">Emoji</a>
+    <a href="#set-pomoc">Setup, przyciski, odwołania</a>
+  </nav>
+</aside>
+
+<main>
+
+  <section id="start" class="anchor">
+    <h2><span class="icon">🚀</span> Szybki start</h2>
+    <p class="section-lead">Najszybsza droga do działającego systemu ticketów — wszystko przez przewodnik:</p>
+    <div class="card">
+      <p class="note" style="margin-top:0"><strong>Wskazówka:</strong> zamiast kanału forum możesz użyć kategorii kanałów — <code>[p]settickets categoryopen main &lt;kategoria&gt;</code> i opcjonalnie <code>categoryclosed</code>. Role pingowania: <code>[p]settickets pingroles main &lt;role...&gt;</code>.</p>
+      <p><strong>Przykład pełnej konfiguracji:</strong></p>
+      <span class="cmd-line">[p]settickets enabled main true</span>
+      <span class="cmd-line">[p]settickets supportroles main @Support @Moderacja</span>
+      <span class="cmd-line">[p]settickets pingroles main @Moderacja</span>
+      <span class="cmd-line">[p]settickets categoryopen main "🎫 Otwarte"</span>
+      <span class="cmd-line">[p]settickets categoryclosed main "📦 Zamknięte"</span>
+      <span class="cmd-line">[p]settickets logschannel main #ticket-logs</span>
+      <span class="cmd-line">[p]settickets max_open_tickets_by_member main 3</span>
+    </div>
+  </section>
+
+  <section id="konwencje" class="anchor">
+    <h2><span class="icon">📖</span> Konwencje</h2>
+    <div class="card">
+      <ul>
+        <li><code>[p]</code> = Twój prefix bota. Główna grupa to <code>[p]ticket</code> z aliasem <code>[p]tickets</code>.</li>
+        <li><code>&lt;profile&gt;</code> = nazwa profilu konfiguracji. Domyślny profil to <code>main</code>.</li>
+        <li>Jeśli pominięto argument <code>[ticket]</code>, komenda działa na ticketcie, w którym aktualnie się znajdujesz.</li>
+        <li>Domyślne wartości ustawień zaznaczono jako <code>domyślnie: …</code>.</li>
+        <li>Legendy uprawnień: <span class="badge all">wszyscy</span> <span class="badge support">support</span> <span class="badge admin">admin / zarządzanie serwerem</span> <span class="badge owner">właściciel bota</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= TICKET ================= -->
+
+  <section id="tworzenie" class="anchor">
+    <h2><span class="icon">➕</span> Tworzenie ticketów</h2>
+    <p class="section-lead">Tworzenie ticketu dla siebie lub dla innego użytkownika.</p>
+    <div class="card">
+      <table>
+        <thead>
+          <tr><th style="width:38%">Komenda</th><th style="width:14%">Dostęp</th><th>Opis</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>[p]ticket create [profile] [reason]</code><span class="flag">alias: +</span></td>
+            <td><span class="badge all">wszyscy</span></td>
+            <td>Tworzy ticket dla siebie. <code>profile</code> (domyślnie <code>main</code>) wybiera profil konfiguracji, <code>reason</code> to opcjonalny powód utworzenia.</td>
+          </tr>
+          <tr>
+            <td><code>[p]ticket createfor &lt;member&gt; [profile] [reason]</code></td>
+            <td><span class="badge admin">admin</span></td>
+            <td>Tworzy ticket w imieniu wskazanego użytkownika (np. gdy ma on zablokowany dostęp).</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><strong>Przykłady:</strong></p>
+      <span class="cmd-line">[p]ticket create</span>
+      <span class="cmd-line">[p]ticket create Wsparcie techniczne — bot się zawiesza</span>
+      <span class="cmd-line">[p]ticket +</span>
+      <span class="cmd-line">[p]ticket createfor @Janek Reklamacja zamówienia #123</span>
+    </div>
+  </section>
+
+  <section id="podglad" class="anchor">
+    <h2><span class="icon">👁️</span> Podgląd i lista ticketów</h2>
+    <div class="card">
+      <table>
+        <thead>
+          <tr><th style="width:38%">Komenda</th><th style="width:14%">Dostęp</th><th>Opis</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>[p]ticket settings [profile]</code></td>
+            <td><span class="badge support">support</span></td>
+            <td>Pokazuje pełną konfigurację wybranego profilu (albo listę profili, jeśli nie podano nazwy).</td>
+          </tr>
+          <tr>
+            <td><code>[p]ticket show [ticket]</code><span class="flag">alias: infos</span></td>
+            <td><span class="badge support">support</span></td>
+            <td>Embed ze szczegółami danego ticketa (właściciel, powód, status, kanał…).</td>
+          </tr>
+          <tr>
+            <td><code>[p]ticket list [short] [claimed] [status] [owner]</code></td>
+            <td><span class="badge support">support</span></td>
+            <td>Lista ticketów według filtra. <code>short</code> = skrócona lista, <code>claimed</code> = tylko Twoje przypisane, <code>status</code> = <code>all / open / claimed / unclaimed / closed / appeal_approved</code> (domyślnie <code>open</code>), <code>owner</code> = filtruj po właścicielu.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><strong>Przykłady:</strong></p>
+      <span class="cmd-line">[p]ticket settings</span>
+      <span class="cmd-line">[p]ticket settings main</span>
+      <span class="cmd-line">[p]ticket show</span>
+      <span class="cmd-line">[p]ticket list</span>
+      <span class="cmd-line">[p]ticket list short false closed</span>
+      <span class="cmd-line">[p]ticket list true true all @Janek</span>
+    </div>
+  </section>
+
+  <section id="akcje" class="anchor">
+    <h2><span class="icon">⚙️</span> Akcje na tickecie</h2>
+    <p class="section-lead">Zmiana statusu, przypisanie, blokowanie i odwołania.</p>
+    <div class="card">
+      <table>
+        <thead>
+          <tr><th style="width:38%">Komenda</th><th style="width:14%">Dostęp</th><th>Opis</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>[p]ticket close [ticket]</code></td>
+            <td><span class="badge support">support</span></td>
+            <td>Zamyka ticket. Jeśli włączony jest modal powodu, zostanie o niego zapytany właściciel.</td>
+          </tr>
+          <tr>
+            <td><code>[p]ticket reopen [ticket]</code><span class="flag">alias: open</span></td>
+            <td><span class="badge support">support</span></td>
+            <td>Ponownie otwiera zamknięty ticket.</td>
+          </tr>
+          <tr>
+            <td><code>[p]ticket claim [ticket]</code></td>
+            <td><span class="badge support">support</span></td>
+            <td>Przypisuje ticket do siebie (claim).</td>
+          </tr>
+          <tr>
+            <td><code>[p]ticket unclaim [ticket]</code></td>
+            <td><span class="badge support">support</span></td>
+            <td>Zdejmuje przypisanie z ticketa.</td>
+          </tr>
+          <tr>
+            <td><code>[p]ticket lock [ticket]</code></td>
+            <td><span class="badge support">support</span></td>
+            <td>Blokuje kanał — nikt nie może pisać w tickecie.</td>
+          </tr>
+          <tr>
+            <td><code>[p]ticket unlock [ticket]</code></td>
+            <td><span class="badge support">support</span></td>
+            <td>Odblokowuje kanał po zablokowaniu.</td>
+          </tr>
+          <tr>
+            <td><code>[p]ticket approveappeal [ticket]</code></td>
+            <td><span class="badge support">support</span></td>
+            <td>Zatwierdza odwołanie — użytkownik zostaje odbanowany w docelowym serwerze.</td>
+          </tr>
+          <tr>
+            <td><code>[p]ticket delete [ticket]</code></td>
+            <td><span class="badge support">support</span></td>
+            <td>Usuwa kanał ticketa. Wcześniej może zostać wygenerowany transkrypt.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><strong>Przykłady (bez argumentu działają na tickecie, w którym jesteś):</strong></p>
+      <span class="cmd-line">[p]ticket close</span>
+      <span class="cmd-line">[p]ticket reopen</span>
+      <span class="cmd-line">[p]ticket claim</span>
+      <span class="cmd-line">[p]ticket unclaim</span>
+      <span class="cmd-line">[p]ticket lock</span>
+      <span class="cmd-line">[p]ticket unlock</span>
+      <span class="cmd-line">[p]ticket close #ticket-12-Jakub</span>
+    </div>
+  </section>
+
+  <section id="czlonkowie" class="anchor">
+    <h2><span class="icon">👥</span> Zarządzanie członkami</h2>
+    <div class="card">
+      <table>
+        <thead>
+          <tr><th style="width:38%">Komenda</th><th style="width:14%">Dostęp</th><th>Opis</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>[p]ticket addmember &lt;member&gt; [ticket]</code><span class="flag">alias: add</span></td>
+            <td><span class="badge support">support</span></td>
+            <td>Dodaje członka do ticketa, aby mógł uczestniczyć w rozmowie.</td>
+          </tr>
+          <tr>
+            <td><code>[p]ticket removemember &lt;member&gt; [ticket]</code><span class="flag">alias: remove</span></td>
+            <td><span class="badge support">support</span></td>
+            <td>Usuwa członka z ticketa.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><strong>Przykłady:</strong></p>
+      <span class="cmd-line">[p]ticket addmember @Ola</span>
+      <span class="cmd-line">[p]ticket add @Ola @Kasia</span>
+      <span class="cmd-line">[p]ticket removemember @Ola</span>
+    </div>
+  </section>
+
+  <section id="transkrypty" class="anchor">
+    <h2><span class="icon">📜</span> Transkrypty i odzysk</h2>
+    <div class="card">
+      <table>
+        <thead>
+          <tr><th style="width:38%">Komenda</th><th style="width:14%">Dostęp</th><th>Opis</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>[p]ticket export [ticket]</code><span class="flag">alias: transcript</span></td>
+            <td><span class="badge support">support</span></td>
+            <td>Eksportuje transkrypt rozmowy jako plik i dodaje link do podglądu w przeglądarce.</td>
+          </tr>
+          <tr>
+            <td><code>[p]ticket recover [channel]</code></td>
+            <td><span class="badge admin">admin</span></td>
+            <td>Odzyskuje ticket z istniejącego kanału (np. gdy system stracił stan po restarcie). Kanał musi zaczynać się od embeda wysłanego przez bota.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><strong>Przykłady:</strong></p>
+      <span class="cmd-line">[p]ticket export</span>
+      <span class="cmd-line">[p]ticket transcript #ticket-12-Jakub</span>
+      <span class="cmd-line">[p]ticket recover</span>
+      <span class="cmd-line">[p]ticket recover #przywrocony-ticket</span>
+    </div>
+  </section>
+
+  <!-- ================= SETTICKETS ================= -->
+
+  <section id="set-ustawienia" class="anchor">
+    <h2><span class="icon">🧩</span> Ustawienia profilu (<code>settickets</code>)</h2>
+    <p class="section-lead">Wszystkie komendy konfiguracyjne mają formę <code>[p]settickets &lt;opcja&gt; &lt;profile&gt; &lt;wartość&gt;</code> i wymagają uprawnień <span class="badge admin">admin</span>. Poniżej lista opcji.</p>
+
+    <div class="card" style="padding-bottom:8px">
+      <h3 style="margin-bottom:4px">Placeholdery</h3>
+      <p style="color:var(--text-dim);margin:0 0 12px;font-size:.9rem">Dostępne w opcjach <code>channel_name</code>, <code>welcome_message</code> i <code>custom_message</code>:</p>
+      <table>
+        <thead>
+          <tr><th style="width:28%">Placeholder</th><th>Opis</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>{id}</code></td><td>Numer (ID) ticketa</td></tr>
+          <tr><td><code>{emoji}</code></td><td>Emoji statusu ticketa: ❓ otwarty, 👥 przypisany (claim), 🔒 zamknięty, 🛡️ odwołanie zatwierdzone</td></tr>
+          <tr><td><code>{owner_display_name}</code></td><td>Wyświetlana nazwa właściciela ticketa</td></tr>
+          <tr><td><code>{owner_name}</code></td><td>Nazwa użytkownika właściciela ticketa</td></tr>
+          <tr><td><code>{owner_mention}</code></td><td>Wzmianka właściciela (<code>@wzmianka</code>)</td></tr>
+          <tr><td><code>{owner_id}</code></td><td>ID właściciela ticketa</td></tr>
+          <tr><td><code>{guild_name}</code></td><td>Nazwa serwera</td></tr>
+          <tr><td><code>{guild_id}</code></td><td>ID serwera</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:26px;color:var(--accent-2)">Ogólne</h3>
+    <div class="grid-3">
+      <div class="chip"><div class="name"><code>enabled</code></div><p>Włącza/wyłącza profil. <em>(domyślnie: False)</em></p></div>
+      <div class="chip"><div class="name"><code>max_open_tickets_by_member</code></div><p>Maks. liczba otwartych ticketów jednego członka. <em>(domyślnie: 5)</em></p></div>
+      <div class="chip"><div class="name"><code>creating_modal</code></div><p>Modal (formularz) wysyłany przy tworzeniu ticketa. Wartość YAML z polami <code>label</code>, <code>style</code> (1 = short, 2 = paragraph), <code>required</code>, <code>placeholder</code>…</p></div>
+      <div class="chip"><div class="name"><code>channel_name</code></div><p>Nazwa kanału ticketa (skracana do 100 znaków). Dostępne placeholdery: <code>{id}</code>, <code>{emoji}</code>, <code>{owner_display_name}</code>, <code>{owner_name}</code>, <code>{owner_mention}</code>, <code>{owner_id}</code>, <code>{guild_name}</code>, <code>{guild_id}</code>.</p></div>
+      <div class="chip"><div class="name"><code>welcome_message</code></div><p>Wiadomość powitalna w tickecie. Dostępne wszystkie placeholdery z tabeli powyżej. <em>(domyślnie: "Welcome {owner_mention}! 👋")</em></p></div>
+      <div class="chip"><div class="name"><code>custom_message</code></div><p>Własna treść wiadomości wysyłanej przy utworzeniu. Dostępne wszystkie placeholdery z tabeli powyżej.</p></div>
+      <div class="chip"><div class="name"><code>close_reopen_reason_modal</code></div><p>Modal z pytaniem o powód przy zamykaniu/otwieraniu ticketa. <em>(domyślnie: True)</em></p></div>
+      <div class="chip"><div class="name"><code>create_modlog_case</code></div><p>Czy tworzyć wpis w modlogu przy utworzeniu ticketa. <em>(domyślnie: False)</em></p></div>
+      <div class="chip"><div class="name"><code>transcripts</code></div><p>Czy generować transkrypt przy usunięciu ticketa. <em>(domyślnie: True)</em></p></div>
+      <div class="chip"><div class="name"><code>always_include_item_label</code></div><p>Czy zawsze dołączać etykietę pozycji (przycisk/menu) w embedach. <em>(domyślnie: False)</em></p></div>
+      <div class="chip"><div class="name"><code>disable_default_open_modal</code></div><p>Wyłącza domyślny modal otwierania (gdy nie zdefiniowano <code>creating_modal</code>). <em>(domyślnie: False)</em></p></div>
+    </div>
+
+    <h3 style="margin-top:26px;color:var(--accent-2)">Zachowania właściciela ticketa</h3>
+    <div class="grid-3">
+      <div class="chip"><div class="name"><code>owner_close_confirmation</code></div><p>Właściciel dostaje potwierdzenie przed zamknięciem. <em>(domyślnie: True)</em></p></div>
+      <div class="chip"><div class="name"><code>owner_can_close</code></div><p>Czy właściciel może sam zamknąć ticket. <em>(domyślnie: True)</em></p></div>
+      <div class="chip"><div class="name"><code>owner_can_reopen</code></div><p>Czy właściciel może sam otworzyć ticket. <em>(domyślnie: True)</em></p></div>
+      <div class="chip"><div class="name"><code>owner_can_add_members</code></div><p>Czy właściciel może dodawać członków. <em>(domyślnie: False)</em></p></div>
+      <div class="chip"><div class="name"><code>owner_can_remove_members</code></div><p>Czy właściciel może usuwać członków. <em>(domyślnie: False)</em></p></div>
+      <div class="chip"><div class="name"><code>show_members_button</code></div><p>Pokazuje przycisk „Członkowie" w tickecie <span class="flag">modyfikacja Twojego forka</span>. <em>(domyślnie: True)</em></p></div>
+      <div class="chip"><div class="name"><code>close_on_leave</code></div><p>Czy zamknąć ticket, gdy właściciel opuści serwer. <em>(domyślnie: True)</em></p></div>
+      <div class="chip"><div class="name"><code>close_after_dank_payout</code></div><p>Czy zamykać ticket po wypłacie Dank Memer. <em>(domyślnie: False)</em></p></div>
+      <div class="chip"><div class="name"><code>auto_delete_on_close</code></div><p>Automatyczne usunięcie ticketa po zamknięciu — podaj czas w godzinach (0–720). 0 = natychmiast. <em>(domyślnie: brak / wyłączone)</em></p></div>
+    </div>
+  </section>
+
+  <section id="set-role" class="anchor">
+    <h2><span class="icon">🛡️</span> Role</h2>
+    <div class="card">
+      <table>
+        <thead>
+          <tr><th style="width:38%">Opcja</th><th>Opis</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>[p]settickets supportroles &lt;profile&gt; &lt;role...&gt;</code></td><td>Role, które mogą obsługiwać tickety (support).</td></tr>
+          <tr><td><code>[p]settickets pingroles &lt;profile&gt; &lt;role...&gt;</code></td><td>Role pingowane przy utworzeniu nowego ticketa.</td></tr>
+          <tr><td><code>[p]settickets speakroles &lt;profile&gt; &lt;role...&gt;</code></td><td>Role, które mogą pisać w kanale ticketa.</td></tr>
+          <tr><td><code>[p]settickets viewroles &lt;profile&gt; &lt;role...&gt;</code></td><td>Role, które mogą widzieć tickety.</td></tr>
+          <tr><td><code>[p]settickets whitelistroles &lt;profile&gt; &lt;role...&gt;</code></td><td>Role, które mogą tworzyć tickety (whitelista).</td></tr>
+          <tr><td><code>[p]settickets blacklistroles &lt;profile&gt; &lt;role...&gt;</code></td><td>Role, które <strong>nie</strong> mogą tworzyć ticketów (blacklista).</td></tr>
+          <tr><td><code>[p]settickets ticketrole &lt;profile&gt; &lt;role&gt;</code></td><td>Rola nadawana właścicielowi ticketa na czas jego trwania.</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Przykłady:</strong></p>
+      <span class="cmd-line">[p]settickets supportroles main @Support @Moderacja</span>
+      <span class="cmd-line">[p]settickets pingroles main @Moderacja</span>
+      <span class="cmd-line">[p]settickets viewroles main @Support @Rada</span>
+      <span class="cmd-line">[p]settickets blacklistroles main @Zbanowani</span>
+      <span class="cmd-line">[p]settickets ticketrole main @W-Tickecie</span>
+    </div>
+  </section>
+
+  <section id="set-kanaly" class="anchor">
+    <h2><span class="icon">📁</span> Kanały</h2>
+    <div class="card">
+      <table>
+        <thead>
+          <tr><th style="width:38%">Opcja</th><th>Opis</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>[p]settickets forumchannel &lt;profile&gt; &lt;kanał&gt;</code></td><td>Forum lub kanał tekstowy, w którym tickety tworzone są jako wątki.</td></tr>
+          <tr><td><code>[p]settickets forumtags &lt;profile&gt; &lt;tagi...&gt;</code></td><td>Tagi dodawane do wątków w kanale forum.</td></tr>
+          <tr><td><code>[p]settickets categoryopen &lt;profile&gt; &lt;kategoria&gt;</code></td><td>Kategoria, w której powstają otwarte tickety (zamiast forum).</td></tr>
+          <tr><td><code>[p]settickets categoryclosed &lt;profile&gt; &lt;kategoria&gt;</code></td><td>Kategoria dla zamkniętych ticketów.</td></tr>
+          <tr><td><code>[p]settickets logschannel &lt;profile&gt; &lt;kanał&gt;</code></td><td>Kanał, do którego trafiają logi działań na ticketach.</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Przykłady:</strong></p>
+      <span class="cmd-line">[p]settickets forumchannel main #tickety</span>
+      <span class="cmd-line">[p]settickets forumtags main "Płatne" "Bezpłatne"</span>
+      <span class="cmd-line">[p]settickets categoryopen main "🎫 Otwarte"</span>
+      <span class="cmd-line">[p]settickets categoryclosed main "📦 Zamknięte"</span>
+      <span class="cmd-line">[p]settickets logschannel main #ticket-logs</span>
+    </div>
+  </section>
+
+  <section id="set-emoji" class="anchor">
+    <h2><span class="icon">😀</span> Emoji przycisków</h2>
+    <p class="section-lead">Każda z opcji przyjmuje emoji (wbudowane lub z serwera):</p>
+    <div class="card">
+      <table>
+        <thead>
+          <tr><th style="width:38%">Opcja</th><th>Opis</th><th style="width:16%">Domyślnie</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>emoji_close</code></td><td>Przycisk zamknięcia</td><td>✖️</td></tr>
+          <tr><td><code>emoji_reopen</code></td><td>Przycisk ponownego otwarcia</td><td>👐</td></tr>
+          <tr><td><code>emoji_claim</code></td><td>Przycisk przypisania</td><td>👥</td></tr>
+          <tr><td><code>emoji_unclaim</code></td><td>Przycisk zdejmowania przypisania</td><td>👤</td></tr>
+          <tr><td><code>emoji_lock</code></td><td>Przycisk blokady</td><td>🔒</td></tr>
+          <tr><td><code>emoji_unlock</code></td><td>Przycisk odblokowania</td><td>🔓</td></tr>
+          <tr><td><code>emoji_transcript</code></td><td>Przycisk transkryptu</td><td>📜</td></tr>
+          <tr><td><code>emoji_delete</code></td><td>Przycisk usunięcia</td><td>🗑️</td></tr>
+          <tr><td><code>emoji_approve_appeal</code></td><td>Przycisk zatwierdzenia odwołania</td><td>🛡️</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Przykłady:</strong></p>
+      <span class="cmd-line">[p]settickets emoji_close main ⛔</span>
+      <span class="cmd-line">[p]settickets emoji_claim main :kret:</span>
+      <span class="cmd-line">[p]settickets emoji_delete main 1278127310835085452</span>
+    </div>
+  </section>
+
+  <section id="dropdown" class="anchor">
+    <h2><span class="icon">🔽</span> Przyciski vs Dropdown</h2>
+    <p class="section-lead">Obie formy doklejane są do wiadomości i tworzą tickety — różnią się wyglądem i przeznaczeniem.</p>
+
+    <div class="card">
+      <h3>🔽 Dropdown (menu rozwijane)</h3>
+      <p>Menu wyboru (<code>discord.ui.Select</code>) — lista opcji rozwijana po kliknięciu. Każda opcja odpowiada jednemu <strong>profilowi</strong> ticketów (np. „Pomoc", „Reklamacja", „Zwrot"). Wybór opcji tworzy ticket z tym profilem, a etykieta opcji staje się kategorią ticketa.</p>
+      <ul>
+        <li><strong>Do czego służy:</strong> gdy masz dużo kategorii ticketów — zamiast wielu przycisków zajmujących miejsce dajesz jedno menu z nawet <strong>25 opcjami</strong>.</li>
+        <li><strong>Kiedy użyć:</strong> przy wielu kategoriach (oszczędza miejsce na wiadomości); przy 2–3 głównych opcjach lepsze są przyciski, które są od razu widoczne.</li>
+        <li>Można łączyć: kilka przycisków + jeden dropdown na tej samej wiadomości.</li>
+      </ul>
+      <p><strong>Przykłady:</strong></p>
+      <span class="cmd-line">[p]settickets adddropdownoption #wyslij-tu 🛠️ Pomoc techniczna Naprawa problemów z botem</span>
+      <span class="cmd-line">[p]settickets adddropdownoption #wyslij-tu 💰 Reklamacja Zwrot za zakup</span>
+      <span class="cmd-line">[p]settickets adddropdownoption #wyslij-tu 🕵️ Odwołanie od bana</span>
+      <span class="cmd-line">[p]settickets adddropdownoption #wyslij-tu reklamacje main 💸 Zwrot</span>
+    </div>
+
+    <div class="card">
+      <h3>🔘 Przyciski</h3>
+      <p>Każdy przycisk tworzy ticket z przypisanym profilem. Do <strong>20 przycisków</strong> na wiadomość, z kolorami:</p>
+      <table>
+        <thead>
+          <tr><th style="width:22%">Numer</th><th>Kolor</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>1</code></td><td>primary (niebieski)</td></tr>
+          <tr><td><code>2</code></td><td>secondary (szary) — domyślny</td></tr>
+          <tr><td><code>3</code></td><td>success (zielony)</td></tr>
+          <tr><td><code>4</code></td><td>danger (czerwony)</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Przykłady:</strong></p>
+      <span class="cmd-line">[p]settickets addbutton #wyslij-tu 🛠️ 3 Pomoc</span>
+      <span class="cmd-line">[p]settickets addbutton #wyslij-tu 💰 4 Reklamacja</span>
+      <span class="cmd-line">[p]settickets addbutton #wyslij-tu reklamacje main 📩 1 Otwórz ticket</span>
+      <span class="cmd-line">[p]settickets addbutton #wyslij-tu 2 Otwórz ticket</span>
+      <p class="note" style="margin-bottom:0"><strong>Wskazówka:</strong> opcje między <code>addbutton</code>/<code>adddropdownoption</code> to kolejno: <code>&lt;wiadomość&gt;</code> (kliknij prawym / użyj <code>[p]message</code> do linku), <code>[profile]</code> (domyślnie <code>main</code>), <code>[emoji]</code> i <code>[style]</code>. Wszystkie elementy usuwa <code>[p]settickets clearmessage &lt;wiadomość&gt;</code>.</p>
+    </div>
+  </section>
+
+  <section id="set-pomoc" class="anchor">
+    <h2><span class="icon">🧰</span> Setup, przyciski i odwołania</h2>
+    <div class="card">
+      <table>
+        <thead>
+          <tr><th style="width:42%">Komenda</th><th style="width:14%">Dostęp</th><th>Opis</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>[p]settickets setup</code></td>
+            <td><span class="badge admin">admin</span></td>
+            <td>Interaktywny przewodnik konfiguracji krok po kroku.</td>
+          </tr>
+          <tr>
+            <td><code>[p]settickets addbutton &lt;message&gt; [profile] [emoji] [style] &lt;label&gt;</code></td>
+            <td><span class="badge admin">admin</span></td>
+            <td>Dodaje przycisk tworzenia ticketu do wiadomości. Style: <code>1</code> = primary, <code>2</code> = secondary (domyślne), <code>3</code> = success, <code>4</code> = danger. Maks. 20 przycisków na wiadomość.</td>
+          </tr>
+          <tr>
+            <td><code>[p]settickets adddropdownoption &lt;message&gt; [profile] [emoji] &lt;label&gt; [description]</code></td>
+            <td><span class="badge admin">admin</span></td>
+            <td>Dodaje opcję do menu wyboru (dropdown) na wiadomości. Maks. 25 opcji.</td>
+          </tr>
+          <tr>
+            <td><code>[p]settickets clearmessage &lt;message&gt;</code></td>
+            <td><span class="badge admin">admin</span></td>
+            <td>Usuwa wszystkie przyciski/opcje dodane przez system z wiadomości.</td>
+          </tr>
+          <tr>
+            <td><code>[p]settickets configureappeals &lt;profile&gt; &lt;guild_id&gt; &lt;invite&gt; [moderator_role] [category_open] [category_closed] [logs_channel] [button_channel]</code></td>
+            <td><span class="badge admin">admin</span></td>
+            <td>Konfiguruje system odwołań od banów. Docelowy serwer jest podawany przez <code>guild_id</code> + zaproszenie; wymaga tam uprawnień <code>Manage Server</code> i <code>Ban Members</code>. Można też wskazać kanał, na którym bot automatycznie postawi wiadomość z przyciskiem odwołania.</td>
+          </tr>
+          <tr>
+            <td><code>[p]settickets getdebugloopstatus</code></td>
+            <td><span class="badge owner">owner</span></td>
+            <td>Ukryta komenda diagnostyczna — status pętli sprawdzania ticketów.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><strong>Przykłady:</strong></p>
+      <span class="cmd-line">[p]settickets addbutton #wyslij-tu 🛠️ 3 Pomoc</span>
+      <span class="cmd-line">[p]settickets adddropdownoption #wyslij-tu 💰 Reklamacja Zwrot za zakup</span>
+      <span class="cmd-line">[p]settickets clearmessage #wyslij-tu</span>
+      <span class="cmd-line">[p]settickets configureappeals main 1234567890 abcdef moderation-log @Moderatorzy</span>
+    </div>
+  </section>
+
+  <footer>
+    Dokumentacja wygenerowana na podstawie kodu forka <strong>CogDesmond/tickets</strong> · Red-DiscordBot · Styl: ciemny, gotowy do wydruku
+  </footer>
+</main>
+
+<script>
+  const links = document.querySelectorAll('#nav a');
+  const sections = [...document.querySelectorAll('main section')];
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        links.forEach((l) => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach((s) => observer.observe(s));
+</script>
+</body>
+</html>
