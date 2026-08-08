@@ -111,6 +111,7 @@ class Tickets(DashboardIntegration, Cog):
                 "owner_can_remove_members": False,
                 "show_members_button": True,
                 "close_on_leave": True,
+                "hide_closed_ticket_from_owner": True,
                 "close_after_dank_payout": False,
                 "auto_delete_on_close": None,
                 # Emojis.
@@ -287,6 +288,11 @@ class Tickets(DashboardIntegration, Cog):
             "close_on_leave": {
                 "converter": bool,
                 "description": "Whether the ticket will be closed when the owner leaves the server.",
+                "no_slash": True,
+            },
+            "hide_closed_ticket_from_owner": {
+                "converter": bool,
+                "description": "Whether the ticket will be hidden from the owner and members when closed.",
                 "no_slash": True,
             },
             "close_after_dank_payout": {
@@ -849,6 +855,7 @@ class Tickets(DashboardIntegration, Cog):
                     "- Owner Can Remove Members: {owner_can_remove_members}\n"
                     "- Show Members Button: {show_members_button}\n"
                     "- Close On Leave: {close_on_leave}\n"
+                    "- Hide Closed Ticket From Owner: {hide_closed_ticket_from_owner}\n"
                     "- Auto Delete On Close: {auto_delete_on_close}\n\n"
                     "- Emoji Claim: {emoji_claim}\n"
                     "- Emoji Unclaim: {emoji_unclaim}\n"
@@ -957,6 +964,10 @@ class Tickets(DashboardIntegration, Cog):
                     owner_can_remove_members=config["owner_can_remove_members"],
                     show_members_button=config["show_members_button"],
                     close_on_leave=config["close_on_leave"],
+                    hide_closed_ticket_from_owner=config.get(
+                        "hide_closed_ticket_from_owner",
+                        True,
+                    ),
                     auto_delete_on_close=config["auto_delete_on_close"],
                     emoji_claim=config["emojis"]["claim"],
                     emoji_unclaim=config["emojis"]["unclaim"],

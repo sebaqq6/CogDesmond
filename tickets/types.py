@@ -748,6 +748,7 @@ class Ticket:
         config: dict[str, typing.Any] = await self.cog.config.guild(
             self.guild,
         ).profiles.get_raw(self.profile)
+        hide_closed = config.get("hide_closed_ticket_from_owner", True)
         overwrites = {
             self.guild.default_role: discord.PermissionOverwrite(
                 read_messages=False,
@@ -771,8 +772,8 @@ class Ticket:
         }
         if self.owner is not None:
             overwrites[self.owner] = discord.PermissionOverwrite(
-                read_messages=True,
-                read_message_history=True,
+                read_messages=not (self.is_closed and hide_closed),
+                read_message_history=not (self.is_closed and hide_closed),
                 send_messages=not self.is_closed,
                 add_reactions=not self.is_closed,
                 embed_links=not self.is_closed,
@@ -811,8 +812,8 @@ class Ticket:
         for member_id in self.members_ids:
             if (member := self.guild.get_member(member_id)) is not None:
                 overwrites[member] = discord.PermissionOverwrite(
-                    read_messages=True,
-                    read_message_history=True,
+                    read_messages=not (self.is_closed and hide_closed),
+                    read_message_history=not (self.is_closed and hide_closed),
                     send_messages=not self.is_closed,
                     add_reactions=not self.is_closed,
                     embed_links=not self.is_closed,
