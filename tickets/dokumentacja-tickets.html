@@ -165,6 +165,19 @@
     white-space: normal;
     word-break: break-word;
   }
+  pre.code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 10px 0;
+    font-family: "JetBrains Mono", Consolas, monospace;
+    font-size: .82rem;
+    color: var(--green);
+    overflow-x: auto;
+    line-height: 1.5;
+  }
   .badge {
     display: inline-block;
     font-size: .68rem;
@@ -243,6 +256,7 @@
     <div class="group-title">Konfiguracja</div>
     <a href="#dropdown">Przyciski vs Dropdown</a>
     <a href="#profile">Profile</a>
+    <a href="#modale">Modale (creating_modal)</a>
     <a href="#set-ustawienia">Ustawienia profilu</a>
     <a href="#set-role">Role</a>
     <a href="#set-kanaly">Kanały</a>
@@ -591,6 +605,91 @@
         <li>Przyciski i dropdowny (sekcja „Przyciski vs Dropdown") mogą wskazywać na dowolny profil — wybór opcji tworzy ticket z tego profilu.</li>
         <li>Przy tworzeniu ticketa profilem z włączonym modalem, w <code>creating_modal</code> można zbierać odpowiedzi właściciela, które pojawią się w tickecie.</li>
       </ul>
+    </div>
+  </section>
+
+  <section id="modale" class="anchor">
+    <h2><span class="icon">📝</span> Modale (creating_modal)</h2>
+    <p class="section-lead">Modal to formularz, który użytkownik wypełnia przy tworzeniu ticketa. Dzięki niemu od razu zbierasz najważniejsze informacje (np. nick, powód, opis), a odpowiedzi pojawiają się w tickecie jako pola. Konfiguracja jest <strong>per profil</strong>.</p>
+
+    <div class="card">
+      <h3>Ustawianie modala</h3>
+      <p>Modal definiujesz w formacie YAML (lista pól). Komenda:</p>
+      <span class="cmd-line">[p]settickets creatingmodal &lt;profil&gt;</span>
+      <p>a pod nią wklejasz YAML. Przykład (2 pola):</p>
+      <pre class="code-block">- label: "Twój nick w grze:"
+  style: 1
+  required: True
+  min_length: 3
+  max_length: 16
+  placeholder: "Podaj swój nick z gry."
+- label: "Na czym polega problem?:"
+  style: 2
+  required: True
+  min_length: 10
+  max_length: 1000
+  placeholder: "Opisz krótko, na czym polega problem."</pre>
+      <p class="note" style="margin-bottom:0"><strong>Wskazówka (ważne):</strong> wklejając YAML blokowy bezpośrednio na Discord, Discord usuwa wcięcia z początku linii i YAML się psuje („Błąd parsowania YAML"). Używaj <strong>jednowierszowego JSON</strong> — JSON jest poprawnym YAML i nie potrzebuje wcięć. Przykład gotowej linii:</p>
+      <span class="cmd-line">[p]settickets creatingmodal main [{"label": "Twój nick w grze:", "style": 1, "required": true, "min_length": 3, "max_length": 16, "placeholder": "Podaj swój nick z gry."}]</span>
+    </div>
+
+    <div class="card">
+      <h3>Dostępne pola każdego inputu</h3>
+      <table>
+        <thead>
+          <tr><th style="width:22%">Klucz</th><th style="width:12%">Wymagany</th><th>Opis</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>label</code></td><td>tak</td><td>Etykieta pola widoczna w modalu (maks. 45 znaków). Jeśli nie kończy się na „:" lub „?", bot dopisuje „:".</td></tr>
+          <tr><td><code>style</code></td><td>nie</td><td><code>1</code> = krótkie (jedna linia), <code>2</code> = wielowierszowe/paragraph. Domyślnie <code>2</code>.</td></tr>
+          <tr><td><code>required</code></td><td>nie</td><td><code>True</code>/<code>False</code> — czy pole obowiązkowe. Domyślnie <code>True</code>.</td></tr>
+          <tr><td><code>default</code></td><td>nie</td><td>Wstępnie wypełniona wartość (maks. 4000 znaków).</td></tr>
+          <tr><td><code>placeholder</code></td><td>nie</td><td>Podpowiedź w polu (maks. 100 znaków).</td></tr>
+          <tr><td><code>min_length</code></td><td>nie</td><td>Minimalna liczba znaków (0–1000). Wymusza np. „tak/nie" przy <code>3</code>.</td></tr>
+          <tr><td><code>max_length</code></td><td>nie</td><td>Maksymalna liczba znaków (1–1000), np. <code>16</code> dla nicku.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Ograniczenia</h3>
+      <ul>
+        <li><strong>Maks. 5 pól</strong> na modal — limit Discorda, powielony przez konwerter (więcej się nie zapisze).</li>
+        <li><code>label</code> ≤ 45 znaków, <code>placeholder</code> ≤ 100, <code>default</code> ≤ 4000, <code>min_length</code>/<code>max_length</code> 0–1000.</li>
+        <li>Jeśli pole jest opcjonalne (<code>required: False</code>) i chcesz pozwolić zostawić je puste, <strong>nie ustawiaj</strong> <code>min_length</code> (Discord może odrzucić puste pole z wymaganą minimalną długością).</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Zarządzanie modalem</h3>
+      <table>
+        <thead>
+          <tr><th style="width:44%">Komenda</th><th style="width:14%">Dostęp</th><th>Opis</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>[p]settickets creatingmodal &lt;profil&gt; &lt;yaml/json&gt;</code></td>
+            <td><span class="badge admin">admin</span></td>
+            <td>Ustawia modal (nadpisuje poprzedni).</td>
+          </tr>
+          <tr>
+            <td><code>[p]settickets showsettings &lt;profil&gt;</code></td>
+            <td><span class="badge admin">admin</span></td>
+            <td>Podgląd aktualnych ustawień profilu, w tym <code>creating_modal</code> (wartość jako repr listy pól).</td>
+          </tr>
+          <tr>
+            <td><code>[p]settickets modalconfig &lt;profil&gt;</code><span class="flag">alias: configmodal</span></td>
+            <td><span class="badge admin">admin</span></td>
+            <td>Edycja wszystkich ustawień przez modale — pole <code>creating_modal</code> przyjmuje YAML/JSON.</td>
+          </tr>
+          <tr>
+            <td><code>[p]settickets resetsetting &lt;profil&gt; creatingmodal</code></td>
+            <td><span class="badge admin">admin</span></td>
+            <td>Usuwa modal — wraca domyślny modal z polem powodu.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="note" style="margin-bottom:0"><strong>Uwaga:</strong> bez ustawionego modala (<code>creating_modal</code> = brak) użytkownik i tak dostaje domyślny modal z polem powodu, chyba że włączysz <code>[p]settickets disable_default_open_modal &lt;profil&gt; true</code>. Wypełnione odpowiedzi trafiają do ticketa jako pola na osobnym embedzie.</p>
     </div>
   </section>
 
