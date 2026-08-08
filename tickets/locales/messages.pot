@@ -641,3 +641,266 @@ msgid ""
 "✅ Twój ticket został utworzony! Poczekaj na odpowiedź zespołu w "
 "{channel.mention}."
 msgstr ""
+
+#: types.py:420
+msgid ""
+"Claimed by: {claimed_by.mention}\n"
+"Claimed at: {claimed_at}"
+msgstr ""
+
+#: types.py:442
+msgid ""
+"\n"
+"Closed by: {closed_by.mention}\n"
+"Closed at: {closed_at}"
+msgstr ""
+
+#: types.py:464
+msgid ""
+"\n"
+"Appeal approved by: {appeal_approved_by.mention}\n"
+"Appeal approved at: {appeal_approved_at}"
+msgstr ""
+
+#: types.py:487
+msgid ""
+"\n"
+"Deleted by: {deleted_by.mention}\n"
+"Deleted at: {deleted_at}"
+msgstr ""
+
+#: types.py:659
+msgid ""
+"Ticket creation for {ticket.owner.display_name} ({ticket.owner.id}) "
+"(profile `{ticket.profile}`)."
+msgstr ""
+
+#: types.py:681
+msgid ""
+"I don't have the required permissions to create private threads in the "
+"forum/text channel configured."
+msgstr ""
+
+#: types.py:710
+msgid ""
+"I don't have the required permissions to create text channels in the "
+"category configured."
+msgstr ""
+
+#: types.py:862
+msgid ""
+"Ticket closed by {closer.display_name} ({closer.id}) (profile "
+"`{self.profile}`)."
+msgstr ""
+
+#: types.py:952
+msgid ""
+"Ticket reopened by {reopener.display_name} ({reopener.id}) (profile "
+"`{self.profile}`)."
+msgstr ""
+
+#: types.py:1010
+msgid ""
+"Ticket claimed by {claimer.display_name} ({claimer.id}) (profile "
+"`{self.profile}`)."
+msgstr ""
+
+#: types.py:1105
+msgid ""
+"Ticket locked by {locker.display_name} ({locker.id}) (profile "
+"`{self.profile}`)."
+msgstr ""
+
+#: types.py:1176
+msgid ""
+"Ticket unlocked by {unlocker.display_name} ({unlocker.id}) (profile "
+"`{self.profile}`)."
+msgstr ""
+
+#: types.py:1239
+msgid "Ticket appeal approved by {approver.display_name} ({approver.id})."
+msgstr ""
+
+#: types.py:1264
+msgid ""
+"## 🛡️ **Congratulations!** Your appeal request got approved by our staff!\n\n"
+"You can use the invite url below to join the server again:\n"
+"https://discord.gg/{invite_code}\n"
+"*If you still encounter any issues to join the server, try restarting your Discord client.*\n\n"
+"Then, please close this ticket. Thank you!"
+msgstr ""
+
+#: types.py:1336
+msgid ""
+"This member has a role that allows them to access the ticket without being "
+"added manually."
+msgstr ""
+
+#: types.py:1344
+msgid "Member added to the ticket: {member.display_name} ({member.id})."
+msgstr ""
+
+#: types.py:1348
+msgid ""
+"Member added to the ticket by {author.display_name} ({author.id}): "
+"{member.display_name} ({member.id})."
+msgstr ""
+
+#: types.py:1402
+msgid "Member removed from the ticket: {member.display_name} ({member.id})."
+msgstr ""
+
+#: types.py:1406
+msgid ""
+"Member removed from the ticket by {author.display_name} ({author.id}): "
+"{member.display_name} ({member.id})."
+msgstr ""
+
+#: types.py:1527
+msgid ""
+"Ticket deleted by {deleter.display_name} ({deleter.id}) (profile "
+"`{self.profile}`)."
+msgstr ""
+
+#: tickets.py:823
+msgid ""
+"- Enabled: {enabled}\n"
+"- Max Open Tickets By Member: {max_open_tickets_by_member}\n"
+"- Creating Modal: {creating_modal}\n"
+"- Channel Name: {channel_name}\n"
+"- Welcome Message: {welcome_message}\n"
+"- Custom Message: {custom_message}\n"
+"- Close/Reopen Reason Modal: {close_reopen_reason_modal}\n"
+"- Create Modlog Case: {create_modlog_case}\n"
+"- Transcripts: {transcripts}\n"
+"- Always Include Item Label: {always_include_item_label}\n"
+"- Disable Default Open Modal: {disable_default_open_modal}\n\n"
+"- Support Roles: {support_roles}\n"
+"- Ping Roles: {ping_roles}\n"
+"- Speak Roles: {speak_roles}\n"
+"- View Roles: {view_roles}\n"
+"- Whitelist Roles: {whitelist_roles}\n"
+"- Blacklist Roles: {blacklist_roles}\n\n"
+"- Forum Channel: {forum_channel}\n"
+"- Forum Tags: {forum_tags}\n"
+"- Category Open: {category_open}\n"
+"- Category Closed: {category_closed}\n"
+"- Logs Channel: {logs_channel}\n\n"
+"- Owner Close Confirmation: {owner_close_confirmation}\n"
+"- Owner Can Close: {owner_can_close}\n"
+"- Owner Can Reopen: {owner_can_reopen}\n"
+"- Owner Can Add Members: {owner_can_add_members}\n"
+"- Owner Can Remove Members: {owner_can_remove_members}\n"
+"- Show Members Button: {show_members_button}\n"
+"- Close On Leave: {close_on_leave}\n"
+"- Auto Delete On Close: {auto_delete_on_close}\n\n"
+"- Emoji Claim: {emoji_claim}\n"
+"- Emoji Unclaim: {emoji_unclaim}\n"
+"- Emoji Close: {emoji_close}\n"
+"- Emoji Reopen: {emoji_reopen}\n"
+"- Emoji Lock: {emoji_lock}\n"
+"- Emoji Unlock: {emoji_unlock}\n"
+"- Emoji Transcript: {emoji_transcript}\n"
+"- Emoji Delete: {emoji_delete}"
+msgstr ""
+
+#: tickets.py:1384
+msgid ""
+"The embed of the first message in this channel must have the author set to "
+"the ticket owner."
+msgstr ""
+
+#: tickets.py:1456
+msgid ""
+"**1.** Enable the profile system with `{ctx.prefix}settickets enabled <profile> True`.\n"
+"**2.** Set the support roles with `{ctx.prefix}settickets supportroles <profile> <roles...>`.\n"
+"**3.** Set the forum channel/text channel with `{ctx.prefix}settickets forumchannel <profile> <channel>`.\n"
+"   **Or** set the open and closed (optional) categories with `{ctx.prefix}settickets categoryopen <profile> <category>` and `{ctx.prefix}settickets categoryclosed <profile> <category>`.\n"
+"**4.** Eventually, set the ping roles with `{ctx.prefix}settickets pingroles <profile> <roles...>`.\n"
+"**5.** Eventually, set the logs channel with `{ctx.prefix}settickets logschannel <profile> <channel>`.\n"
+"**6.** Eventually, set the whitelist or blacklist roles with `{ctx.prefix}settickets whitelistroles <profile> <roles...>` and `{ctx.prefix}settickets blacklistroles <profile> <roles...>`.\n"
+"**7.** Eventually, set the forum tags with `{ctx.prefix}settickets forumtags <profile> <tags...>`.\n"
+"**8.** Eventually, set the custom message with `{ctx.prefix}settickets custommessage <profile> <message>`.\n"
+"**9.** Eventually, set a creating modal with `{ctx.prefix}settickets creatingmodal <profile> <modal>`."
+msgstr ""
+
+#: tickets.py:1473
+msgid "Look at all the different settings with `{ctx.prefix}tickets settings`."
+msgstr ""
+
+#: tickets.py:1482
+msgid ""
+"You can add buttons and dropdowns to messages to create tickets.\n"
+"- Use `{ctx.clean_prefix}settickets addbutton <message> [profile=main] [emoji] [style=secondary] <label>` to add a button to a message.\n"
+"- Use `{ctx.clean_prefix}settickets adddropdownoption <message> [profile=main] [emoji] <label> [description]` to add an option to a dropdown.\n"
+"- Use `{ctx.clean_prefix}settickets clearmessage <message>` to remove them."
+msgstr ""
+
+#: tickets.py:1643
+msgid ""
+"You must have the `Manage Server` and `Ban Members` permissions in the guild "
+"to configure the appeal feature."
+msgstr ""
+
+#: tickets.py:1715
+msgid ""
+"Click the button below to create an appeal ticket. If our team accepts your "
+"appeal, you will be unbanned from the server."
+msgstr ""
+
+#: views.py:167
+msgid "Members"
+msgstr ""
+
+#: views.py:461
+msgid ""
+"If you would like to close this ticket, then just press the `Close` button. "
+"If you would like to keep this ticket open to get further assistance, you "
+"can click on the `Cancel` button."
+msgstr ""
+
+#: converters.py:56
+msgid ""
+"The forum tag ID provided doesn't exist. The available tags are: "
+"{available_tags}."
+msgstr ""
+
+#: converters.py:109
+msgid ""
+"I have to be the author of the message. You can use EmbedUtils by AAA3A to "
+"send one."
+msgstr ""
+
+#: converters.py:126
+msgid ""
+"Error parsing YAML. Please make sure the format is valid (a YAML validator "
+"may help)"
+msgstr ""
+
+#: converters.py:154
+msgid "The argument `/{count}/{arg}` is invalid in the YAML. Check the spelling."
+msgstr ""
+
+#: converters.py:160
+msgid "The argument `/modal/{count}/label` must be less than 45 characters long."
+msgstr ""
+
+#: converters.py:198
+msgid "The argument `/{count}/required` must be a boolean (True or False)."
+msgstr ""
+
+#: converters.py:208
+msgid "The argument `/modal/{count}/default` must be less than 4000 characters long."
+msgstr ""
+
+#: converters.py:216
+msgid "The argument `/modal/{count}/placeholder` must be less than 100 characters long."
+msgstr ""
+
+#: converters.py:224
+msgid "The argument `/modal/{count}/min_length` must be between 0 and 1000."
+msgstr ""
+
+#: converters.py:232
+msgid "The argument `/modal/{count}/max_length` must be between 0 and 1000."
+msgstr ""
