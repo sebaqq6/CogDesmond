@@ -4,3 +4,4 @@ __pycache__/
 
 # Lokalne konfiguracje / referencje (nie commitować)
 tickets/modale-tickets.yaml
+tickets/konfiguracja-profil-main.txt
