@@ -76,21 +76,34 @@ which role so `[p]unbanrole` can restore them.
 ### banstrip
 
 Custom cog: strips **all** roles from a member when a configured BAN role is
-applied (only the BAN role remains active), and runs the **Verify** flow
-(`[p]verify`, i.e. the Verify cog's configured autoroles) when the BAN role is
-removed, so the standard roles come back.
+applied (only the BAN role remains active), and runs a configurable command
+(default: the Verify cog's `[p]verify` flow) when the BAN role is removed, so
+the standard roles come back. Includes automated ban management:
+
+- `[p]banstrip ban <member> [days] [reason]` — apply the BAN role (strips roles);
+  `days` optional, `0`/empty = permanent, auto-expires after `days` days.
+- `[p]banstrip unban <member>` — remove the BAN role and run the restore command.
+- `[p]banstrip banlist` — list banned members with reason and remaining duration.
+- `[p]banstrip role <role>` / `[p]banstrip toggle` / `[p]banstrip restorecommand <cmd>`
+- `[p]banstrip perms ban|unban|view <role>` — who may ban, unban, or view the list
+  (empty list = admins only).
+
+Command output (ban/unban/banlist) is **ephemeral** for slash invocations, so it
+is only visible to the user who ran it.
+
+Setup:
 
 ```
 [p]cog install cogdesmond banstrip
 [p]load banstrip
-[p]banstripset role <ban_role>
-[p]banstripset toggle true
-[p]banstripset runverify true
-[p]banstripset view
+[p]banstrip role <ban_role>
+[p]banstrip restorecommand verify
+[p]banstrip toggle true
 ```
 
-Note: it restores roles via Verify's autorole list, so any role that is *not*
-listed in `[p]verifyset autorole` is not given back.
+Note: roles are restored via the configured restore command's own logic (by
+default Verify's autoroles), so a role that command does not grant is not given
+back.
 
 ## License
 

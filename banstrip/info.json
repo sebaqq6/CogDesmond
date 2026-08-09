@@ -4,16 +4,17 @@
     ],
     "min_bot_version": "3.5.0",
     "min_python_version": [3, 10, 0],
-    "description": "Strip all roles when a BAN role is applied, and run the Verify flow to restore standard roles when it is removed.",
+    "description": "Strip all roles when a BAN role is applied; run a configurable command (e.g. Verify) on removal. Includes ban/unban/banlist commands with reasons, day-based durations with auto-expiry, and per-guild permissions.",
     "hidden": false,
-    "install_msg": "Thank you for installing BanStrip. Get started with `[p]banstripset role <role>` and `[p]banstripset toggle true`.",
+    "install_msg": "Thank you for installing BanStrip. Get started with `[p]banstrip role <role>` and `[p]banstrip toggle true`.",
     "name": "BanStrip",
-    "short": "Strip roles on BAN role, restore via Verify",
-    "end_user_data_statement": "This cog does not store any End User Data",
+    "short": "BAN-role jail with ban/unban/banlist and verify-on-unban",
+    "end_user_data_statement": "This cog stores, per guild and user, the reason, who banned, and ban timestamps for members banned via `[p]banstrip ban`. This data is removed when the BAN role is removed or on request.",
     "tags": [
         "moderation",
         "roles",
         "ban",
+        "jail",
         "verify"
     ]
 }
