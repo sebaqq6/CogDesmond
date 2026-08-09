@@ -262,6 +262,19 @@ msgstr ""
 
 #: tickets.py:1626
 #, docstring
+msgid "Fix the names of all the profiles to be lowercase."
+msgstr ""
+
+#: tickets.py:1637
+msgid "All the profiles are already lowercase."
+msgstr ""
+
+#: tickets.py:1659
+msgid "Profiles renamed: {renamed}."
+msgstr ""
+
+#: tickets.py:1683
+#, docstring
 msgid "Configure the appeal feature."
 msgstr ""
 

@@ -276,7 +276,20 @@ msgstr "Wyczyść komponenty wiadomości."
 msgid "This message doesn't have components added with Tickets."
 msgstr "Ta wiadomość nie ma komponentów dodanych przez Tickets."
 
-#: tickets.py:1617
+#: tickets.py:1626
+#, docstring
+msgid "Fix the names of all the profiles to be lowercase."
+msgstr "Popraw nazwy wszystkich profili, aby były małymi literami."
+
+#: tickets.py:1637
+msgid "All the profiles are already lowercase."
+msgstr "Wszystkie profile są już małymi literami."
+
+#: tickets.py:1659
+msgid "Profiles renamed: {renamed}."
+msgstr "Zmieniono nazwy profili: {renamed}."
+
+#: tickets.py:1683
 #, docstring
 msgid "Configure the appeal feature."
 msgstr "Skonfiguruj funkcję odwołań."

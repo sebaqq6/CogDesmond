@@ -1621,6 +1621,52 @@ class Tickets(DashboardIntegration, Cog):
         await message.edit(view=None)
         await self.config.guild(ctx.guild).buttons_dropdowns.set(buttons_dropdowns)
 
+    @settickets.command(aliases=["fixprofiles"])
+    async def fixprofile(self, ctx: commands.Context) -> None:
+        """Fix the names of all the profiles to be lowercase."""
+        profiles = await self.config.guild(ctx.guild).profiles()
+        mapping = {
+            profile: profile.lower()
+            for profile in profiles
+            if profile != profile.lower()
+        }
+        for profile in list(mapping):
+            if mapping[profile] in profiles and mapping[profile] != profile:
+                mapping.pop(profile, None)
+        if not mapping:
+            await ctx.send(_("All the profiles are already lowercase."))
+            return
+        new_profiles = {mapping.get(profile, profile): value for profile, value in profiles.items()}
+        await self.config.guild(ctx.guild).profiles.set(new_profiles)
+        tickets = await self.config.guild(ctx.guild).tickets.all()
+        for ticket in tickets.values():
+            if ticket.get("profile") in mapping:
+                ticket["profile"] = mapping[ticket["profile"]]
+        await self.config.guild(ctx.guild).tickets.set(tickets)
+        buttons_dropdowns = await self.config.guild(ctx.guild).buttons_dropdowns.all()
+        for components in buttons_dropdowns.values():
+            for component in (
+                list(components.get("buttons", {}).values())
+                + list(components.get("dropdown_options", {}).values())
+            ):
+                if component.get("profile") in mapping:
+                    component["profile"] = mapping[component["profile"]]
+        await self.config.guild(ctx.guild).buttons_dropdowns.set(buttons_dropdowns)
+        for ticket in self.tickets.get(ctx.guild.id, {}).values():
+            if ticket.profile in mapping:
+                ticket.profile = mapping[ticket.profile]
+        await ctx.send(
+            _("Profiles renamed: {renamed}.").format(
+                renamed=humanize_list(
+                    [
+                        f"`{old}` -> `{new}`"
+                        for old, new in mapping.items()
+                        if old != new
+                    ],
+                ),
+            ),
+        )
+
     @settickets.command(with_app_command=False)
     async def configureappeals(
         self,
