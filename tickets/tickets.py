@@ -1621,7 +1621,7 @@ class Tickets(DashboardIntegration, Cog):
         await message.edit(view=None)
         await self.config.guild(ctx.guild).buttons_dropdowns.set(buttons_dropdowns)
 
-    @settickets.command(aliases=["fixprofiles"])
+    @settickets.command(with_app_command=False, aliases=["fixprofiles"])
     async def fixprofile(self, ctx: commands.Context) -> None:
         """Fix the names of all the profiles to be lowercase."""
         profiles = await self.config.guild(ctx.guild).profiles()
