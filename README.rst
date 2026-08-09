@@ -83,7 +83,8 @@ the standard roles come back. Includes automated ban management:
 - `[p]banstrip ban <member> [days] [reason]` — apply the BAN role (strips roles);
   `days` optional, `0`/empty = permanent, auto-expires after `days` days.
 - `[p]banstrip unban <member>` — remove the BAN role and run the restore command.
-- `[p]banstrip banlist` — list banned members with reason and remaining duration.
+- `[p]banstrip banlist` — list banned members with reason, remaining duration, and
+  who banned them (`banned_by`; shows "Unknown" for bans applied manually).
 - `[p]banstrip role <role>` / `[p]banstrip toggle` / `[p]banstrip restorecommand <cmd>`
 - `[p]banstrip perms ban|unban|view <role>` — who may ban, unban, or view the list
   (empty list = admins only).

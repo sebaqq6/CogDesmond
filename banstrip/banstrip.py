@@ -223,14 +223,15 @@ class BanStrip(commands.Cog):
                 duration = _("expires {time}").format(time=discord.utils.format_dt(dt, "R"))
             else:
                 duration = _("permanent")
-            lines.append(
-                _("{member} ({member_id})\n  Reason: {reason}\n  Duration: {duration}").format(
-                    member=member,
-                    member_id=member.id,
-                    reason=reason,
-                    duration=duration,
-                ),
+            banned_by = await self._format_banned_by(ctx.guild, data["banned_by"])
+            entry = _("{member} ({member_id})\n  Reason: {reason}\n  Duration: {duration}").format(
+                member=member,
+                member_id=member.id,
+                reason=reason,
+                duration=duration,
             )
+            entry += _("\n  Banned by: {banned_by}").format(banned_by=banned_by)
+            lines.append(entry)
         for page in pagify("\n".join(lines), shorten_by=10):
             await self._reply(ctx, box(page))
         return None
@@ -388,6 +389,7 @@ class BanStrip(commands.Cog):
         has_ban = any(role.id == ban_role_id for role in after.roles)
         if not had_ban and has_ban:
             await self._strip_roles(after, ban_role_id)
+            await self._ensure_ban_record(after)
             await self._notify_banned(after, guild)
         elif had_ban and not has_ban:
             await self.config.member(after).clear()
@@ -425,6 +427,25 @@ class BanStrip(commands.Cog):
             log.warning("Failed to re-apply BAN role to %s in %s: %s", member.id, guild.id, e)
 
     # ---------- Internals ----------
+
+    async def _ensure_ban_record(self, member: discord.Member) -> None:
+        data = await self.config.member(member).all()
+        if data["banned_at"] or data["reason"]:
+            return
+        await self.config.member(member).banned_at.set(
+            int(datetime.datetime.now(datetime.timezone.utc).timestamp()),
+        )
+
+    async def _format_banned_by(self, guild: discord.Guild, banned_by_id: int | None) -> str:
+        if not banned_by_id:
+            return _("Unknown")
+        member = guild.get_member(banned_by_id)
+        if member is not None:
+            return member.display_name
+        user = self.bot.get_user(banned_by_id)
+        if user is not None:
+            return user.display_name
+        return _("Unknown")
 
     async def _notify_banned(self, member: discord.Member, guild: discord.Guild) -> None:
         data = await self.config.member(member).all()

@@ -209,6 +209,18 @@ msgstr ""
 "  Powód: {reason}\n"
 "  Czas trwania: {duration}"
 
+#: banstrip.py:233
+msgid ""
+"\n"
+"  Banned by: {banned_by}"
+msgstr ""
+"\n"
+"  Zbanowany przez: {banned_by}"
+
+#: banstrip.py:441 banstrip.py:448
+msgid "Unknown"
+msgstr "Nieznany"
+
 #: banstrip.py:242
 #, docstring
 msgid ""
