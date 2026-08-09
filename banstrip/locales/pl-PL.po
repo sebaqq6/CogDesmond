@@ -189,6 +189,16 @@ msgstr "wygasa {time}"
 msgid "permanent"
 msgstr "permanentny"
 
+#: banstrip.py:441
+msgid ""
+"You have been banned from {guild}.\n"
+"Reason: {reason}\n"
+"Duration: {duration}"
+msgstr ""
+"Zostałeś zbanowany na serwerze {guild}.\n"
+"Powód: {reason}\n"
+"Czas trwania: {duration}"
+
 #: banstrip.py:225
 msgid ""
 "{member} ({member_id})\n"

@@ -108,6 +108,10 @@ Note: roles are restored via the configured restore command's own logic (by
 default Verify's autoroles), so a role that command does not grant is not given
 back.
 
+The banned member also gets a **DM** with the reason and duration. If a banned
+member leaves and rejoins the server, banstrip re-applies the BAN role
+automatically (until the ban expires or they are unbanned).
+
 ## License
 
 MIT. The `vcounter` cog is derived from

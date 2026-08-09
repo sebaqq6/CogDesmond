@@ -136,12 +136,6 @@ class BanStrip(commands.Cog):
 
         ban_role = ctx.guild.get_role(await self.config.guild(ctx.guild).ban_role())
         already = ban_role in member.roles
-        try:
-            await member.add_roles(ban_role, reason=reason or "banstrip: banned")
-        except discord.Forbidden:
-            return await self._reply(ctx, _("I don't have permission to add the BAN role."))
-        except discord.HTTPException as e:
-            return await self._reply(ctx, _("Failed to add the BAN role: {error}").format(error=e))
 
         member_conf = self.config.member(member)
         await member_conf.reason.set(reason)
@@ -150,6 +144,14 @@ class BanStrip(commands.Cog):
             int(datetime.datetime.now(datetime.timezone.utc).timestamp()),
         )
         await member_conf.expires_at.set(expires_at)
+        try:
+            await member.add_roles(ban_role, reason=reason or "banstrip: banned")
+        except discord.Forbidden:
+            await member_conf.clear()
+            return await self._reply(ctx, _("I don't have permission to add the BAN role."))
+        except discord.HTTPException as e:
+            await member_conf.clear()
+            return await self._reply(ctx, _("Failed to add the BAN role: {error}").format(error=e))
 
         msg = (
             _("{member} is already banned.").format(member=member.mention)
@@ -386,13 +388,60 @@ class BanStrip(commands.Cog):
         has_ban = any(role.id == ban_role_id for role in after.roles)
         if not had_ban and has_ban:
             await self._strip_roles(after, ban_role_id)
+            await self._notify_banned(after, guild)
         elif had_ban and not has_ban:
             await self.config.member(after).clear()
             await self._run_restore(guild, after)
         elif has_ban:
             await self._strip_roles(after, ban_role_id)
 
+    @commands.Cog.listener()
+    async def on_member_join(self, member: discord.Member) -> None:
+        guild = member.guild
+        if await self.bot.cog_disabled_in_guild(self, guild):
+            return
+        if not guild.me.guild_permissions.manage_roles:
+            return
+        guild_conf = self.config.guild(guild)
+        if not await guild_conf.enabled():
+            return
+        ban_role_id = await guild_conf.ban_role()
+        if not ban_role_id:
+            return
+        data = await self.config.member(member).all()
+        if not data["banned_at"] and not data["reason"]:
+            return
+        expires_at = data["expires_at"]
+        now = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
+        if expires_at and expires_at <= now:
+            await self.config.member(member).clear()
+            return
+        ban_role = guild.get_role(ban_role_id)
+        if ban_role is None:
+            return
+        try:
+            await member.add_roles(ban_role, reason="banstrip: re-applying ban role on rejoin")
+        except (discord.Forbidden, discord.HTTPException) as e:
+            log.warning("Failed to re-apply BAN role to %s in %s: %s", member.id, guild.id, e)
+
     # ---------- Internals ----------
+
+    async def _notify_banned(self, member: discord.Member, guild: discord.Guild) -> None:
+        data = await self.config.member(member).all()
+        reason = data["reason"] or _("No reason")
+        if expires := data["expires_at"]:
+            dt = datetime.datetime.fromtimestamp(expires, tz=datetime.timezone.utc)
+            duration = _("expires {time}").format(time=discord.utils.format_dt(dt, "R"))
+        else:
+            duration = _("permanent")
+        template = _("You have been banned from {guild}.\nReason: {reason}\nDuration: {duration}")
+        content = template.format(guild=guild.name, reason=reason, duration=duration)
+        try:
+            await member.send(content)
+        except discord.Forbidden:
+            log.info("Could not DM %s in %s (DMs closed)", member.id, guild.id)
+        except discord.HTTPException as e:
+            log.warning("Failed to DM %s in %s: %s", member.id, guild.id, e)
 
     async def _strip_roles(self, member: discord.Member, ban_role_id: int) -> None:
         keep = [role for role in member.roles if role.is_managed() or role.id == ban_role_id]
