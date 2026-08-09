@@ -48,11 +48,11 @@ msgstr "Skonfiguruj i zarządzaj systemem ticketów dla swojego serwera!"
 
 #: tickets.py:611
 msgid "Jump to Ticket"
-msgstr "Przejdź do Ticketa"
+msgstr "Przejdź do ticketa"
 
 #: tickets.py:660
 msgid "Create a Ticket"
-msgstr "Utwórz Ticketa"
+msgstr "Utwórz ticketa"
 
 #: tickets.py:683
 msgid "Only the ticket owner can fill the answers."
@@ -60,7 +60,7 @@ msgstr "Tylko właściciel ticketa może wypełnić odpowiedzi."
 
 #: tickets.py:700
 msgid "Fill Answers"
-msgstr "Wypełnij Odpowiedzi"
+msgstr "Wypełnij odpowiedzi"
 
 #: tickets.py:768
 #, docstring
@@ -165,7 +165,7 @@ msgstr "📜 Oto transkrypt tego ticketa!"
 
 #: tickets.py:1308 views.py:653
 msgid "View Transcript"
-msgstr "Zobacz Transkrypt"
+msgstr "Zobacz transkrypt"
 
 #: tickets.py:1343
 #, docstring
@@ -207,11 +207,11 @@ msgstr "Pomoc w konfiguracji Tickets."
 
 #: tickets.py:1445
 msgid "Getting Started (Required Steps):"
-msgstr "Pierwsze Kroki (Wymagane Kroki):"
+msgstr "Pierwsze kroki (wymagane kroki):"
 
 #: tickets.py:1471
 msgid "Buttons & Dropdowns:"
-msgstr "Przyciski i Listy Rozwijane:"
+msgstr "Przyciski i listy rozwijane:"
 
 #: tickets.py:1494
 #, docstring
@@ -310,7 +310,7 @@ msgstr "To zaproszenie nie należy do tego serwera."
 
 #: tickets.py:1704
 msgid "Appeal Ticket"
-msgstr "Ticket Odwoławczy"
+msgstr "Ticket odwoławczy"
 
 #: tickets.py:1718
 msgid "Appeal"
@@ -368,7 +368,7 @@ msgstr "Nie masz uprawnień, aby zamknąć ten ticket!"
 
 #: types.py:854
 msgid "❌ Ticket Closed"
-msgstr "❌ Ticket Zamknięty"
+msgstr "❌ Ticket zamknięty"
 
 #: types.py:859
 msgid "Ticket closed (profile `{self.profile}`)."
@@ -392,7 +392,7 @@ msgstr "Ticket otwarty ponownie (profil `{self.profile}.`)"
 
 #: types.py:984
 msgid "👐 Ticket Reopened"
-msgstr "👐 Ticket Otworzony Ponownie"
+msgstr "👐 Ticket otworzony ponownie"
 
 #: types.py:1003
 msgid "This ticket is already claimed."
@@ -400,7 +400,7 @@ msgstr "Ten ticket jest już przejęty."
 
 #: types.py:1026
 msgid "👥 Ticket Claimed"
-msgstr "👥 Ticket Przejęty"
+msgstr "👥 Ticket przejęty"
 
 #: types.py:1043
 msgid "This ticket is not claimed."
@@ -412,7 +412,7 @@ msgstr "Ticket oddany (profil `{self.profile}`)."
 
 #: types.py:1064
 msgid "👤 Ticket Unclaimed"
-msgstr "👤 Ticket Oddany"
+msgstr "👤 Ticket oddany"
 
 #: types.py:1080
 msgid "This ticket is already locked."
@@ -428,7 +428,7 @@ msgstr "Ticket zablokowany (profil `{self.profile}`)."
 
 #: types.py:1133
 msgid "🔒 Ticket Locked"
-msgstr "🔒 Ticket Zablokowany"
+msgstr "🔒 Ticket zablokowany"
 
 #: types.py:1149
 msgid "This ticket is not locked."
@@ -444,7 +444,7 @@ msgstr "Ticket odblokowany (profil `{self.profile}`)."
 
 #: types.py:1204
 msgid "🔓 Ticket Unlocked"
-msgstr "🔓 Ticket Odblokowany"
+msgstr "🔓 Ticket odblokowany"
 
 #: types.py:1220
 msgid "This ticket appeal is already approved."
@@ -480,7 +480,7 @@ msgstr ""
 
 #: types.py:1259
 msgid "🛡️ Ticket Appeal Approved"
-msgstr "🛡️ Odwołanie Ticketa Zatwierdzone"
+msgstr "🛡️ Odwołanie ticketa zatwierdzone"
 
 #: types.py:1322
 msgid "You aren't allowed to add members to this ticket!"
@@ -492,7 +492,7 @@ msgstr "Ten członek jest już w tickecie."
 
 #: types.py:1360
 msgid "➕ Member Added"
-msgstr "➕ Członek Dodany"
+msgstr "➕ Członek dodany"
 
 #: types.py:1394
 msgid "You aren't allowed to remove members from this ticket!"
@@ -504,7 +504,7 @@ msgstr "Ten członek nie jest w tickecie."
 
 #: types.py:1420
 msgid "➖ Member Removed"
-msgstr "➖ Członek Usunięty"
+msgstr "➖ Członek usunięty"
 
 #: types.py:1445
 msgid " by {author.mention}"
@@ -520,7 +520,7 @@ msgstr "Ticket usunięty (profil `{self.profile}`)."
 
 #: types.py:1540
 msgid "🗑 Ticket Deleted"
-msgstr "🗑 Ticket Usunięty"
+msgstr "🗑 Ticket usunięty"
 
 #: types.py:1541
 msgid "<@{self.owner_id}>'s ticket has been deleted."
@@ -560,7 +560,7 @@ msgstr "Otwórz ponownie"
 
 #: views.py:151
 msgid "Approve Appeal"
-msgstr "Zatwierdź Odwołanie"
+msgstr "Zatwierdź odwołanie"
 
 #: views.py:179
 msgid "🔒 This ticket has been locked!"
@@ -608,11 +608,11 @@ msgstr "➖ Członkowie zostali usunięci z ticketa!"
 
 #: views.py:388 views.py:450
 msgid "Close Ticket"
-msgstr "Zamknij Ticket"
+msgstr "Zamknij ticket"
 
 #: views.py:388
 msgid "Reopen Ticket"
-msgstr "Otwórz Ticket Ponownie"
+msgstr "Otwórz ponownie ticket"
 
 #: views.py:394
 msgid "Optional reason..."
@@ -658,7 +658,7 @@ msgstr "Usuń"
 
 #: views.py:600
 msgid "Closed Ticket Controls"
-msgstr "Kontrolki Zamkniętego Ticketa"
+msgstr "Kontrolki zamkniętego ticketa"
 
 #: views.py:162
 msgid "Members"
