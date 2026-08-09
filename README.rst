@@ -91,6 +91,9 @@ the standard roles come back. Includes automated ban management:
 Command output (ban/unban/banlist) is **ephemeral** for slash invocations, so it
 is only visible to the user who ran it.
 
+**Polish translation** (`locales/pl-PL.po`/`pl-PL.mo`). Set the bot locale to
+Polish with `[p]set locale pl-PL` and reload the cog.
+
 Setup:
 
 ```

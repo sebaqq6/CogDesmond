@@ -1,0 +1,409 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2026-08-09 17:35+0200\n"
+"PO-Revision-Date: 2026-08-09 00:00+0200\n"
+"Last-Translator: Desmond <desmond@local>\n"
+"Language-Team: Polish <pl@example.com>\n"
+"Language: pl_PL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+"Generated-By: redgettext 3.4.2\n"
+
+#: banstrip.py:24
+#, docstring
+msgid ""
+"\n"
+"    Strip all roles from a member when a configured BAN role is applied,\n"
+"    and run a configurable command (e.g. Verify) when the BAN role is removed.\n"
+"\n"
+"    Includes `ban`/`unban`/`banlist` commands with reasons, optional durations\n"
+"    in days (with automatic expiry), and per-guild permissions for each action.\n"
+"    "
+msgstr ""
+"\n"
+"    Zdejmuje wszystkie role z członka po nadaniu skonfigurowanej roli BAN,\n"
+"    a po jej usunięciu uruchamia konfigurowalną komendę (np. Verify).\n"
+"\n"
+"    Zawiera komendy `ban`/`unban`/`banlist` z powodami, opcjonalnym czasem\n"
+"    trwania w dniach (z automatycznym wygasaniem) oraz uprawnieniami per serwer.\n"
+"    "
+
+#: banstrip.py:72
+msgid "banstrip records for user {user_id}:\n"
+msgstr "Rekordy banstrip dla użytkownika {user_id}:\n"
+
+#: banstrip.py:101
+#, docstring
+msgid ""
+"\n"
+"        Apply the BAN role to a member (stripping their other roles).\n"
+"\n"
+"        `details` may start with a number of days (0 or empty = permanent),\n"
+"        optionally followed by a reason.\n"
+"        Example: `[p]banstrip ban @user 7 spamming`\n"
+"        "
+msgstr ""
+"\n"
+"        Nadaje członkowi rolę BAN (zdejmując jego pozostałe role).\n"
+"\n"
+"        `details` może zaczynać się od liczby dni (0 lub puste = permanentny),\n"
+"        a po niej od opcjonalnego powodu.\n"
+"        Przykład: `[p]banstrip ban @user 7 spamming`\n"
+"        "
+
+#: banstrip.py:109
+msgid "You don't have permission to ban members."
+msgstr "Nie masz uprawnień do banowania członków."
+
+#: banstrip.py:113
+msgid "You can't ban yourself."
+msgstr "Nie możesz zbanować samego siebie."
+
+#: banstrip.py:115
+msgid "You can't ban the server owner."
+msgstr "Nie możesz zbanować właściciela serwera."
+
+#: banstrip.py:117
+msgid "You can't ban the bot."
+msgstr "Nie możesz zbanować bota."
+
+#: banstrip.py:121
+msgid "You can't ban someone whose role has the `ban_members` permission."
+msgstr "Nie możesz zbanować kogoś, czyja rola ma uprawnienie `ban_members`."
+
+#: banstrip.py:126
+msgid "You can't ban someone with a role equal to or higher than yours."
+msgstr "Nie możesz zbanować kogoś z rolą równą lub wyższą niż twoja."
+
+#: banstrip.py:131
+msgid "I can't manage that member's roles (their top role is too high)."
+msgstr "Nie mogę zarządzać rolami tego członka (jego najwyższa rola jest za wysoka)."
+
+#: banstrip.py:142
+msgid "I don't have permission to add the BAN role."
+msgstr "Nie mam uprawnień do nadania roli BAN."
+
+#: banstrip.py:144
+msgid "Failed to add the BAN role: {error}"
+msgstr "Nie udało się nadać roli BAN: {error}"
+
+#: banstrip.py:155
+msgid "{member} is already banned."
+msgstr "{member} jest już zbanowany."
+
+#: banstrip.py:157
+msgid "{member} has been banned."
+msgstr "{member} został zbanowany."
+
+#: banstrip.py:160
+msgid ""
+"\n"
+"Reason: {reason}"
+msgstr ""
+"\n"
+"Powód: {reason}"
+
+#: banstrip.py:162
+msgid ""
+"\n"
+"Duration: {days} days"
+msgstr ""
+"\n"
+"Czas trwania: {days} dni"
+
+#: banstrip.py:162
+msgid ""
+"\n"
+"Duration: permanent"
+msgstr ""
+"\n"
+"Czas trwania: permanentny"
+
+#: banstrip.py:170
+#, docstring
+msgid ""
+"\n"
+"        Remove the BAN role from a member and run the restore command.\n"
+"        "
+msgstr ""
+"\n"
+"        Usuwa rolę BAN z członka i uruchamia komendę przywracania.\n"
+"        "
+
+#: banstrip.py:174
+msgid "You don't have permission to unban members."
+msgstr "Nie masz uprawnień do odbanowywania członków."
+
+#: banstrip.py:181
+msgid "{member} does not have the BAN role."
+msgstr "{member} nie ma roli BAN."
+
+#: banstrip.py:188
+msgid "Failed to remove the BAN role: {error}"
+msgstr "Nie udało się usunąć roli BAN: {error}"
+
+#: banstrip.py:192
+msgid "{member} has been unbanned. Running the restore command..."
+msgstr "{member} został odbanowany. Uruchamiam komendę przywracania..."
+
+#: banstrip.py:201
+#, docstring
+msgid ""
+"\n"
+"        List currently banned members (with the BAN role), their reasons and durations.\n"
+"        "
+msgstr ""
+"\n"
+"        Wyświetla aktualnie zbanowanych członków (z rolą BAN), ich powody i czas trwania.\n"
+"        "
+
+#: banstrip.py:205
+msgid "You don't have permission to view the ban list."
+msgstr "Nie masz uprawnień do przeglądania listy banów."
+
+#: banstrip.py:208
+msgid "No BAN role is configured."
+msgstr "Nie ustawiono roli BAN."
+
+#: banstrip.py:211
+msgid "The configured BAN role no longer exists."
+msgstr "Skonfigurowana rola BAN już nie istnieje."
+
+#: banstrip.py:214
+msgid "No members are currently banned."
+msgstr "Obecnie żaden członek nie jest zbanowany."
+
+#: banstrip.py:218
+msgid "No reason"
+msgstr "Brak powodu"
+
+#: banstrip.py:221
+msgid "expires {time}"
+msgstr "wygasa {time}"
+
+#: banstrip.py:223
+msgid "permanent"
+msgstr "permanentny"
+
+#: banstrip.py:225
+msgid ""
+"{member} ({member_id})\n"
+"  Reason: {reason}\n"
+"  Duration: {duration}"
+msgstr ""
+"{member} ({member_id})\n"
+"  Powód: {reason}\n"
+"  Czas trwania: {duration}"
+
+#: banstrip.py:242
+#, docstring
+msgid ""
+"\n"
+"        Set the BAN role that strips all other roles. Leave empty to clear.\n"
+"        "
+msgstr ""
+"\n"
+"        Ustawia rolę BAN, która zdejmuje wszystkie inne role. Puste = wyczyść.\n"
+"        "
+
+#: banstrip.py:248
+msgid "Cleared the BAN role."
+msgstr "Wyczyszczono rolę BAN."
+
+#: banstrip.py:250
+msgid "The BAN role must be lower than my highest role."
+msgstr "Rola BAN musi być niżej niż moja najwyższa rola."
+
+#: banstrip.py:254
+msgid "You can't set a role equal to or higher than your own."
+msgstr "Nie możesz ustawić roli równej lub wyższej niż twoja."
+
+#: banstrip.py:257
+msgid "BAN role set to {role}."
+msgstr "Ustawiono rolę BAN na {role}."
+
+#: banstrip.py:264
+#, docstring
+msgid ""
+"\n"
+"        Enable or disable role stripping and the ban commands.\n"
+"        "
+msgstr ""
+"\n"
+"        Włącza lub wyłącza zdejmowanie ról oraz komendy ban.\n"
+"        "
+
+#: banstrip.py:271
+msgid "enabled"
+msgstr "włączony"
+
+#: banstrip.py:271
+msgid "disabled"
+msgstr "wyłączony"
+
+#: banstrip.py:272
+msgid "banstrip is now {state}."
+msgstr "banstrip jest teraz {state}."
+
+#: banstrip.py:278
+#, docstring
+msgid ""
+"\n"
+"        Set the command run when the BAN role is removed (e.g. `verify`).\n"
+"\n"
+"        Leave empty to disable. The command is invoked as the unbanned member.\n"
+"        "
+msgstr ""
+"\n"
+"        Ustawia komendę uruchamianą po usunięciu roli BAN (np. `verify`).\n"
+"\n"
+"        Puste = wyłączone. Komenda jest wywoływana jako odbanowany członek.\n"
+"        "
+
+#: banstrip.py:286
+msgid "No restore command will be run."
+msgstr "Żadna komenda przywracania nie zostanie uruchomiona."
+
+#: banstrip.py:288
+msgid "That command does not exist."
+msgstr "Ta komenda nie istnieje."
+
+#: banstrip.py:290
+msgid "Restore command set to `{command}`."
+msgstr "Ustawiono komendę przywracania na `{command}`."
+
+#: banstrip.py:297
+#, docstring
+msgid ""
+"\n"
+"        Configure who can ban, unban, and view the ban list.\n"
+"        "
+msgstr ""
+"\n"
+"        Konfiguruje, kto może banować, odbanowywać i przeglądać listę banów.\n"
+"        "
+
+#: banstrip.py:305
+#, docstring
+msgid ""
+"\n"
+"        Add/remove a role allowed to use `ban`. Leave empty to clear (admins only).\n"
+"        "
+msgstr ""
+"\n"
+"        Dodaje/usuwa rolę, która może używać `ban`. Puste = wyczyść (tylko admini).\n"
+"        "
+
+#: banstrip.py:312
+#, docstring
+msgid ""
+"\n"
+"        Add/remove a role allowed to use `unban`. Leave empty to clear (admins only).\n"
+"        "
+msgstr ""
+"\n"
+"        Dodaje/usuwa rolę, która może używać `unban`. Puste = wyczyść (tylko admini).\n"
+"        "
+
+#: banstrip.py:319
+#, docstring
+msgid ""
+"\n"
+"        Add/remove a role allowed to view the ban list. Leave empty to clear (admins only).\n"
+"        "
+msgstr ""
+"\n"
+"        Dodaje/usuwa rolę, która może przeglądać listę banów. Puste = wyczyść (tylko admini).\n"
+"        "
+
+#: banstrip.py:326
+#, docstring
+msgid ""
+"\n"
+"        Show who can use each action.\n"
+"        "
+msgstr ""
+"\n"
+"        Pokazuje, kto może używać każdej akcji.\n"
+"        "
+
+#: banstrip.py:334
+msgid "{label}: admins only"
+msgstr "{label}: tylko admini"
+
+#: banstrip.py:338
+msgid "{label}: {roles}"
+msgstr "{label}: {roles}"
+
+#: banstrip.py:340 banstrip.py:356 banstrip.py:358 banstrip.py:590
+msgid "None"
+msgstr "Brak"
+
+#: banstrip.py:349
+#, docstring
+msgid ""
+"\n"
+"        Show the current settings.\n"
+"        "
+msgstr ""
+"\n"
+"        Pokazuje bieżące ustawienia.\n"
+"        "
+
+#: banstrip.py:355
+msgid "Enabled: {value}"
+msgstr "Włączony: {value}"
+
+#: banstrip.py:356
+msgid "BAN role: {role}"
+msgstr "Rola BAN: {role}"
+
+#: banstrip.py:357
+msgid "Restore command: {command}"
+msgstr "Komenda przywracania: {command}"
+
+#: banstrip.py:360
+msgid "Can ban: {roles}"
+msgstr "Może banować: {roles}"
+
+#: banstrip.py:361
+msgid "Can unban: {roles}"
+msgstr "Może odbanowywać: {roles}"
+
+#: banstrip.py:364
+msgid "Can view: {roles}"
+msgstr "Może przeglądać: {roles}"
+
+#: banstrip.py:540
+msgid "banstrip is disabled. Enable it with `{prefix}banstrip toggle true`."
+msgstr "banstrip jest wyłączony. Włącz go komendą `{prefix}banstrip toggle true`."
+
+#: banstrip.py:548
+msgid ""
+"No BAN role is configured. Set one with `{prefix}banstrip role <role>`."
+msgstr ""
+"Nie ustawiono roli BAN. Ustaw ją komendą `{prefix}banstrip role <rola>`."
+
+#: banstrip.py:567
+msgid "Cleared the '{label}' role list (admins only)."
+msgstr "Wyczyszczono listę ról '{label}' (tylko admini)."
+
+#: banstrip.py:576
+msgid "removed from"
+msgstr "usunięty z"
+
+#: banstrip.py:576
+msgid "added to"
+msgstr "dodany do"
+
+#: banstrip.py:579
+msgid "{role} {state} the '{label}' role list."
+msgstr "{role} {state} listy ról '{label}'."
+
+#: banstrip.py:588
+msgid "admins only"
+msgstr "tylko admini"
