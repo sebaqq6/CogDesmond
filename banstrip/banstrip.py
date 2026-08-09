@@ -109,6 +109,11 @@ class BanStrip(commands.Cog):
             return await self._reply(ctx, "You can't ban the server owner.")
         if member == ctx.guild.me:
             return await self._reply(ctx, "You can't ban the bot.")
+        if member.guild_permissions.ban_members:
+            return await self._reply(
+                ctx,
+                "You can't ban someone whose role has the `ban_members` permission.",
+            )
         if member.top_role >= ctx.author.top_role and ctx.author != ctx.guild.owner:
             return await self._reply(
                 ctx,
