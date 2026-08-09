@@ -56,7 +56,44 @@ Installation:
 [p]settickets setup
 ```
 
+### banrole
+
+Fork of [palmtree5's BanRole](https://github.com/palmtree5/palmtree5-cogs) (GPL-3.0)
+cleaned up for Red 3.5 / Python 3.10: deprecated `checks` import replaced with
+`commands.admin_or_permissions`, a bug in `red_delete_data_for_user` fixed, and
+`info.json` metadata added.
+
+Bans/unbans every member holding a given role and remembers who was banned via
+which role so `[p]unbanrole` can restore them.
+
+```
+[p]cog install cogdesmond banrole
+[p]load banrole
+[p]banrole <role>
+[p]unbanrole <role>
+```
+
+### banstrip
+
+Custom cog: strips **all** roles from a member when a configured BAN role is
+applied (only the BAN role remains active), and runs the **Verify** flow
+(`[p]verify`, i.e. the Verify cog's configured autoroles) when the BAN role is
+removed, so the standard roles come back.
+
+```
+[p]cog install cogdesmond banstrip
+[p]load banstrip
+[p]banstripset role <ban_role>
+[p]banstripset toggle true
+[p]banstripset runverify true
+[p]banstripset view
+```
+
+Note: it restores roles via Verify's autorole list, so any role that is *not*
+listed in `[p]verifyset autorole` is not given back.
+
 ## License
 
 MIT. The `vcounter` cog is derived from
 [YamiCogs InfoChannel](https://github.com/yamikaitou/YamiCogs) (MIT, YamiKaitou & Bobloy).
+The `banrole` cog is GPL-3.0 (palmtree5).

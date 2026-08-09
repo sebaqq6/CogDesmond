@@ -1,0 +1,19 @@
+{
+    "author": [
+        "Desmond"
+    ],
+    "min_bot_version": "3.5.0",
+    "min_python_version": [3, 10, 0],
+    "description": "Strip all roles when a BAN role is applied, and run the Verify flow to restore standard roles when it is removed.",
+    "hidden": false,
+    "install_msg": "Thank you for installing BanStrip. Get started with `[p]banstripset role <role>` and `[p]banstripset toggle true`.",
+    "name": "BanStrip",
+    "short": "Strip roles on BAN role, restore via Verify",
+    "end_user_data_statement": "This cog does not store any End User Data",
+    "tags": [
+        "moderation",
+        "roles",
+        "ban",
+        "verify"
+    ]
+}
