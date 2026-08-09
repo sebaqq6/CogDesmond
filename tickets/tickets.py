@@ -1668,6 +1668,20 @@ class Tickets(DashboardIntegration, Cog):
         )
 
     @settickets.command(with_app_command=False)
+    async def profilesstatus(self, ctx: commands.Context) -> None:
+        """List the profiles with their enabled status."""
+        profiles = await self.config.guild(ctx.guild).profiles()
+        message = f"---------- Profiles in {self.qualified_name} ----------\n\n"
+        message += "\n".join(
+            [
+                f"- {profile} "
+                f"{_('✅ (enabled)') if config.get('enabled', False) else _('❌ (disabled)')}"
+                for profile, config in profiles.items()
+            ],
+        )
+        await Menu(pages=message, lang="py").start(ctx)
+
+    @settickets.command(with_app_command=False)
     async def configureappeals(
         self,
         ctx: commands.Context,

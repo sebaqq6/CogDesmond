@@ -273,6 +273,19 @@ msgstr ""
 msgid "Profiles renamed: {renamed}."
 msgstr ""
 
+#: tickets.py:1672
+#, docstring
+msgid "List the profiles with their enabled status."
+msgstr ""
+
+#: tickets.py:1678
+msgid "✅ (enabled)"
+msgstr ""
+
+#: tickets.py:1678
+msgid "❌ (disabled)"
+msgstr ""
+
 #: tickets.py:1683
 #, docstring
 msgid "Configure the appeal feature."

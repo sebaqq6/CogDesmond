@@ -289,6 +289,19 @@ msgstr "Wszystkie profile są już małymi literami."
 msgid "Profiles renamed: {renamed}."
 msgstr "Zmieniono nazwy profili: {renamed}."
 
+#: tickets.py:1672
+#, docstring
+msgid "List the profiles with their enabled status."
+msgstr "Wypisz profile wraz z ich statusem włączenia."
+
+#: tickets.py:1678
+msgid "✅ (enabled)"
+msgstr "✅ (włączony)"
+
+#: tickets.py:1678
+msgid "❌ (disabled)"
+msgstr "❌ (wyłączony)"
+
 #: tickets.py:1683
 #, docstring
 msgid "Configure the appeal feature."
