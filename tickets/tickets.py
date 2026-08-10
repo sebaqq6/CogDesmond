@@ -144,6 +144,9 @@ class Tickets(DashboardIntegration, Cog):
 
         self.tickets: dict[int, dict[int, Tickets]] = {}
 
+        self._pending_channel_name_updates: dict[int, tuple[str, str]] = {}
+        self._channel_name_workers: set[int] = set()
+
         _settings: dict[str, dict[str, typing.Any]] = {
             "enabled": {
                 "converter": bool,
