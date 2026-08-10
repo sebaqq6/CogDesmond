@@ -4,8 +4,9 @@ from io import BytesIO
 from typing import Literal
 
 import discord
+from discord.ext import tasks
 
-from redbot.core import Config, commands, tasks
+from redbot.core import Config, commands
 from redbot.core.bot import Red
 from redbot.core.i18n import Translator, cog_i18n
 from redbot.core.utils.chat_formatting import box, humanize_list, pagify
@@ -49,7 +50,7 @@ class BanStrip(commands.Cog):
 
     async def cog_load(self):
         await super().cog_load()
-        self._expiry_loop.start()
+        await self._expiry_loop.start()
 
     async def cog_unload(self):
         self._expiry_loop.cancel()
