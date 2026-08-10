@@ -452,10 +452,10 @@ class Ticket:
                             continue
                         target_name, reason = new_pending
                         channel = self.bot.get_channel(channel_id) or channel
-                        if channel.name == target_name:
-                            break
                         edit_task.cancel()
                         await asyncio.gather(edit_task, return_exceptions=True)
+                        if channel.name == target_name:
+                            break
                         edit_task = asyncio.ensure_future(
                             self._apply_channel_name(channel, target_name, reason),
                         )
