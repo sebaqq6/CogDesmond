@@ -1063,3 +1063,11 @@ msgstr "Argument `/modal/{count}/min_length` musi wynosić od 0 do 1000."
 #: converters.py:232
 msgid "The argument `/modal/{count}/max_length` must be between 0 and 1000."
 msgstr "Argument `/modal/{count}/max_length` musi wynosić od 0 do 1000."
+
+#: types.py:398
+msgid ""
+"⚠️ The channel name change was skipped because of a Discord rate limit. It "
+"will be updated with the next action on this ticket."
+msgstr ""
+"⚠️ Zmiana nazwy kanału została pominięta z powodu limitu żądań Discorda "
+"(rate limit). Zostanie zaktualizowana przy następnej akcji na tym tickecie."
