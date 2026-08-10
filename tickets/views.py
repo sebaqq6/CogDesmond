@@ -545,8 +545,8 @@ class OwnerCloseConfirmation(discord.ui.View):
                 if interaction.message.embeds[0].fields
                 else None
             )
-            await interaction.followup.send(_("❌ This ticket has been closed!"), ephemeral=True)
             await ticket.close(interaction.user, reason=reason)
+            await interaction.followup.send(_("❌ This ticket has been closed!"), ephemeral=True)
         except RuntimeError as e:
             return await interaction.followup.send(
                 f"⛔ {e}",
