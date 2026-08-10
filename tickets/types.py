@@ -417,29 +417,51 @@ class Ticket:
                 edit_task = asyncio.ensure_future(
                     self._apply_channel_name(channel, target_name, reason),
                 )
-                try:
-                    await asyncio.wait_for(asyncio.shield(edit_task), timeout=1.0)
-                except asyncio.TimeoutError:
-                    if channel.name != target_name and not self._channel_name_note_recent(
-                        channel_id,
-                    ):
-                        self.cog._channel_name_note_timestamps[channel_id] = (
-                            asyncio.get_running_loop().time()
+                noted = False
+                while True:
+                    try:
+                        await asyncio.wait_for(asyncio.shield(edit_task), timeout=1.0)
+                    except asyncio.TimeoutError:
+                        if (
+                            not noted
+                            and channel.name != target_name
+                            and not self._channel_name_note_recent(channel_id)
+                        ):
+                            noted = True
+                            self.cog._channel_name_note_timestamps[channel_id] = (
+                                asyncio.get_running_loop().time()
+                            )
+                            try:
+                                note_message = await channel.send(
+                                    embed=discord.Embed(
+                                        description=self._rate_limited_name_note(),
+                                        color=discord.Color.orange(),
+                                    ),
+                                )
+                            except discord.HTTPException:
+                                pass
+                            else:
+                                asyncio.get_running_loop().create_task(
+                                    self._delete_channel_name_note(note_message),
+                                )
+                        new_pending = self.cog._pending_channel_name_updates.pop(
+                            channel_id,
+                            None,
                         )
-                        try:
-                            note_message = await channel.send(
-                                embed=discord.Embed(
-                                    description=self._rate_limited_name_note(),
-                                    color=discord.Color.orange(),
-                                ),
-                            )
-                        except discord.HTTPException:
-                            pass
-                        else:
-                            asyncio.get_running_loop().create_task(
-                                self._delete_channel_name_note(note_message),
-                            )
-                    await asyncio.shield(edit_task)
+                        if new_pending is None:
+                            continue
+                        target_name, reason = new_pending
+                        channel = self.bot.get_channel(channel_id) or channel
+                        if channel.name == target_name:
+                            break
+                        edit_task.cancel()
+                        await asyncio.gather(edit_task, return_exceptions=True)
+                        edit_task = asyncio.ensure_future(
+                            self._apply_channel_name(channel, target_name, reason),
+                        )
+                        noted = False
+                    else:
+                        break
         finally:
             self.cog._channel_name_workers.discard(channel_id)
 
