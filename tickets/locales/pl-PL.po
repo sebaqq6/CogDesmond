@@ -444,6 +444,10 @@ msgstr "👤 Ticket oddany"
 msgid "This ticket is already locked."
 msgstr "Ten ticket jest już zablokowany."
 
+#: types.py:931
+msgid "This ticket is locked."
+msgstr "Ten ticket jest zablokowany."
+
 #: types.py:1095
 msgid "You aren't allowed to lock this ticket!"
 msgstr "Nie masz uprawnień, aby zablokować ten ticket!"

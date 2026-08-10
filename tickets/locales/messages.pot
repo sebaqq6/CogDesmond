@@ -424,6 +424,10 @@ msgstr ""
 msgid "This ticket is already locked."
 msgstr ""
 
+#: types.py:931
+msgid "This ticket is locked."
+msgstr ""
+
 #: types.py:1095
 msgid "You aren't allowed to lock this ticket!"
 msgstr ""
