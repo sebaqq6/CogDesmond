@@ -386,47 +386,19 @@ class Ticket:
             guild_id=self.guild.id,
         )[:100]
 
-    def _channel_name_rate_limited(self) -> float | None:
-        try:
-            import discord.http as http_module
-
-            route = http_module.Route(
-                "PATCH",
-                "/channels/{channel_id}",
-                channel_id=self.channel.id,
-            )
-            http = self.bot.http
-            bucket_hash = http._bucket_hashes.get(route.key)
-            bucket_key = bucket_hash if bucket_hash is not None else route.key
-            key = f"{bucket_key}:{route.major_parameters}"
-            ratelimit = http._buckets.get(key)
-        except (AttributeError, KeyError, TypeError):
-            return None
-        if (
-            ratelimit is None
-            or ratelimit.is_expired()
-            or ratelimit.remaining > 0
-            or ratelimit.expires is None
-        ):
-            return None
-        wait = ratelimit.expires - ratelimit._loop.time()
-        return max(wait, 0.0) if wait > 0 else None
-
-    def _rate_limited_name_note(self, wait: float) -> str:
+    def _rate_limited_name_note(self) -> str:
         return _(
-            "⚠️ The channel name change was delayed by a Discord rate limit (~{seconds} s). "
+            "⚠️ The channel name change was delayed by a Discord rate limit. "
             "It will be applied shortly.",
-        ).format(seconds=round(wait))
+        )
 
-    async def _schedule_channel_name_update(self, reason: str) -> float | None:
-        wait = self._channel_name_rate_limited()
+    async def _schedule_channel_name_update(self, reason: str) -> None:
         target_name = await self.channel_name()
         channel_id = self.channel.id
         self.cog._pending_channel_name_updates[channel_id] = (target_name, reason)
         if channel_id not in self.cog._channel_name_workers:
             self.cog._channel_name_workers.add(channel_id)
             asyncio.get_running_loop().create_task(self._channel_name_worker(channel_id))
-        return wait
 
     async def _channel_name_worker(self, channel_id: int) -> None:
         try:
@@ -442,12 +414,53 @@ class Ticket:
                 channel = self.bot.get_channel(channel_id)
                 if channel is None or channel.name == target_name:
                     continue
+                edit_task = asyncio.ensure_future(
+                    self._apply_channel_name(channel, target_name, reason),
+                )
                 try:
-                    await channel.edit(name=target_name, reason=reason)
-                except discord.HTTPException:
-                    continue
+                    await asyncio.wait_for(asyncio.shield(edit_task), timeout=1.0)
+                except asyncio.TimeoutError:
+                    if channel.name != target_name and not self._channel_name_note_recent(
+                        channel_id,
+                    ):
+                        self.cog._channel_name_note_timestamps[channel_id] = (
+                            asyncio.get_running_loop().time()
+                        )
+                        try:
+                            note_message = await channel.send(
+                                embed=discord.Embed(
+                                    description=self._rate_limited_name_note(),
+                                    color=discord.Color.orange(),
+                                ),
+                            )
+                        except discord.HTTPException:
+                            pass
+                        else:
+                            asyncio.get_running_loop().create_task(
+                                self._delete_channel_name_note(note_message),
+                            )
+                    await asyncio.shield(edit_task)
         finally:
             self.cog._channel_name_workers.discard(channel_id)
+
+    async def _apply_channel_name(self, channel, target_name: str, reason: str) -> None:
+        try:
+            await channel.edit(name=target_name, reason=reason)
+        except discord.HTTPException:
+            pass
+
+    async def _delete_channel_name_note(self, message: discord.Message) -> None:
+        await asyncio.sleep(10)
+        try:
+            await message.delete()
+        except discord.HTTPException:
+            pass
+
+    def _channel_name_note_recent(self, channel_id: int) -> bool:
+        timestamp = self.cog._channel_name_note_timestamps.get(channel_id)
+        if timestamp is None:
+            return False
+        return asyncio.get_running_loop().time() - timestamp < 30.0
 
     async def get_embed(self, for_logging: bool = False) -> discord.Embed:
         embed: discord.Embed = discord.Embed(
@@ -888,7 +901,7 @@ class Ticket:
         self,
         closer: discord.Member | None = None,
         reason: str | None = None,
-    ) -> str | None:
+    ) -> None:
         if self.is_closed:
             raise RuntimeError(_("This ticket is already closed."))
         config = await self.cog.config.guild(self.guild).profiles.get_raw(self.profile)
@@ -939,7 +952,7 @@ class Ticket:
                 locked=True,
                 reason=audit_reason,
             )
-            wait = await self._schedule_channel_name_update(audit_reason)
+            await self._schedule_channel_name_update(audit_reason)
         else:
             await self.channel.edit(
                 category=(
@@ -954,7 +967,7 @@ class Ticket:
                 overwrites=await self.get_channel_overwrites(),
                 reason=audit_reason,
             )
-            wait = await self._schedule_channel_name_update(audit_reason)
+            await self._schedule_channel_name_update(audit_reason)
 
         self.bot.dispatch("ticket_close", self)
         if config["create_modlog_case"]:
@@ -979,13 +992,12 @@ class Ticket:
             )
             await asyncio.sleep(5)
             await self.delete_channel(None)  # That's a setting, so no deleter.
-        return self._rate_limited_name_note(wait) if wait is not None else None
 
     async def reopen(
         self,
         reopener: discord.Member | None = None,
         reason: str | None = None,
-    ) -> str | None:
+    ) -> None:
         if not self.is_closed:
             raise RuntimeError(_("This ticket is not closed."))
         config = await self.cog.config.guild(self.guild).profiles.get_raw(self.profile)
@@ -1022,7 +1034,7 @@ class Ticket:
                 locked=False,
                 reason=audit_reason,
             )
-            wait = await self._schedule_channel_name_update(audit_reason)
+            await self._schedule_channel_name_update(audit_reason)
         else:
             await self.channel.edit(
                 category=(
@@ -1036,7 +1048,7 @@ class Ticket:
                 overwrites=await self.get_channel_overwrites(),
                 reason=audit_reason,
             )
-            wait = await self._schedule_channel_name_update(audit_reason)
+            await self._schedule_channel_name_update(audit_reason)
         view = self.cog.views[self.message]
         await view._update()
         await self.message.edit(
@@ -1062,9 +1074,8 @@ class Ticket:
                 channel=self.channel,
             )
         await self.cog.send_ticket_log(self)
-        return self._rate_limited_name_note(wait) if wait is not None else None
 
-    async def claim(self, claimer: discord.Member) -> str | None:
+    async def claim(self, claimer: discord.Member) -> None:
         if self.is_claimed:
             raise RuntimeError(_("This ticket is already claimed."))
         self.is_claimed = True
@@ -1075,7 +1086,7 @@ class Ticket:
         audit_reason = _(
             "Ticket claimed by {claimer.display_name} ({claimer.id}) (profile `{self.profile}`).",
         ).format(claimer=claimer, self=self)
-        wait = await self._schedule_channel_name_update(audit_reason)
+        await self._schedule_channel_name_update(audit_reason)
         view = self.cog.views[self.message]
         await view._update()
         await self.message.edit(
@@ -1100,9 +1111,8 @@ class Ticket:
                 channel=self.channel,
             )
         await self.cog.send_ticket_log(self)
-        return self._rate_limited_name_note(wait) if wait is not None else None
 
-    async def unclaim(self) -> str | None:
+    async def unclaim(self) -> None:
         if not self.is_claimed:
             raise RuntimeError(_("This ticket is not claimed."))
         self.is_claimed = False
@@ -1111,7 +1121,7 @@ class Ticket:
         await self.save()
 
         audit_reason = _("Ticket unclaimed (profile `{self.profile}`).").format(self=self)
-        wait = await self._schedule_channel_name_update(audit_reason)
+        await self._schedule_channel_name_update(audit_reason)
         view = self.cog.views[self.message]
         await view._update()
         await self.message.edit(
@@ -1135,7 +1145,6 @@ class Ticket:
                 channel=self.channel,
             )
         await self.cog.send_ticket_log(self)
-        return self._rate_limited_name_note(wait) if wait is not None else None
 
     async def lock(self, locker: discord.Member | None = None) -> None:
         if self.is_locked:

@@ -146,6 +146,7 @@ class Tickets(DashboardIntegration, Cog):
 
         self._pending_channel_name_updates: dict[int, tuple[str, str]] = {}
         self._channel_name_workers: set[int] = set()
+        self._channel_name_note_timestamps: dict[int, float] = {}
 
         _settings: dict[str, dict[str, typing.Any]] = {
             "enabled": {
