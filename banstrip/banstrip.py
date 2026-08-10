@@ -50,7 +50,7 @@ class BanStrip(commands.Cog):
 
     async def cog_load(self):
         await super().cog_load()
-        await self._expiry_loop.start()
+        self._expiry_loop.start()
 
     async def cog_unload(self):
         self._expiry_loop.cancel()
