@@ -460,7 +460,7 @@ class Ticket:
         timestamp = self.cog._channel_name_note_timestamps.get(channel_id)
         if timestamp is None:
             return False
-        return asyncio.get_running_loop().time() - timestamp < 30.0
+        return asyncio.get_running_loop().time() - timestamp < 10.0
 
     async def get_embed(self, for_logging: bool = False) -> discord.Embed:
         embed: discord.Embed = discord.Embed(
