@@ -201,16 +201,15 @@ class TicketView(discord.ui.View):
         await interaction.response.defer(ephemeral=True, thinking=True)
         try:
             if not self.ticket.is_claimed:
-                name_note = await self.ticket.claim(interaction.user)
+                await self.ticket.claim(interaction.user)
                 await interaction.followup.send(
-                    _("👥 You have claimed this ticket!") + (f"\n{name_note}" if name_note else ""),
+                    _("👥 You have claimed this ticket!"),
                     ephemeral=True,
                 )
             else:
-                name_note = await self.ticket.unclaim()
+                await self.ticket.unclaim()
                 await interaction.followup.send(
-                    _("👤 You have unclaimed this ticket!")
-                    + (f"\n{name_note}" if name_note else ""),
+                    _("👤 You have unclaimed this ticket!"),
                     ephemeral=True,
                 )
         except RuntimeError as e:
@@ -266,10 +265,9 @@ class TicketView(discord.ui.View):
     ) -> None:
         await interaction.response.defer(ephemeral=True, thinking=True)
         try:
-            name_note = await self.ticket.approve_appeal(interaction.user)
+            await self.ticket.approve_appeal(interaction.user)
             await interaction.followup.send(
-                _("✅ This ticket's appeal has been approved!")
-                + (f"\n{name_note}" if name_note else ""),
+                _("✅ This ticket's appeal has been approved!"),
                 ephemeral=True,
             )
         except RuntimeError as e:
@@ -420,17 +418,16 @@ class ReasonModal(discord.ui.Modal):
                     await view.start(self.ticket, interaction, reason=reason)
                     return
                 await interaction.response.defer(ephemeral=True)
-                name_note = await self.ticket.close(interaction.user, reason=reason)
+                await self.ticket.close(interaction.user, reason=reason)
                 await interaction.followup.send(
-                    _("❌ This ticket has been closed!") + (f"\n{name_note}" if name_note else ""),
+                    _("❌ This ticket has been closed!"),
                     ephemeral=True,
                 )
             else:
                 await interaction.response.defer(ephemeral=True)
-                name_note = await self.ticket.reopen(interaction.user, reason=reason)
+                await self.ticket.reopen(interaction.user, reason=reason)
                 await interaction.followup.send(
-                    _("👐 This ticket has been reopened!")
-                    + (f"\n{name_note}" if name_note else ""),
+                    _("👐 This ticket has been reopened!"),
                     ephemeral=True,
                 )
         except RuntimeError as e:
@@ -549,9 +546,7 @@ class OwnerCloseConfirmation(discord.ui.View):
                 else None
             )
             await interaction.followup.send(_("❌ This ticket has been closed!"), ephemeral=True)
-            name_note = await ticket.close(interaction.user, reason=reason)
-            if name_note:
-                await interaction.followup.send(name_note, ephemeral=True)
+            await ticket.close(interaction.user, reason=reason)
         except RuntimeError as e:
             return await interaction.followup.send(
                 f"⛔ {e}",
@@ -683,11 +678,8 @@ class ClosedTicketControls(discord.ui.View):
             channel=interaction.channel,
         )
         try:
-            name_note = await ticket.reopen(interaction.user)
-            await interaction.followup.send(
-                _("👐 This ticket has been reopened!") + (f"\n{name_note}" if name_note else ""),
-                ephemeral=True,
-            )
+            await ticket.reopen(interaction.user)
+            await interaction.followup.send(_("👐 This ticket has been reopened!"), ephemeral=True)
         except RuntimeError as e:
             return await interaction.followup.send(
                 f"⛔ {e}",

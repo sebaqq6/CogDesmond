@@ -386,20 +386,17 @@ class Ticket:
             guild_id=self.guild.id,
         )[:100]
 
-    async def _update_channel_name(self, reason: str) -> str | None:
+    async def _update_channel_name(self, reason: str) -> None:
         try:
             target_name = await self.channel_name()
             if self.channel.name == target_name:
-                return None
+                return
             await self.channel.edit(name=target_name, reason=reason)
-            return None
-        except discord.RateLimited:
-            return _(
-                "⚠️ The channel name change was skipped because of a Discord rate limit. "
-                "It will be updated with the next action on this ticket.",
-            )
         except discord.HTTPException:
-            return None
+            pass
+
+    def _schedule_channel_name_update(self, reason: str) -> None:
+        asyncio.get_running_loop().create_task(self._update_channel_name(reason))
 
     async def get_embed(self, for_logging: bool = False) -> discord.Embed:
         embed: discord.Embed = discord.Embed(
@@ -891,7 +888,7 @@ class Ticket:
                 locked=True,
                 reason=audit_reason,
             )
-            name_note = await self._update_channel_name(audit_reason)
+            self._schedule_channel_name_update(audit_reason)
         else:
             await self.channel.edit(
                 category=(
@@ -906,7 +903,7 @@ class Ticket:
                 overwrites=await self.get_channel_overwrites(),
                 reason=audit_reason,
             )
-            name_note = await self._update_channel_name(audit_reason)
+            self._schedule_channel_name_update(audit_reason)
 
         self.bot.dispatch("ticket_close", self)
         if config["create_modlog_case"]:
@@ -931,7 +928,6 @@ class Ticket:
             )
             await asyncio.sleep(5)
             await self.delete_channel(None)  # That's a setting, so no deleter.
-        return name_note
 
     async def reopen(
         self,
@@ -974,7 +970,7 @@ class Ticket:
                 locked=False,
                 reason=audit_reason,
             )
-            name_note = await self._update_channel_name(audit_reason)
+            self._schedule_channel_name_update(audit_reason)
         else:
             await self.channel.edit(
                 category=(
@@ -988,7 +984,7 @@ class Ticket:
                 overwrites=await self.get_channel_overwrites(),
                 reason=audit_reason,
             )
-            name_note = await self._update_channel_name(audit_reason)
+            self._schedule_channel_name_update(audit_reason)
         view = self.cog.views[self.message]
         await view._update()
         await self.message.edit(
@@ -1014,7 +1010,6 @@ class Ticket:
                 channel=self.channel,
             )
         await self.cog.send_ticket_log(self)
-        return name_note
 
     async def claim(self, claimer: discord.Member) -> None:
         if self.is_claimed:
@@ -1027,7 +1022,7 @@ class Ticket:
         audit_reason = _(
             "Ticket claimed by {claimer.display_name} ({claimer.id}) (profile `{self.profile}`).",
         ).format(claimer=claimer, self=self)
-        name_note = await self._update_channel_name(audit_reason)
+        self._schedule_channel_name_update(audit_reason)
         view = self.cog.views[self.message]
         await view._update()
         await self.message.edit(
@@ -1052,7 +1047,6 @@ class Ticket:
                 channel=self.channel,
             )
         await self.cog.send_ticket_log(self)
-        return name_note
 
     async def unclaim(self) -> None:
         if not self.is_claimed:
@@ -1063,7 +1057,7 @@ class Ticket:
         await self.save()
 
         audit_reason = _("Ticket unclaimed (profile `{self.profile}`).").format(self=self)
-        name_note = await self._update_channel_name(audit_reason)
+        self._schedule_channel_name_update(audit_reason)
         view = self.cog.views[self.message]
         await view._update()
         await self.message.edit(
@@ -1087,7 +1081,6 @@ class Ticket:
                 channel=self.channel,
             )
         await self.cog.send_ticket_log(self)
-        return name_note
 
     async def lock(self, locker: discord.Member | None = None) -> None:
         if self.is_locked:
@@ -1285,7 +1278,7 @@ class Ticket:
             ),
         )
 
-        name_note = await self._update_channel_name(audit_reason)
+        self._schedule_channel_name_update(audit_reason)
         view = self.cog.views[self.message]
         await view._update()
         await self.message.edit(
@@ -1304,7 +1297,6 @@ class Ticket:
                 moderator=self.guild.me,
                 channel=self.channel,
             )
-        return name_note
 
     async def add_member(
         self,

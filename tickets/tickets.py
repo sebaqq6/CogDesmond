@@ -1099,11 +1099,9 @@ class Tickets(DashboardIntegration, Cog):
         ):
             raise commands.UserFeedbackCheckFailure(_("No ticket found."))
         try:
-            name_note = await ticket.close(ctx.author)
+            await ticket.close(ctx.author)
         except RuntimeError as e:
             raise commands.UserFeedbackCheckFailure(str(e))
-        if name_note:
-            await ctx.send(name_note)
 
     @is_support()
     @ticket.command(aliases=["open"])
@@ -1125,11 +1123,9 @@ class Tickets(DashboardIntegration, Cog):
         ):
             raise commands.UserFeedbackCheckFailure(_("No ticket found."))
         try:
-            name_note = await ticket.reopen(ctx.author)
+            await ticket.reopen(ctx.author)
         except RuntimeError as e:
             raise commands.UserFeedbackCheckFailure(str(e))
-        if name_note:
-            await ctx.send(name_note)
 
     @is_support(ignore_owner=True)
     @ticket.command()
@@ -1151,11 +1147,9 @@ class Tickets(DashboardIntegration, Cog):
         ):
             raise commands.UserFeedbackCheckFailure(_("No ticket found."))
         try:
-            name_note = await ticket.claim(ctx.author)
+            await ticket.claim(ctx.author)
         except RuntimeError as e:
             raise commands.UserFeedbackCheckFailure(str(e))
-        if name_note:
-            await ctx.send(name_note)
 
     @is_support(ignore_owner=True)
     @ticket.command()
@@ -1177,11 +1171,9 @@ class Tickets(DashboardIntegration, Cog):
         ):
             raise commands.UserFeedbackCheckFailure(_("No ticket found."))
         try:
-            name_note = await ticket.unclaim()
+            await ticket.unclaim()
         except RuntimeError as e:
             raise commands.UserFeedbackCheckFailure(str(e))
-        if name_note:
-            await ctx.send(name_note)
 
     @is_support(ignore_owner=True)
     async def lock(
@@ -1250,11 +1242,9 @@ class Tickets(DashboardIntegration, Cog):
         ):
             raise commands.UserFeedbackCheckFailure(_("No ticket found."))
         try:
-            name_note = await ticket.approve_appeal(ctx.author)
+            await ticket.approve_appeal(ctx.author)
         except RuntimeError as e:
             raise commands.UserFeedbackCheckFailure(str(e))
-        if name_note:
-            await ctx.send(name_note)
 
     @is_support()
     @ticket.command(aliases=["add"])
