@@ -509,13 +509,19 @@ class Tickets(DashboardIntegration, Cog):
                     await ticket.delete()
                     continue
                 config = profiles[ticket.profile]
-                if not ticket.is_closed and ticket.owner is None and config["close_on_leave"]:
+                if (
+                    not ticket.is_closed
+                    and not ticket.is_locked
+                    and ticket.owner is None
+                    and config["close_on_leave"]
+                ):
                     try:
                         await ticket.guild.fetch_member(ticket.owner_id)
                     except discord.NotFound:
                         await ticket.close()
                 if (
                     ticket.is_closed
+                    and not ticket.is_locked
                     and config["auto_delete_on_close"] is not None
                     and datetime.datetime.now(tz=datetime.timezone.utc) - ticket.closed_at
                     > datetime.timedelta(hours=config["auto_delete_on_close"])
@@ -551,7 +557,7 @@ class Tickets(DashboardIntegration, Cog):
             )
         ) is None:
             return
-        if ticket.is_closed:
+        if ticket.is_closed or ticket.is_locked:
             return
         if not await self.config.guild(message.guild).profiles.get_raw(
             ticket.profile,

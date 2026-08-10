@@ -927,6 +927,8 @@ class Ticket:
     ) -> None:
         if self.is_closed:
             raise RuntimeError(_("This ticket is already closed."))
+        if self.is_locked:
+            raise RuntimeError(_("This ticket is locked."))
         config = await self.cog.config.guild(self.guild).profiles.get_raw(self.profile)
         if closer is not None and not config["owner_can_close"]:
             fake_context = type(
