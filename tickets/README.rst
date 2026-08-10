@@ -159,6 +159,9 @@ Here are all the commands included in this cog (64):
 * ``[p]settickets supportroles <profile> <support_roles>``
  Roles that can support tickets.
 
+* ``[p]settickets supportcansendwhenclosed <profile> <support_can_send_when_closed>``
+ Whether support roles can send messages on closed tickets.
+
 * ``[p]settickets ticketrole <profile> <role>``
  Role that will be added to the ticket owner for the duration of the ticket.
 

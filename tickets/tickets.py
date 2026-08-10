@@ -91,6 +91,7 @@ class Tickets(DashboardIntegration, Cog):
                 "disable_default_open_modal": False,
                 # Roles.
                 "support_roles": [],
+                "support_can_send_when_closed": True,
                 "ping_roles": [],
                 "speak_roles": [],
                 "view_roles": [],
@@ -205,6 +206,11 @@ class Tickets(DashboardIntegration, Cog):
             "support_roles": {
                 "converter": commands.Greedy[discord.Role],
                 "description": "Roles that can support tickets.",
+            },
+            "support_can_send_when_closed": {
+                "converter": bool,
+                "description": "Whether support roles can send messages on closed tickets.",
+                "no_slash": True,
             },
             "ping_roles": {
                 "converter": commands.Greedy[discord.Role],

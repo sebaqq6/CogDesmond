@@ -847,6 +847,7 @@ class Ticket:
             self.guild,
         ).profiles.get_raw(self.profile)
         hide_closed = config.get("hide_closed_ticket_from_owner", True)
+        support_can_send = config.get("support_can_send_when_closed", True)
         overwrites = {
             self.guild.default_role: discord.PermissionOverwrite(
                 read_messages=False,
@@ -882,7 +883,7 @@ class Ticket:
                 overwrites[support_role] = discord.PermissionOverwrite(
                     read_messages=True,
                     read_message_history=True,
-                    send_messages=not self.is_closed,
+                    send_messages=not self.is_closed or support_can_send,
                     add_reactions=not self.is_closed,
                     embed_links=not self.is_closed,
                     attach_files=not self.is_closed,
