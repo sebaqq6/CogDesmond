@@ -741,8 +741,8 @@ class Tickets(DashboardIntegration, Cog):
                 reason = text_inputs[0].value.strip() or None
             else:
                 owner_answers = {
-                    text_input.label: text_input.value.strip()
-                    for text_input in text_inputs
+                    text_input_kwargs["label"]: text_input.value.strip()
+                    for text_input_kwargs, text_input in zip(final_modal, text_inputs)
                     if text_input.value.strip()
                 }
         elif isinstance(ctx_interaction, discord.Interaction):
