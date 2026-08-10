@@ -1206,17 +1206,10 @@ class Ticket:
                 reason=audit_reason,
             )
         else:
-            await self.channel.set_permissions(
-                self.owner,
-                send_messages=False,
-                reason=audit_reason,
-            )
+            if self.owner is not None:
+                await self._set_channel_send_messages(self.owner, False, audit_reason)
             for member in self.members:
-                await self.channel.set_permissions(
-                    member,
-                    send_messages=False,
-                    reason=audit_reason,
-                )
+                await self._set_channel_send_messages(member, False, audit_reason)
         view = self.cog.views[self.message]
         await view._update()
         await self.message.edit(
@@ -1277,17 +1270,10 @@ class Ticket:
                 reason=audit_reason,
             )
         else:
-            await self.channel.set_permissions(
-                self.owner,
-                send_messages=True,
-                reason=audit_reason,
-            )
+            if self.owner is not None:
+                await self._set_channel_send_messages(self.owner, True, audit_reason)
             for member in self.members:
-                await self.channel.set_permissions(
-                    member,
-                    send_messages=True,
-                    reason=audit_reason,
-                )
+                await self._set_channel_send_messages(member, True, audit_reason)
         view = self.cog.views[self.message]
         await view._update()
         await self.message.edit(
@@ -1310,6 +1296,16 @@ class Ticket:
                 moderator=unlocker,
                 channel=self.channel,
             )
+
+    async def _set_channel_send_messages(
+        self,
+        target: discord.Member,
+        can_send: bool,
+        reason: str,
+    ) -> None:
+        overwrite = self.channel.overwrites_for(target)
+        overwrite.send_messages = can_send
+        await self.channel.set_permissions(target, overwrite=overwrite, reason=reason)
 
     async def approve_appeal(self, approver: discord.Member | None = None) -> None:
         if self.appeal_approved:
