@@ -201,15 +201,16 @@ class TicketView(discord.ui.View):
         await interaction.response.defer(ephemeral=True, thinking=True)
         try:
             if not self.ticket.is_claimed:
-                await self.ticket.claim(interaction.user)
+                name_note = await self.ticket.claim(interaction.user)
                 await interaction.followup.send(
-                    _("👥 You have claimed this ticket!"),
+                    _("👥 You have claimed this ticket!") + (f"\n{name_note}" if name_note else ""),
                     ephemeral=True,
                 )
             else:
-                await self.ticket.unclaim()
+                name_note = await self.ticket.unclaim()
                 await interaction.followup.send(
-                    _("👤 You have unclaimed this ticket!"),
+                    _("👤 You have unclaimed this ticket!")
+                    + (f"\n{name_note}" if name_note else ""),
                     ephemeral=True,
                 )
         except RuntimeError as e:
@@ -418,16 +419,17 @@ class ReasonModal(discord.ui.Modal):
                     await view.start(self.ticket, interaction, reason=reason)
                     return
                 await interaction.response.defer(ephemeral=True)
-                await self.ticket.close(interaction.user, reason=reason)
+                name_note = await self.ticket.close(interaction.user, reason=reason)
                 await interaction.followup.send(
-                    _("❌ This ticket has been closed!"),
+                    _("❌ This ticket has been closed!") + (f"\n{name_note}" if name_note else ""),
                     ephemeral=True,
                 )
             else:
                 await interaction.response.defer(ephemeral=True)
-                await self.ticket.reopen(interaction.user, reason=reason)
+                name_note = await self.ticket.reopen(interaction.user, reason=reason)
                 await interaction.followup.send(
-                    _("👐 This ticket has been reopened!"),
+                    _("👐 This ticket has been reopened!")
+                    + (f"\n{name_note}" if name_note else ""),
                     ephemeral=True,
                 )
         except RuntimeError as e:
@@ -545,8 +547,11 @@ class OwnerCloseConfirmation(discord.ui.View):
                 if interaction.message.embeds[0].fields
                 else None
             )
-            await interaction.followup.send(_("❌ This ticket has been closed!"), ephemeral=True)
-            await ticket.close(interaction.user, reason=reason)
+            name_note = await ticket.close(interaction.user, reason=reason)
+            await interaction.followup.send(
+                _("❌ This ticket has been closed!") + (f"\n{name_note}" if name_note else ""),
+                ephemeral=True,
+            )
         except RuntimeError as e:
             return await interaction.followup.send(
                 f"⛔ {e}",
@@ -678,8 +683,11 @@ class ClosedTicketControls(discord.ui.View):
             channel=interaction.channel,
         )
         try:
-            await ticket.reopen(interaction.user)
-            await interaction.followup.send(_("👐 This ticket has been reopened!"), ephemeral=True)
+            name_note = await ticket.reopen(interaction.user)
+            await interaction.followup.send(
+                _("👐 This ticket has been reopened!") + (f"\n{name_note}" if name_note else ""),
+                ephemeral=True,
+            )
         except RuntimeError as e:
             return await interaction.followup.send(
                 f"⛔ {e}",
