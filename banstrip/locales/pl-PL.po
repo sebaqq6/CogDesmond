@@ -437,3 +437,66 @@ msgstr "Uprawnienia BanStrip"
 #: banstrip.py:370
 msgid "BanStrip settings"
 msgstr "Ustawienia BanStrip"
+
+#: banstrip.py:338
+msgid "Cleared the log channel."
+msgstr "Wyczyszczono kanał logów."
+
+#: banstrip.py:330
+#, docstring
+msgid ""
+"\n"
+"        Set the channel where ban/unban actions are logged.\n"
+"\n"
+"        Leave empty to clear the log channel.\n"
+"        "
+msgstr ""
+"\n"
+"        Ustawia kanał, na którym logowane są akcje ban/unban.\n"
+"\n"
+"        Puste = wyczyść kanał logów.\n"
+"        "
+
+#: banstrip.py:340
+msgid "Log channel set to {channel}."
+msgstr "Ustawiono kanał logów na {channel}."
+
+#: banstrip.py:411
+msgid "Log channel: {channel}"
+msgstr "Kanał logów: {channel}"
+
+#: banstrip.py:565
+msgid "Ban"
+msgstr "Ban"
+
+#: banstrip.py:570
+msgid "Banned by"
+msgstr "Zbanowany przez"
+
+#: banstrip.py:573
+msgid "Reason"
+msgstr "Powód"
+
+#: banstrip.py:574
+msgid "Duration"
+msgstr "Czas trwania"
+
+#: banstrip.py:586 banstrip.py:592
+msgid "Unban"
+msgstr "Odbanowanie"
+
+#: banstrip.py:589
+msgid "Ban expired"
+msgstr "Ban wygasł"
+
+#: banstrip.py:590
+msgid "Automatic"
+msgstr "Automatycznie"
+
+#: banstrip.py:593
+msgid "Manual role removal"
+msgstr "Ręczne zdjęcie roli"
+
+#: banstrip.py:599
+msgid "Unbanned by"
+msgstr "Odbanowany przez"

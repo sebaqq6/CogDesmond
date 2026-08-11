@@ -86,6 +86,8 @@ the standard roles come back. Includes automated ban management:
 - `[p]banstrip banlist` — list banned members with reason, remaining duration, and
   who banned them (`banned_by`; shows "Unknown" for bans applied manually).
 - `[p]banstrip role <role>` / `[p]banstrip toggle` / `[p]banstrip restorecommand <cmd>`
+- `[p]banstrip logchannel <channel>` — channel where ban/unban actions are logged
+  (who banned/unbanned, reason, duration; also logs auto-expiry and manual removals).
 - `[p]banstrip perms ban|unban|view <role>` — who may ban, unban, or view the list
   (empty list = admins only).
 

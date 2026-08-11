@@ -52,6 +52,7 @@ class BanStrip(commands.Cog):
             enabled=False,
             ban_role=None,
             restore_command="verify",
+            log_channel=None,
             ban_roles=[],
             unban_roles=[],
             view_roles=[],
@@ -62,6 +63,7 @@ class BanStrip(commands.Cog):
             banned_at=None,
             expires_at=None,
         )
+        self._removal_markers: dict[tuple[int, int], tuple[str, discord.Member | None]] = {}
 
     async def cog_load(self):
         await super().cog_load()
@@ -204,9 +206,11 @@ class BanStrip(commands.Cog):
                 ctx,
                 _("{member} does not have the BAN role.").format(member=member.mention),
             )
+        self._removal_markers[(ctx.guild.id, member.id)] = ("unban", ctx.author)
         try:
             await member.remove_roles(ban_role, reason=f"banstrip: unbanned by {ctx.author}")
         except (discord.Forbidden, discord.HTTPException) as e:
+            self._removal_markers.pop((ctx.guild.id, member.id), None)
             return await self._reply(
                 ctx,
                 _fmt(_("Failed to remove the BAN role: {error}"), error=e),
@@ -317,6 +321,27 @@ class BanStrip(commands.Cog):
 
     @commands.guild_only()
     @commands.admin_or_permissions(manage_roles=True)
+    @banstrip.command(name="logchannel", with_app_command=False)
+    async def set_log_channel(
+        self,
+        ctx: commands.Context,
+        channel: discord.TextChannel | None = None,
+    ):
+        """
+        Set the channel where ban/unban actions are logged.
+
+        Leave empty to clear the log channel.
+        """
+        guild_conf = self.config.guild(ctx.guild)
+        if channel is None:
+            await guild_conf.log_channel.clear()
+            return await self._reply(ctx, _("Cleared the log channel."))
+        await guild_conf.log_channel.set(channel.id)
+        await self._reply(ctx, _("Log channel set to {channel}.").format(channel=channel.mention))
+        return None
+
+    @commands.guild_only()
+    @commands.admin_or_permissions(manage_roles=True)
     @banstrip.group(name="perms", with_app_command=False)
     async def perms(self, ctx: commands.Context):
         """
@@ -376,11 +401,15 @@ class BanStrip(commands.Cog):
         """
         data = await self.config.guild(ctx.guild).all()
         role = ctx.guild.get_role(data["ban_role"]) if data["ban_role"] else None
+        log_channel = ctx.guild.get_channel(data["log_channel"]) if data["log_channel"] else None
         lines = [
             _("Enabled: {value}").format(value=data["enabled"]),
             _("BAN role: {role}").format(role=role.mention if role else _("None")),
             _("Restore command: {command}").format(
                 command=data["restore_command"] or _("None"),
+            ),
+            _("Log channel: {channel}").format(
+                channel=log_channel.mention if log_channel else _("None"),
             ),
             _("Can ban: {roles}").format(roles=await self._format_roles(data["ban_roles"], ctx)),
             _("Can unban: {roles}").format(
@@ -413,8 +442,11 @@ class BanStrip(commands.Cog):
             await self._strip_roles(after, ban_role_id)
             await self._ensure_ban_record(after)
             await self._notify_banned(after, guild)
+            await self._log_ban(after, guild)
         elif had_ban and not has_ban:
+            marker = self._removal_markers.pop((guild.id, after.id), None)
             await self.config.member(after).clear()
+            await self._log_unban(after, guild, marker)
             await self._run_restore(guild, after)
         elif has_ban:
             await self._strip_roles(after, ban_role_id)
@@ -520,6 +552,65 @@ class BanStrip(commands.Cog):
         except discord.HTTPException as e:
             log.warning("Failed to strip roles from %s in %s: %s", member.id, member.guild.id, e)
 
+    async def _log_ban(self, member: discord.Member, guild: discord.Guild) -> None:
+        data = await self.config.member(member).all()
+        banned_by = guild.get_member(data["banned_by"]) if data["banned_by"] else None
+        reason = data["reason"] or _("No reason")
+        if expires := data["expires_at"]:
+            dt = datetime.datetime.fromtimestamp(expires, tz=datetime.timezone.utc)
+            duration = _("expires {time}").format(time=discord.utils.format_dt(dt, "R"))
+        else:
+            duration = _("permanent")
+        embed = discord.Embed(
+            title=_("Ban"),
+            description=f"{member.mention} ({member.id})",
+            color=discord.Color.red(),
+        )
+        embed.add_field(
+            name=_("Banned by"),
+            value=banned_by.display_name if banned_by else _("Unknown"),
+        )
+        embed.add_field(name=_("Reason"), value=reason, inline=False)
+        embed.add_field(name=_("Duration"), value=duration)
+        await self._send_log(guild, embed)
+
+    async def _log_unban(
+        self,
+        member: discord.Member,
+        guild: discord.Guild,
+        marker: tuple[str, discord.Member | None] | None,
+    ) -> None:
+        if marker:
+            kind, actor = marker
+            if kind == "unban":
+                title = _("Unban")
+                actor_name = actor.display_name if actor else _("Unknown")
+            else:
+                title = _("Ban expired")
+                actor_name = _("Automatic")
+        else:
+            title = _("Unban")
+            actor_name = _("Manual role removal")
+        embed = discord.Embed(
+            title=title,
+            description=f"{member.mention} ({member.id})",
+            color=discord.Color.green(),
+        )
+        embed.add_field(name=_("Unbanned by"), value=actor_name)
+        await self._send_log(guild, embed)
+
+    async def _send_log(self, guild: discord.Guild, embed: discord.Embed) -> None:
+        log_channel_id = await self.config.guild(guild).log_channel()
+        if not log_channel_id:
+            return
+        channel = guild.get_channel(log_channel_id)
+        if channel is None:
+            return
+        try:
+            await channel.send(embed=embed)
+        except (discord.Forbidden, discord.HTTPException) as e:
+            log.warning("Failed to send banstrip log to %s in %s: %s", log_channel_id, guild.id, e)
+
     async def _run_restore(self, guild: discord.Guild, member: discord.Member) -> None:
         command_line = await self.config.guild(guild).restore_command()
         if not command_line:
@@ -623,9 +714,11 @@ class BanStrip(commands.Cog):
                 member = guild.get_member(int(user_id))
                 if member is None or ban_role not in member.roles:
                     continue
+                self._removal_markers[(guild.id, member.id)] = ("expiry", None)
                 try:
                     await member.remove_roles(ban_role, reason="banstrip: ban expired")
                 except (discord.Forbidden, discord.HTTPException) as e:
+                    self._removal_markers.pop((guild.id, member.id), None)
                     log.warning("Failed to expire ban for %s in %s: %s", user_id, guild.id, e)
 
     @_expiry_loop.before_loop
