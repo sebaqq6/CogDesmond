@@ -482,7 +482,7 @@ class BanStrip(commands.Cog):
             log.warning("Failed to DM %s in %s: %s", member.id, guild.id, e)
 
     async def _strip_roles(self, member: discord.Member, ban_role_id: int) -> None:
-        keep = [role for role in member.roles if role.is_managed() or role.id == ban_role_id]
+        keep = [role for role in member.roles if role.managed or role.id == ban_role_id]
         if keep == member.roles:
             return
         reason = "banstrip: BAN role applied, stripping roles"
@@ -490,7 +490,7 @@ class BanStrip(commands.Cog):
             await member.edit(roles=keep, reason=reason)
         except discord.Forbidden:
             for role in member.roles:
-                if role.id == ban_role_id or role.is_managed() or role >= member.guild.me.top_role:
+                if role.id == ban_role_id or role.managed or role >= member.guild.me.top_role:
                     continue
                 try:
                     await member.remove_roles(role, reason=reason)
