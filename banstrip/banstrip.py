@@ -20,6 +20,11 @@ RequesterTypes = Literal["discord_deleted_user", "owner", "user", "user_strict"]
 PERM_KEYS = {"ban": "ban_roles", "unban": "unban_roles", "view": "view_roles"}
 
 
+def _fmt(template: str, **kwargs: object) -> str:
+    escaped = {k: str(v).replace("{", "{{").replace("}", "}}") for k, v in kwargs.items()}
+    return template.format(**escaped)
+
+
 @cog_i18n(_)
 class BanStrip(commands.Cog):
     """
@@ -152,7 +157,10 @@ class BanStrip(commands.Cog):
             return await self._reply(ctx, _("I don't have permission to add the BAN role."))
         except discord.HTTPException as e:
             await member_conf.clear()
-            return await self._reply(ctx, _("Failed to add the BAN role: {error}").format(error=e))
+            return await self._reply(
+                ctx,
+                _fmt(_("Failed to add the BAN role: {error}"), error=e),
+            )
 
         msg = (
             _("{member} is already banned.").format(member=member.mention)
@@ -160,7 +168,7 @@ class BanStrip(commands.Cog):
             else _("{member} has been banned.").format(member=member.mention)
         )
         if reason:
-            msg += _("\nReason: {reason}").format(reason=reason)
+            msg += _fmt(_("\nReason: {reason}"), reason=reason)
         msg += (
             _("\nDuration: {days} days").format(days=days) if days else _("\nDuration: permanent")
         )
@@ -188,7 +196,7 @@ class BanStrip(commands.Cog):
         except (discord.Forbidden, discord.HTTPException) as e:
             return await self._reply(
                 ctx,
-                _("Failed to remove the BAN role: {error}").format(error=e),
+                _fmt(_("Failed to remove the BAN role: {error}"), error=e),
             )
         await self._reply(
             ctx,
@@ -225,13 +233,14 @@ class BanStrip(commands.Cog):
             else:
                 duration = _("permanent")
             banned_by = await self._format_banned_by(ctx.guild, data["banned_by"])
-            entry = _("{member} ({member_id})\n  Reason: {reason}\n  Duration: {duration}").format(
+            entry = _fmt(
+                _("{member} ({member_id})\n  Reason: {reason}\n  Duration: {duration}"),
                 member=member,
                 member_id=member.id,
                 reason=reason,
                 duration=duration,
             )
-            entry += _("\n  Banned by: {banned_by}").format(banned_by=banned_by)
+            entry += _fmt(_("\n  Banned by: {banned_by}"), banned_by=banned_by)
             lines.append(entry)
         for page in pagify("\n".join(lines), shorten_by=10):
             await self._reply(ctx, box(page))
@@ -291,7 +300,7 @@ class BanStrip(commands.Cog):
         if self.bot.get_command(command.strip().split(maxsplit=1)[0]) is None:
             return await self._reply(ctx, _("That command does not exist."))
         await guild_conf.restore_command.set(command.strip())
-        await self._reply(ctx, _("Restore command set to `{command}`.").format(command=command))
+        await self._reply(ctx, _fmt(_("Restore command set to `{command}`."), command=command))
         return None
 
     @commands.guild_only()
@@ -473,7 +482,7 @@ class BanStrip(commands.Cog):
         else:
             duration = _("permanent")
         template = _("You have been banned from {guild}.\nReason: {reason}\nDuration: {duration}")
-        content = template.format(guild=guild.name, reason=reason, duration=duration)
+        content = _fmt(template, guild=guild.name, reason=reason, duration=duration)
         try:
             await member.send(content)
         except discord.Forbidden:
@@ -624,7 +633,8 @@ class BanStrip(commands.Cog):
         if not await guild_conf.enabled():
             await self._reply(
                 ctx,
-                _("banstrip is disabled. Enable it with `{prefix}banstrip toggle true`.").format(
+                _fmt(
+                    _("banstrip is disabled. Enable it with `{prefix}banstrip toggle true`."),
                     prefix=ctx.clean_prefix,
                 ),
             )
@@ -632,7 +642,8 @@ class BanStrip(commands.Cog):
         if not await guild_conf.ban_role():
             await self._reply(
                 ctx,
-                _("No BAN role is configured. Set one with `{prefix}banstrip role <role>`.").format(
+                _fmt(
+                    _("No BAN role is configured. Set one with `{prefix}banstrip role <role>`."),
                     prefix=ctx.clean_prefix,
                 ),
             )
