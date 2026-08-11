@@ -120,8 +120,22 @@ The banned member also gets a **DM** with the reason and duration. If a banned
 member leaves and rejoins the server, banstrip re-applies the BAN role
 automatically (until the ban expires or they are unbanned).
 
+### levelup
+
+Verbatim fork of [Vertyco's LevelUp](https://github.com/vertyco/vrt-cogs)
+(activity/leveling system). Kept as-is for easier diffing against upstream;
+note that it uses Black style (line length 120), so `ruff` reports style
+findings against this repo's config.
+
+```
+[p]cog install cogdesmond levelup
+[p]load levelup
+[p]lset toggle
+```
+
 ## License
 
 MIT. The `vcounter` cog is derived from
 [YamiCogs InfoChannel](https://github.com/yamikaitou/YamiCogs) (MIT, YamiKaitou & Bobloy).
 The `banrole` cog is GPL-3.0 (palmtree5).
+The `levelup` cog is MIT (Vertyco/vrt-cogs).
