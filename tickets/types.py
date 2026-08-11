@@ -884,9 +884,9 @@ class Ticket:
                     read_messages=True,
                     read_message_history=True,
                     send_messages=not self.is_closed or support_can_send,
-                    add_reactions=not self.is_closed,
-                    embed_links=not self.is_closed,
-                    attach_files=not self.is_closed,
+                    add_reactions=not self.is_closed or support_can_send,
+                    embed_links=not self.is_closed or support_can_send,
+                    attach_files=not self.is_closed or support_can_send,
                 )
         for speak_role_id in config.get("speak_roles", []):
             if (speak_role := self.guild.get_role(speak_role_id)) is not None:
