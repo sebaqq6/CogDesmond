@@ -1,0 +1,19 @@
+{
+    "author": ["Desmond"],
+    "name": "PlayerStats",
+    "install_msg": "Thank you for installing PlayerStats!\nDo `[p]playerstats` to generate a line chart of the online players from the Eadventure logs API. Use `[p]setplayerstats` to configure the time range and the title.",
+    "short": "Generate a line chart of the players online, from the Eadventure logs API.",
+    "description": "Generate a line chart of the players online, from the Eadventure logs API. The time range and the chart title are configurable per server.",
+    "tags": [
+        "stats",
+        "chart",
+        "graph",
+        "players",
+        "eadventure",
+        "plotly"
+    ],
+    "requirements": ["git+https://github.com/AAA3A-AAA3A/AAA3A_utils.git", "plotly", "kaleido"],
+    "min_bot_version": "3.5.0",
+    "min_python_version": [3, 10, 0],
+    "end_user_data_statement": "This cog does not persistently store data or metadata about users."
+}
