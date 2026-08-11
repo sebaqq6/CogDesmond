@@ -25,6 +25,16 @@ def _fmt(template: str, **kwargs: object) -> str:
     return template.format(**escaped)
 
 
+def _action_check(key: str):
+    async def predicate(ctx: commands.Context) -> bool:
+        cog = ctx.bot.get_cog("BanStrip")
+        if cog is None:
+            return False
+        return await cog._check_action(ctx, key)
+
+    return commands.check(predicate)
+
+
 @cog_i18n(_)
 class BanStrip(commands.Cog):
     """
@@ -87,6 +97,7 @@ class BanStrip(commands.Cog):
     # ---------- Main group ----------
 
     @commands.guild_only()
+    @commands.admin_or_permissions(manage_roles=True)
     @commands.hybrid_group(name="banstrip", aliases=["banstripset", "bs"])
     async def banstrip(self, ctx: commands.Context):
         """
@@ -96,6 +107,7 @@ class BanStrip(commands.Cog):
     # ---------- Actions ----------
 
     @commands.guild_only()
+    @_action_check("ban_roles")
     @banstrip.command(name="ban")
     async def ban(
         self,
@@ -176,6 +188,7 @@ class BanStrip(commands.Cog):
         return None
 
     @commands.guild_only()
+    @_action_check("unban_roles")
     @banstrip.command(name="unban")
     async def unban(self, ctx: commands.Context, member: discord.Member):
         """
@@ -205,6 +218,7 @@ class BanStrip(commands.Cog):
         return None
 
     @commands.guild_only()
+    @_action_check("view_roles")
     @banstrip.command(name="banlist")
     async def banlist(self, ctx: commands.Context):
         """

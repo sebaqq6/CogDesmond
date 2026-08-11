@@ -92,6 +92,11 @@ the standard roles come back. Includes automated ban management:
 Command output (ban/unban/banlist) is **ephemeral** for slash invocations, so it
 is only visible to the user who ran it.
 
+The whole `banstrip` command tree is hidden from regular users: the group
+requires `manage_roles` (admin) and the action subcommands check the configured
+permission roles *before* parsing arguments, so normal members can neither run
+it nor see its help.
+
 **Polish translation** (`locales/pl-PL.po`/`pl-PL.mo`). Set the bot locale to
 Polish with `[p]set locale pl-PL` and reload the cog.
 
