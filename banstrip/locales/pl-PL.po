@@ -147,8 +147,8 @@ msgid "Failed to remove the BAN role: {error}"
 msgstr "Nie udało się usunąć roli BAN: {error}"
 
 #: banstrip.py:192
-msgid "{member} has been unbanned. Running the restore command..."
-msgstr "{member} został odbanowany. Uruchamiam komendę przywracania..."
+msgid "{member} has been unbanned."
+msgstr "{member} został odbanowany."
 
 #: banstrip.py:201
 #, docstring

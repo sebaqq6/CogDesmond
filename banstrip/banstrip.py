@@ -200,9 +200,7 @@ class BanStrip(commands.Cog):
             )
         await self._reply(
             ctx,
-            _("{member} has been unbanned. Running the restore command...").format(
-                member=member.mention,
-            ),
+            _("{member} has been unbanned.").format(member=member.mention),
         )
         return None
 
