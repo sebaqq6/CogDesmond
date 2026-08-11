@@ -438,6 +438,10 @@ msgstr "Uprawnienia BanStrip"
 msgid "BanStrip settings"
 msgstr "Ustawienia BanStrip"
 
+#: banstrip.py:262
+msgid "Ban list"
+msgstr "Lista banów"
+
 #: banstrip.py:338
 msgid "Cleared the log channel."
 msgstr "Wyczyszczono kanał logów."

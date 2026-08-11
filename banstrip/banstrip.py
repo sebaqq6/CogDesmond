@@ -259,7 +259,7 @@ class BanStrip(commands.Cog):
             entry += _fmt(_("\n  Banned by: {banned_by}"), banned_by=banned_by)
             lines.append(entry)
         for page in pagify("\n".join(lines), shorten_by=10):
-            await self._reply(ctx, box(page))
+            await self._send_settings_embed(ctx, _("Ban list"), [page])
         return None
 
     # ---------- Settings ----------
