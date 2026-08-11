@@ -429,3 +429,11 @@ msgstr "{role} {state} listy ról '{label}'."
 #: banstrip.py:588
 msgid "admins only"
 msgstr "tylko admini"
+
+#: banstrip.py:347
+msgid "BanStrip permissions"
+msgstr "Uprawnienia BanStrip"
+
+#: banstrip.py:370
+msgid "BanStrip settings"
+msgstr "Ustawienia BanStrip"

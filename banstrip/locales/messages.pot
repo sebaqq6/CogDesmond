@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-08-09 18:01+0200\n"
+"POT-Creation-Date: 2026-08-11 07:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -11,7 +11,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: redgettext 3.4.2\n"
 
-#: banstrip.py:24
+#: banstrip.py:25
 #, docstring
 msgid ""
 "\n"
@@ -23,11 +23,11 @@ msgid ""
 "    "
 msgstr ""
 
-#: banstrip.py:72
+#: banstrip.py:73
 msgid "banstrip records for user {user_id}:\n"
 msgstr ""
 
-#: banstrip.py:101
+#: banstrip.py:102
 #, docstring
 msgid ""
 "\n"
@@ -39,69 +39,69 @@ msgid ""
 "        "
 msgstr ""
 
-#: banstrip.py:109
+#: banstrip.py:110
 msgid "You don't have permission to ban members."
 msgstr ""
 
-#: banstrip.py:113
+#: banstrip.py:114
 msgid "You can't ban yourself."
 msgstr ""
 
-#: banstrip.py:115
+#: banstrip.py:116
 msgid "You can't ban the server owner."
 msgstr ""
 
-#: banstrip.py:117
+#: banstrip.py:118
 msgid "You can't ban the bot."
 msgstr ""
 
-#: banstrip.py:121
+#: banstrip.py:122
 msgid "You can't ban someone whose role has the `ban_members` permission."
 msgstr ""
 
-#: banstrip.py:126
+#: banstrip.py:127
 msgid "You can't ban someone with a role equal to or higher than yours."
 msgstr ""
 
-#: banstrip.py:131
+#: banstrip.py:132
 msgid "I can't manage that member's roles (their top role is too high)."
 msgstr ""
 
-#: banstrip.py:151
+#: banstrip.py:152
 msgid "I don't have permission to add the BAN role."
 msgstr ""
 
-#: banstrip.py:154
+#: banstrip.py:155
 msgid "Failed to add the BAN role: {error}"
 msgstr ""
 
-#: banstrip.py:157
+#: banstrip.py:158
 msgid "{member} is already banned."
 msgstr ""
 
-#: banstrip.py:159
+#: banstrip.py:160
 msgid "{member} has been banned."
 msgstr ""
 
-#: banstrip.py:162
+#: banstrip.py:163
 msgid ""
 "\n"
 "Reason: {reason}"
 msgstr ""
 
-#: banstrip.py:164
+#: banstrip.py:165
 msgid ""
 "\n"
 "Duration: {days} days"
 msgstr ""
 
-#: banstrip.py:164
+#: banstrip.py:165
 msgid ""
 "\n"
 "Duration: permanent"
 msgstr ""
 
-#: banstrip.py:172
+#: banstrip.py:173
 #, docstring
 msgid ""
 "\n"
@@ -109,23 +109,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: banstrip.py:176
+#: banstrip.py:177
 msgid "You don't have permission to unban members."
 msgstr ""
 
-#: banstrip.py:183
+#: banstrip.py:184
 msgid "{member} does not have the BAN role."
 msgstr ""
 
-#: banstrip.py:190
+#: banstrip.py:191
 msgid "Failed to remove the BAN role: {error}"
 msgstr ""
 
-#: banstrip.py:194
+#: banstrip.py:195
 msgid "{member} has been unbanned. Running the restore command..."
 msgstr ""
 
-#: banstrip.py:203
+#: banstrip.py:204
 #, docstring
 msgid ""
 "\n"
@@ -133,48 +133,48 @@ msgid ""
 "        "
 msgstr ""
 
-#: banstrip.py:207
+#: banstrip.py:208
 msgid "You don't have permission to view the ban list."
 msgstr ""
 
-#: banstrip.py:210
+#: banstrip.py:211
 msgid "No BAN role is configured."
 msgstr ""
 
-#: banstrip.py:213
+#: banstrip.py:214
 msgid "The configured BAN role no longer exists."
 msgstr ""
 
-#: banstrip.py:216
+#: banstrip.py:217
 msgid "No members are currently banned."
 msgstr ""
 
-#: banstrip.py:220 banstrip.py:452
+#: banstrip.py:221 banstrip.py:469
 msgid "No reason"
 msgstr ""
 
-#: banstrip.py:223 banstrip.py:455
+#: banstrip.py:224 banstrip.py:472
 msgid "expires {time}"
 msgstr ""
 
-#: banstrip.py:225 banstrip.py:457
+#: banstrip.py:226 banstrip.py:474
 msgid "permanent"
 msgstr ""
 
-#: banstrip.py:227
+#: banstrip.py:228
 msgid ""
 "{member} ({member_id})\n"
 "  Reason: {reason}\n"
 "  Duration: {duration}"
 msgstr ""
 
-#: banstrip.py:233
+#: banstrip.py:234
 msgid ""
 "\n"
 "  Banned by: {banned_by}"
 msgstr ""
 
-#: banstrip.py:245
+#: banstrip.py:246
 #, docstring
 msgid ""
 "\n"
@@ -182,23 +182,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: banstrip.py:251
+#: banstrip.py:252
 msgid "Cleared the BAN role."
 msgstr ""
 
-#: banstrip.py:253
+#: banstrip.py:254
 msgid "The BAN role must be lower than my highest role."
 msgstr ""
 
-#: banstrip.py:257
+#: banstrip.py:258
 msgid "You can't set a role equal to or higher than your own."
 msgstr ""
 
-#: banstrip.py:260
+#: banstrip.py:261
 msgid "BAN role set to {role}."
 msgstr ""
 
-#: banstrip.py:267
+#: banstrip.py:268
 #, docstring
 msgid ""
 "\n"
@@ -206,19 +206,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: banstrip.py:274
+#: banstrip.py:275
 msgid "enabled"
 msgstr ""
 
-#: banstrip.py:274
+#: banstrip.py:275
 msgid "disabled"
 msgstr ""
 
-#: banstrip.py:275
+#: banstrip.py:276
 msgid "banstrip is now {state}."
 msgstr ""
 
-#: banstrip.py:281
+#: banstrip.py:282
 #, docstring
 msgid ""
 "\n"
@@ -228,19 +228,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: banstrip.py:289
+#: banstrip.py:290
 msgid "No restore command will be run."
 msgstr ""
 
-#: banstrip.py:291
+#: banstrip.py:292
 msgid "That command does not exist."
 msgstr ""
 
-#: banstrip.py:293
+#: banstrip.py:294
 msgid "Restore command set to `{command}`."
 msgstr ""
 
-#: banstrip.py:300
+#: banstrip.py:301
 #, docstring
 msgid ""
 "\n"
@@ -248,7 +248,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: banstrip.py:308
+#: banstrip.py:309
 #, docstring
 msgid ""
 "\n"
@@ -256,7 +256,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: banstrip.py:315
+#: banstrip.py:316
 #, docstring
 msgid ""
 "\n"
@@ -264,7 +264,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: banstrip.py:322
+#: banstrip.py:323
 #, docstring
 msgid ""
 "\n"
@@ -272,7 +272,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: banstrip.py:329
+#: banstrip.py:330
 #, docstring
 msgid ""
 "\n"
@@ -280,19 +280,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: banstrip.py:337
+#: banstrip.py:338
 msgid "{label}: admins only"
 msgstr ""
 
-#: banstrip.py:341
+#: banstrip.py:342
 msgid "{label}: {roles}"
 msgstr ""
 
-#: banstrip.py:343 banstrip.py:359 banstrip.py:361 banstrip.py:660
+#: banstrip.py:344 banstrip.py:360 banstrip.py:362 banstrip.py:677
 msgid "None"
 msgstr ""
 
-#: banstrip.py:352
+#: banstrip.py:347
+msgid "BanStrip permissions"
+msgstr ""
+
+#: banstrip.py:353
 #, docstring
 msgid ""
 "\n"
@@ -300,66 +304,70 @@ msgid ""
 "        "
 msgstr ""
 
-#: banstrip.py:358
+#: banstrip.py:359
 msgid "Enabled: {value}"
 msgstr ""
 
-#: banstrip.py:359
+#: banstrip.py:360
 msgid "BAN role: {role}"
 msgstr ""
 
-#: banstrip.py:360
+#: banstrip.py:361
 msgid "Restore command: {command}"
 msgstr ""
 
-#: banstrip.py:363
+#: banstrip.py:364
 msgid "Can ban: {roles}"
 msgstr ""
 
-#: banstrip.py:364
+#: banstrip.py:365
 msgid "Can unban: {roles}"
 msgstr ""
 
-#: banstrip.py:367
+#: banstrip.py:368
 msgid "Can view: {roles}"
 msgstr ""
 
-#: banstrip.py:441 banstrip.py:448
+#: banstrip.py:370
+msgid "BanStrip settings"
+msgstr ""
+
+#: banstrip.py:458 banstrip.py:465
 msgid "Unknown"
 msgstr ""
 
-#: banstrip.py:458
+#: banstrip.py:475
 msgid ""
 "You have been banned from {guild}.\n"
 "Reason: {reason}\n"
 "Duration: {duration}"
 msgstr ""
 
-#: banstrip.py:610
+#: banstrip.py:627
 msgid "banstrip is disabled. Enable it with `{prefix}banstrip toggle true`."
 msgstr ""
 
-#: banstrip.py:618
+#: banstrip.py:635
 msgid ""
 "No BAN role is configured. Set one with `{prefix}banstrip role <role>`."
 msgstr ""
 
-#: banstrip.py:637
+#: banstrip.py:654
 msgid "Cleared the '{label}' role list (admins only)."
 msgstr ""
 
-#: banstrip.py:646
+#: banstrip.py:663
 msgid "removed from"
 msgstr ""
 
-#: banstrip.py:646
+#: banstrip.py:663
 msgid "added to"
 msgstr ""
 
-#: banstrip.py:649
+#: banstrip.py:666
 msgid "{role} {state} the '{label}' role list."
 msgstr ""
 
-#: banstrip.py:658
+#: banstrip.py:675
 msgid "admins only"
 msgstr ""

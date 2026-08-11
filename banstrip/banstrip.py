@@ -344,7 +344,7 @@ class BanStrip(commands.Cog):
                     roles=humanize_list(roles) if roles else _("None"),
                 ),
             )
-        await self._reply(ctx, box("\n".join(lines)))
+        await self._send_settings_embed(ctx, _("BanStrip permissions"), lines)
 
     @commands.guild_only()
     @commands.admin_or_permissions(manage_roles=True)
@@ -367,7 +367,7 @@ class BanStrip(commands.Cog):
             ),
             _("Can view: {roles}").format(roles=await self._format_roles(data["view_roles"], ctx)),
         ]
-        await self._reply(ctx, box("\n".join(lines)))
+        await self._send_settings_embed(ctx, _("BanStrip settings"), lines)
 
     # ---------- Listener ----------
 
@@ -428,6 +428,22 @@ class BanStrip(commands.Cog):
             log.warning("Failed to re-apply BAN role to %s in %s: %s", member.id, guild.id, e)
 
     # ---------- Internals ----------
+
+    async def _send_settings_embed(
+        self,
+        ctx: commands.Context,
+        title: str,
+        lines: list[str],
+    ) -> None:
+        if await ctx.embed_requested():
+            embed = discord.Embed(
+                title=title,
+                description="\n".join(lines),
+                color=await ctx.embed_color(),
+            )
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send(box("\n".join(lines)))
 
     async def _ensure_ban_record(self, member: discord.Member) -> None:
         data = await self.config.member(member).all()
