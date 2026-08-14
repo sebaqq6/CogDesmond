@@ -189,14 +189,16 @@ class User(MixinMeta):
         conf.counter = suggestion_number
         profile.suggestions_made += 1
 
-        if ctx.invoked_with == "idea":
-            word = "idea"
-        else:
-            word = "suggestion"
         if channel.permissions_for(ctx.author).view_channel:
-            txt = _("Your [{}]({}) has been posted!").format(f"{word} #{suggestion_number}", message.jump_url)
+            if ctx.invoked_with == "idea":
+                txt = _("Your [idea #{}]({}) has been posted!").format(suggestion_number, message.jump_url)
+            else:
+                txt = _("Your [suggestion #{}]({}) has been posted!").format(suggestion_number, message.jump_url)
         else:
-            txt = _("Your {} has been posted!").format(f"{word} #{suggestion_number}")
+            if ctx.invoked_with == "idea":
+                txt = _("Your idea #{} has been posted!").format(suggestion_number)
+            else:
+                txt = _("Your suggestion #{} has been posted!").format(suggestion_number)
 
         if ctx.interaction:
             try:

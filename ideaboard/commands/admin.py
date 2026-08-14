@@ -150,9 +150,14 @@ class Admin(MixinMeta):
     ):
         """Set the approved, rejected, or pending channels for IdeaBoard"""
         conf = self.db.get_conf(ctx.guild)
+        channel_labels = {
+            "approved": _("approved"),
+            "rejected": _("rejected"),
+            "pending": _("pending"),
+        }
         current = getattr(conf, channel_type)
         if current == channel.id:
-            return await ctx.send(_("This channel is already set as the {} channel!").format(channel_type))
+            return await ctx.send(_("This channel is already set as the {} channel!").format(channel_labels[channel_type]))
         if not channel.permissions_for(ctx.me).send_messages:
             return await ctx.send(_("I don't have permission to send messages in {}!").format(channel.mention))
         if not channel.permissions_for(ctx.me).embed_links:
@@ -219,10 +224,10 @@ class Admin(MixinMeta):
 
         if current:
             txt = _("The {} channel has been changed from {} to {}").format(
-                channel_type, f"<#{current}>", channel.mention
+                channel_labels[channel_type], f"<#{current}>", channel.mention
             )
         else:
-            txt = _("Set {} channel to {}").format(channel_type, channel.mention)
+            txt = _("Set {} channel to {}").format(channel_labels[channel_type], channel.mention)
         setattr(conf, channel_type, channel.id)
         await ctx.send(txt)
         await self.save()
@@ -232,7 +237,7 @@ class Admin(MixinMeta):
         """Toggle allowing anonymous suggestions"""
         conf = self.db.get_conf(ctx.guild)
         conf.anonymous = not conf.anonymous
-        state = "enabled" if conf.anonymous else "disabled"
+        state = _("enabled") if conf.anonymous else _("disabled")
         await ctx.send(_("Anonymous suggestions are now {}.").format(state))
         await self.save()
 
@@ -245,7 +250,7 @@ class Admin(MixinMeta):
         """
         conf = self.db.get_conf(ctx.guild)
         conf.reveal = not conf.reveal
-        state = "enabled" if conf.reveal else "disabled"
+        state = _("enabled") if conf.reveal else _("disabled")
         await ctx.send(_("Revealing of authors on rejection is now {}.").format(state))
         await self.save()
 
@@ -254,7 +259,7 @@ class Admin(MixinMeta):
         """Toggle showing vote counts on suggestions"""
         conf = self.db.get_conf(ctx.guild)
         conf.show_vote_counts = not conf.show_vote_counts
-        state = "enabled" if conf.show_vote_counts else "disabled"
+        state = _("enabled") if conf.show_vote_counts else _("disabled")
         await ctx.send(_("Showing vote counts on suggestions is now {}.").format(state))
         await self.save()
 
@@ -263,7 +268,7 @@ class Admin(MixinMeta):
         """Toggle DMing users the results of suggestions they made"""
         conf = self.db.get_conf(ctx.guild)
         conf.dm = not conf.dm
-        state = "enabled" if conf.dm else "disabled"
+        state = _("enabled") if conf.dm else _("disabled")
         await ctx.send(_("DMing users about suggestion results is now {}.").format(state))
         await self.save()
 
@@ -272,7 +277,7 @@ class Admin(MixinMeta):
         """Toggle opening a discussion thread for each suggestion"""
         conf = self.db.get_conf(ctx.guild)
         conf.discussion_threads = not conf.discussion_threads
-        state = "enabled" if conf.discussion_threads else "disabled"
+        state = _("enabled") if conf.discussion_threads else _("disabled")
         await ctx.send(_("Discussion threads are now {}.").format(state))
         await self.save()
 
@@ -343,10 +348,10 @@ class Admin(MixinMeta):
         conf = self.db.get_conf(ctx.guild)
         if role.id in conf.vote_roles:
             conf.vote_roles.remove(role.id)
-            state = "removed from"
+            state = _("removed from")
         else:
             conf.vote_roles.append(role.id)
-            state = "added to"
+            state = _("added to")
         await ctx.send(_("Role {} `{}` voting whitelist.").format(role.name, state))
         await self.save()
 
@@ -356,10 +361,10 @@ class Admin(MixinMeta):
         conf = self.db.get_conf(ctx.guild)
         if role.id in conf.suggest_roles:
             conf.suggest_roles.remove(role.id)
-            state = "removed from"
+            state = _("removed from")
         else:
             conf.suggest_roles.append(role.id)
-            state = "added to"
+            state = _("added to")
         await ctx.send(_("Role {} `{}` suggest whitelist.").format(role.name, state))
         await self.save()
 
@@ -369,10 +374,10 @@ class Admin(MixinMeta):
         conf = self.db.get_conf(ctx.guild)
         if role.id in conf.approvers:
             conf.approvers.remove(role.id)
-            state = "removed from"
+            state = _("removed from")
         else:
             conf.approvers.append(role.id)
-            state = "added to"
+            state = _("added to")
         await ctx.send(_("Role {} `{}` approvers list.").format(role.name, state))
         await self.save()
 
