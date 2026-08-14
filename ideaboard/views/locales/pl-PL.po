@@ -1,0 +1,79 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: vrt-cogs\n"
+"POT-Creation-Date: 2026-08-14 08:28+0200\n"
+"PO-Revision-Date: 2026-08-14 00:00+0200\n"
+"Last-Translator: Desmond <desmond@local>\n"
+"Language-Team: Polish <pl@example.com>\n"
+"Language: pl_PL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+"Generated-By: redgettext 3.4.2\n"
+
+#: views/voteview.py:60
+#, docstring
+#: views/voteview.py:64
+msgid "Return True if the user can vote"
+msgstr "Zwróć True, jeśli użytkownik może głosować"
+
+#: views/voteview.py:92
+msgid "This suggestion no longer exists in the config!"
+msgstr "Ta sugestia już nie istnieje w konfiguracji!"
+
+#: views/voteview.py:102
+msgid "You do not have any of the required roles to vote."
+msgstr "Nie masz żadnej z wymaganych ról, aby głosować."
+
+#: views/voteview.py:111
+msgid "Your account is too new! You must wait `{tleft}` before you can vote."
+msgstr "Twoje konto jest zbyt nowe! Musisz odczekać `{tleft}`, zanim zagłosujesz."
+
+#: views/voteview.py:125
+msgid "You joined the server too recently! You must wait `{tleft}` before you can vote."
+msgstr "Dołączyłeś na serwer zbyt niedawno! Musisz odczekać `{tleft}`, zanim zagłosujesz."
+
+#: views/voteview.py:140
+msgid "You must be level {level} or higher to vote."
+msgstr "Musisz mieć poziom {level} lub wyższy, aby głosować."
+
+#: views/voteview.py:141
+msgid "Your in-game profile must be registered in order to vote on suggestions.\n"
+msgstr "Twój profil w grze musi być zarejestrowany, abyś mógł głosować na sugestiach.\n"
+
+#: views/voteview.py:147
+msgid "Use the {} command to link your discord account."
+msgstr "Użyj komendy {}, aby połączyć swoje konto Discord."
+
+#: views/voteview.py:170 views/voteview.py:213
+msgid "You must have at least {} hours of playtime to vote."
+msgstr "Musisz mieć co najmniej {} godzin gry, aby głosować."
+
+#: views/voteview.py:173
+msgid "You cannot vote on your own suggestion."
+msgstr "Nie możesz głosować na własną sugestię."
+
+#: views/voteview.py:181
+msgid "You have switched your downvote to an upvote."
+msgstr "Zmieniłeś swój głos na nie na głos na tak."
+
+#: views/voteview.py:186
+msgid "You have removed your upvote."
+msgstr "Usunąłeś swój głos na tak."
+
+#: views/voteview.py:216
+msgid "You have upvoted this suggestion."
+msgstr "Zagłosowałeś na tę sugestię na tak."
+
+#: views/voteview.py:224
+msgid "You have switched your upvote to a downvote."
+msgstr "Zmieniłeś swój głos na tak na głos na nie."
+
+#: views/voteview.py:229
+msgid "You have removed your downvote."
+msgstr "Usunąłeś swój głos na nie."
+
+msgid "You have downvoted this suggestion."
+msgstr "Zagłosowałeś na tę sugestię na nie."
+

@@ -1,0 +1,35 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2026-08-14 08:32+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: redgettext 3.4.2\n"
+
+#: common/listener.py:29
+#, docstring
+msgid "Get the number of suggestions a user has submitted"
+msgstr ""
+
+#: common/listener.py:46
+#, docstring
+msgid "Check if the message deleted was a suggestions"
+msgstr ""
+
+#: common/listener.py:71
+msgid " [Deleted]"
+msgstr ""
+
+#: common/listener.py:75
+msgid "Deleted Suggestion"
+msgstr ""
+
+#: common/listener.py:87
+#, docstring
+msgid "Remove all votes from a user when they leave the server"
+msgstr ""
