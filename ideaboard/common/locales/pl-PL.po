@@ -25,63 +25,51 @@ msgstr "Zatwierdzono"
 msgid "Rejected"
 msgstr "Odrzucono"
 
-#: common/embeds.py:41
+#: common/embeds.py:77 common/embeds.py:111
 msgid "Deleted"
 msgstr "Usunięto"
 
-#: common/embeds.py:42
-msgid "Votes for"
-msgstr "Głosy na tak"
-
-#: common/embeds.py:61 common/embeds.py:95
-msgid "Votes against"
-msgstr "Głosy na nie"
-
-#: common/embeds.py:63 common/embeds.py:104
+#: common/embeds.py:79 common/embeds.py:120
 msgid "Suggestion #{}"
 msgstr "Sugestia #{}"
 
-#: common/embeds.py:67 common/embeds.py:100
+#: common/embeds.py:83 common/embeds.py:116
 msgid "Posted anonymously"
 msgstr "Opublikowano anonimowo"
 
-#: common/embeds.py:69 common/embeds.py:105
+#: common/embeds.py:85 common/embeds.py:121
 msgid "Posted by {}"
 msgstr "Opublikowano przez {}"
 
-#: common/embeds.py:71 common/embeds.py:106
+#: common/embeds.py:118
 msgid "Status"
 msgstr "Status"
 
-#: common/embeds.py:102
-msgid "Votes"
-msgstr "Głosy"
-
-#: common/embeds.py:108
+#: common/embeds.py:131
 msgid "Suggested by a user who is no longer in the server."
 msgstr "Zasugerowane przez użytkownika, którego już nie ma na serwerze."
 
-#: common/embeds.py:108
-msgid "Reason for Rejection"
-msgstr "Powód odrzucenia"
-
-#: common/embeds.py:118
-msgid "Reason"
-msgstr "Powód"
-
-#: common/embeds.py:120
+#: common/embeds.py:133
 msgid "Approved by {}"
 msgstr "Zatwierdził(a): {}"
 
-#: common/embeds.py:122
+#: common/embeds.py:135
 msgid "Rejected by {}"
 msgstr "Odrzucił(a): {}"
 
-#: common/embeds.py:124
+#: common/embeds.py:135
+msgid "Reason for Rejection"
+msgstr "Powód odrzucenia"
+
+#: common/embeds.py:138
+msgid "Reason"
+msgstr "Powód"
+
+#: common/embeds.py:140
 msgid "Decision Date"
 msgstr "Data decyzji"
 
-#: common/embeds.py:125
+#: common/embeds.py:141
 msgid "Discussion"
 msgstr "Dyskusja"
 

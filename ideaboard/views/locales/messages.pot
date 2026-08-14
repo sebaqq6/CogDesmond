@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-08-14 10:16+0200\n"
+"POT-Creation-Date: 2026-08-14 10:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -11,70 +11,70 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: redgettext 3.4.2\n"
 
-#: views/voteview.py:60
+#: views/voteview.py:82
 #, docstring
 msgid "Return True if the user can vote"
 msgstr ""
 
-#: views/voteview.py:64
+#: views/voteview.py:86
 msgid "This suggestion no longer exists in the config!"
 msgstr ""
 
-#: views/voteview.py:92
+#: views/voteview.py:114
 msgid "You do not have any of the required roles to vote."
 msgstr ""
 
-#: views/voteview.py:102
+#: views/voteview.py:124
 msgid "Your account is too new! You must wait `{tleft}` before you can vote."
 msgstr ""
 
-#: views/voteview.py:111
+#: views/voteview.py:133
 msgid ""
 "You joined the server too recently! You must wait `{tleft}` before you can "
 "vote."
 msgstr ""
 
-#: views/voteview.py:125
+#: views/voteview.py:147
 msgid "You must be level {level} or higher to vote."
 msgstr ""
 
-#: views/voteview.py:140
+#: views/voteview.py:162
 msgid ""
 "Your in-game profile must be registered in order to vote on suggestions.\n"
 msgstr ""
 
-#: views/voteview.py:141
+#: views/voteview.py:163
 msgid "Use the {} command to link your discord account."
 msgstr ""
 
-#: views/voteview.py:147
+#: views/voteview.py:169
 msgid "You must have at least {} hours of playtime to vote."
 msgstr ""
 
-#: views/voteview.py:170 views/voteview.py:213
+#: views/voteview.py:192 views/voteview.py:233
 msgid "You cannot vote on your own suggestion."
 msgstr ""
 
-#: views/voteview.py:173
+#: views/voteview.py:195
 msgid "You have switched your downvote to an upvote."
 msgstr ""
 
-#: views/voteview.py:181
+#: views/voteview.py:203
 msgid "You have removed your upvote."
 msgstr ""
 
-#: views/voteview.py:186
+#: views/voteview.py:208
 msgid "You have upvoted this suggestion."
 msgstr ""
 
-#: views/voteview.py:216
+#: views/voteview.py:236
 msgid "You have switched your upvote to a downvote."
 msgstr ""
 
-#: views/voteview.py:224
+#: views/voteview.py:244
 msgid "You have removed your downvote."
 msgstr ""
 
-#: views/voteview.py:229
+#: views/voteview.py:249
 msgid "You have downvoted this suggestion."
 msgstr ""

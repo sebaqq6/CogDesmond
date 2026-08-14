@@ -35,13 +35,29 @@ def _status_label(status: str) -> str:
     return labels[status]
 
 
-def vote_block(bot: Red, conf: GuildSettings, suggestion: Suggestion) -> str:
+def vote_fields(bot: Red, conf: GuildSettings, suggestion: Suggestion) -> tuple[str, str]:
     up, down = conf.get_emojis(bot)
-    lines = [
-        f"{up} {_('Votes for')}: {len(suggestion.upvotes)}",
-        f"{down} {_('Votes against')}: {len(suggestion.downvotes)}",
-    ]
-    return "```\n" + "\n".join(lines) + "\n```"
+    up_count = len(suggestion.upvotes)
+    down_count = len(suggestion.downvotes)
+    total = up_count + down_count
+    up_pct = round(up_count / total * 100) if total else 0
+    down_pct = round(down_count / total * 100) if total else 0
+    return (
+        f"```\n{up_count} ({up_pct}%)\n```",
+        f"```\n{down_count} ({down_pct}%)\n```",
+    )
+
+
+def add_vote_fields(
+    embed: discord.Embed,
+    bot: Red,
+    conf: GuildSettings,
+    suggestion: Suggestion,
+) -> None:
+    up, down = conf.get_emojis(bot)
+    up_val, down_val = vote_fields(bot, conf, suggestion)
+    embed.add_field(name=str(up), value=up_val, inline=True)
+    embed.add_field(name=str(down), value=down_val, inline=True)
 
 
 def build_pending_embed(
@@ -68,7 +84,7 @@ def build_pending_embed(
     status = f"{STATUS_EMOJI['pending']} {_status_label('pending')}"
     embed.add_field(name=_("Status"), value=status, inline=False)
     if show_votes:
-        embed.add_field(name=_("Votes"), value=vote_block(bot, conf, suggestion), inline=False)
+        add_vote_fields(embed, bot, conf, suggestion)
     return embed
 
 
@@ -103,7 +119,7 @@ def build_decision_embeds(
     else:
         proposal.set_footer(text=_("Posted anonymously"))
     proposal.add_field(name=_("Status"), value=f"{emoji} {label}", inline=False)
-    proposal.add_field(name=_("Votes"), value=vote_block(bot, conf, suggestion), inline=False)
+    add_vote_fields(proposal, bot, conf, suggestion)
 
     embeds = [proposal]
     if approver is None:

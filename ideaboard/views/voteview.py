@@ -8,6 +8,7 @@ from redbot.core.i18n import Translator
 from redbot.core.utils.chat_formatting import humanize_timedelta
 
 from ..abc import MixinMeta
+from ..common.embeds import build_pending_embed
 
 log = logging.getLogger("red.vrt.ideaboard.views.voteview")
 _ = Translator("IdeaBoard", __file__)
@@ -49,6 +50,27 @@ class VoteView(discord.ui.View):
                 self.downvote.label = str(downvotes)
             else:
                 self.downvote.label = None
+
+    async def update_message(self, interaction: discord.Interaction):
+        if not interaction.message:
+            return
+        conf = self.cog.db.get_conf(self.guild)
+        suggestion = conf.suggestions.get(self.suggestion_number)
+        if not suggestion:
+            return
+        author = self.guild.get_member(suggestion.author_id)
+        embed = build_pending_embed(
+            bot=self.bot,
+            conf=conf,
+            suggestion=suggestion,
+            number=self.suggestion_number,
+            author=author,
+            anonymous=conf.anonymous,
+            show_votes=conf.show_vote_counts,
+        )
+        self.update_labels()
+        with suppress(discord.HTTPException):
+            await interaction.message.edit(embed=embed, view=self)
 
     async def respond(self, interaction: discord.Interaction, text: str):
         with suppress(discord.HTTPException):
@@ -191,9 +213,7 @@ class VoteView(discord.ui.View):
         await self.respond(interaction, txt)
 
         if conf.show_vote_counts:
-            self.update_labels()
-            with suppress(discord.HTTPException):
-                await interaction.message.edit(view=self)
+            await self.update_message(interaction)
 
         await self.cog.save()
 
@@ -234,8 +254,6 @@ class VoteView(discord.ui.View):
         await self.respond(interaction, txt)
 
         if conf.show_vote_counts:
-            self.update_labels()
-            with suppress(discord.HTTPException):
-                await interaction.message.edit(view=self)
+            await self.update_message(interaction)
 
         await self.cog.save()
