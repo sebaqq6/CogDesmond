@@ -104,9 +104,6 @@ def build_decision_embeds(
         proposal.set_footer(text=_("Posted anonymously"))
     proposal.add_field(name=_("Status"), value=f"{emoji} {label}", inline=False)
     proposal.add_field(name=_("Votes"), value=vote_block(bot, conf, suggestion), inline=False)
-    if reason:
-        name = _("Reason for Rejection") if status == "rejected" else _("Reason")
-        proposal.add_field(name=name, value=reason, inline=False)
 
     embeds = [proposal]
     if approver is None:
@@ -118,6 +115,9 @@ def build_decision_embeds(
         details.set_author(name=_("Approved by {}").format(approver.display_name), icon_url=avatar)
     else:
         details.set_author(name=_("Rejected by {}").format(approver.display_name), icon_url=avatar)
+    if reason:
+        name = _("Reason for Rejection") if status == "rejected" else _("Reason")
+        details.add_field(name=name, value=reason, inline=False)
     decision_date = discord.utils.format_dt(datetime.now(), "R")
     details.add_field(name=_("Decision Date"), value=decision_date, inline=True)
     if thread is not None:
