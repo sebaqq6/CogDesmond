@@ -1,0 +1,84 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: vrt-cogs\n"
+"POT-Creation-Date: 2026-05-06 22:10-0400\n"
+"PO-Revision-Date: 2026-05-07 02:53\n"
+"Last-Translator: \n"
+"Language-Team: German\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: redgettext 3.4.2\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: vrt-cogs\n"
+"X-Crowdin-Project-ID: 550681\n"
+"X-Crowdin-Language: de\n"
+"X-Crowdin-File: /[vertyco.vrt-cogs] main/ideaboard/views/locales/messages.pot\n"
+"X-Crowdin-File-ID: 124\n"
+"Language: de_DE\n"
+
+#: ideaboard\views\voteview.py:60
+#, docstring
+msgid "Return True if the user can vote"
+msgstr ""
+
+#: ideaboard\views\voteview.py:64
+msgid "This suggestion no longer exists in the config!"
+msgstr ""
+
+#: ideaboard\views\voteview.py:92
+msgid "You do not have any of the required roles to vote."
+msgstr ""
+
+#: ideaboard\views\voteview.py:102
+msgid "Your account is too new! You must wait `{tleft}` before you can vote."
+msgstr ""
+
+#: ideaboard\views\voteview.py:111
+msgid "You joined the server too recently! You must wait `{tleft}` before you can vote."
+msgstr ""
+
+#: ideaboard\views\voteview.py:125
+msgid "You must be level {level} or higher to vote."
+msgstr ""
+
+#: ideaboard\views\voteview.py:140
+msgid "Your in-game profile must be registered in order to vote on suggestions.\n"
+msgstr ""
+
+#: ideaboard\views\voteview.py:141
+msgid "Use the {} command to link your discord account."
+msgstr ""
+
+#: ideaboard\views\voteview.py:147
+msgid "You must have at least {} hours of playtime to vote."
+msgstr ""
+
+#: ideaboard\views\voteview.py:170 ideaboard\views\voteview.py:213
+msgid "You cannot vote on your own suggestion."
+msgstr ""
+
+#: ideaboard\views\voteview.py:173
+msgid "You have switched your downvote to an upvote."
+msgstr ""
+
+#: ideaboard\views\voteview.py:181
+msgid "You have removed your upvote."
+msgstr ""
+
+#: ideaboard\views\voteview.py:186
+msgid "You have upvoted this suggestion."
+msgstr ""
+
+#: ideaboard\views\voteview.py:216
+msgid "You have switched your upvote to a downvote."
+msgstr ""
+
+#: ideaboard\views\voteview.py:224
+msgid "You have removed your downvote."
+msgstr ""
+
+#: ideaboard\views\voteview.py:229
+msgid "You have downvoted this suggestion."
+msgstr ""
+
