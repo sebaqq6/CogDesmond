@@ -11,6 +11,7 @@ from redbot.core.utils.chat_formatting import humanize_number
 from redbot.core.utils.predicates import MessagePredicate
 
 from ..abc import MixinMeta
+from ..common.embeds import build_pending_embed
 from ..common.models import Profile, Suggestion
 from ..views.voteview import VoteView
 
@@ -38,6 +39,10 @@ class Admin(MixinMeta):
             ctx.guild.get_role(k).mention: v for k, v in conf.role_cooldowns.items() if ctx.guild.get_role(k)
         }
         up, down = conf.get_emojis(self.bot)
+
+        def yn(value: bool) -> str:
+            return "✅" if value else "❌"
+
         main = _(
             "`Approved Channel:   `{}\n"
             "`Rejected Channel:   `{}\n"
@@ -56,14 +61,14 @@ class Admin(MixinMeta):
             f"<#{conf.approved}>" if conf.approved else _("Not set"),
             f"<#{conf.rejected}>" if conf.rejected else _("Not set"),
             f"<#{conf.pending}>" if conf.pending else _("Not set"),
-            conf.anonymous,
-            conf.reveal,
-            conf.dm,
-            conf.discussion_threads,
-            conf.delete_threads,
+            yn(conf.anonymous),
+            yn(conf.reveal),
+            yn(conf.dm),
+            yn(conf.discussion_threads),
+            yn(conf.delete_threads),
             up,
             down,
-            conf.show_vote_counts,
+            yn(conf.show_vote_counts),
             len(conf.suggestions),
             conf.counter,
         )
@@ -74,22 +79,22 @@ class Admin(MixinMeta):
         embed.set_author(name=_("Ideaboard Settings"), icon_url=ctx.guild.icon)
 
         name = _("Cooldowns")
-        value = _("Base: {} seconds\nRole Cooldowns: {}").format(
+        value = "```\n" + _("Base: {} seconds\nRole Cooldowns: {}").format(
             conf.base_cooldown,
             "\n".join(f"{r}: {c}s" for r, c in cooldown_roles.items()) if cooldown_roles else _("None Set"),
-        )
+        ) + "```"
         embed.add_field(name=name, value=value, inline=False)
 
         name = _("Account Age")
-        value = _("Minimum age of account to vote or suggest\nVote: {} hours\nSuggest: {} hours").format(
+        value = "```\n" + _("Minimum age of account to vote or suggest\nVote: {} hours\nSuggest: {} hours").format(
             conf.min_account_age_to_vote, conf.min_account_age_to_suggest
-        )
+        ) + "```"
         embed.add_field(name=name, value=value, inline=False)
 
         name = _("Join Time")
-        value = _("Minimum time in server to vote or suggest\nVote: {} hours\nSuggest: {} hours").format(
+        value = "```\n" + _("Minimum time in server to vote or suggest\nVote: {} hours\nSuggest: {} hours").format(
             conf.min_join_time_to_vote, conf.min_join_time_to_suggest
-        )
+        ) + "```"
         embed.add_field(name=name, value=value, inline=False)
 
         name = _("Vote Roles")
@@ -119,14 +124,16 @@ class Admin(MixinMeta):
 
         if self.bot.get_cog("LevelUp"):
             name = _("LevelUp Integration")
-            value = _("Minimum level required to vote or make suggestions.\nVote: {}\nSuggest: {}").format(
+            value = "```\n" + _("Minimum level required to vote or make suggestions.\nVote: {}\nSuggest: {}").format(
                 conf.min_level_to_vote, conf.min_level_to_suggest
-            )
+            ) + "```"
             embed.add_field(name=name, value=value, inline=False)
         if self.bot.get_cog("ArkTools"):
             name = _("Ark Playtime Integration")
-            value = _("Minimum playtime to vote or make suggestions\nVote: {} hours\nSuggest: {} hours").format(
-                conf.min_playtime_to_vote, conf.min_playtime_to_suggest
+            value = (
+                "```\n" + _("Minimum playtime to vote or make suggestions\nVote: {} hours\nSuggest: {} hours").format(
+                    conf.min_playtime_to_vote, conf.min_playtime_to_suggest
+                ) + "```"
             )
             embed.add_field(name=name, value=value, inline=False)
 
@@ -188,18 +195,20 @@ class Admin(MixinMeta):
                         with suppress(discord.HTTPException):
                             original_message = await pending.fetch_message(suggestion.message_id)
                     # Send the suggestion to the new channel
-                    content = _("Suggestion #{}").format(num)
-                    embed = discord.Embed(color=discord.Color.blurple(), description=suggestion.content)
-                    if conf.anonymous:
-                        embed.set_footer(text=_("Posted anonymously"))
-                    else:
-                        user = ctx.guild.get_member(suggestion.author_id) or await self.bot.get_or_fetch_user(
-                            suggestion.author_id
-                        )
-                        text = _("Posted by {}").format(f"{user.name} ({user.id})")
-                        embed.set_footer(text=text, icon_url=user.display_avatar)
+                    user = ctx.guild.get_member(suggestion.author_id) or await self.bot.get_or_fetch_user(
+                        suggestion.author_id
+                    )
+                    embed = build_pending_embed(
+                        bot=self.bot,
+                        conf=conf,
+                        suggestion=suggestion,
+                        number=num,
+                        author=user,
+                        anonymous=conf.anonymous,
+                        show_votes=conf.show_vote_counts,
+                    )
                     view = VoteView(self, ctx.guild, num, suggestion.id)
-                    message = await channel.send(content=content, embed=embed, view=view)
+                    message = await channel.send(embed=embed, view=view)
                     conf.suggestions[num].message_id = message.id
                     if conf.discussion_threads:
                         name = _("Suggestion #{} Discussion").format(num)
@@ -691,7 +700,10 @@ class Admin(MixinMeta):
             # Top X users with the lowest karma
             lowest_karma = sorted(p.items(), key=lambda x: x[1].karma, reverse=False)[:amount]
 
-            embed = discord.Embed(title=_("Server Insights"), color=discord.Color.gold())
+            embed = discord.Embed(title=_("Server Insights"), color=discord.Color.gold(), timestamp=ctx.message.created_at)
+            if ctx.guild.icon:
+                embed.set_thumbnail(url=ctx.guild.icon.url)
+            embed.set_footer(text=ctx.guild.name)
             embed.add_field(
                 name=_("Average Suggestions Made Per User"),
                 value=humanize_number(avg_suggestions),

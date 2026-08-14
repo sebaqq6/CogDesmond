@@ -6,6 +6,7 @@ from redbot.core import commands
 from redbot.core.i18n import Translator
 
 from ..abc import MixinMeta
+from ..common.embeds import build_decision_embeds
 
 log = logging.getLogger("red.vrt.ideaboard.listeners")
 
@@ -46,13 +47,11 @@ class Listeners(MixinMeta):
         """Check if the message deleted was a suggestions"""
         if message.guild is None:
             return
-        if not message.content.startswith("Suggestion #"):
-            return
         conf = self.db.get_conf(message.guild)
         for num, suggestion in conf.suggestions.copy().items():
             if suggestion.message_id != message.id:
                 continue
-            profile = conf.get_profile(message.author)
+            profile = conf.get_profile(suggestion.author_id)
             profile.suggestions_made -= 1
             for uid in suggestion.upvotes:
                 profile = conf.get_profile(uid)
@@ -69,12 +68,18 @@ class Listeners(MixinMeta):
                             await thread.delete()
                         else:
                             newname = thread.name + _(" [Deleted]")
-                            embed = discord.Embed(
-                                color=discord.Color.dark_red(),
-                                description=suggestion.content,
-                                title=_("Deleted Suggestion"),
+                            embeds = build_decision_embeds(
+                                bot=self.bot,
+                                conf=conf,
+                                suggestion=suggestion,
+                                number=num,
+                                status="deleted",
+                                approver=None,
+                                reason=None,
+                                thread=None,
+                                author=message.guild.get_member(suggestion.author_id),
                             )
-                            await thread.send(embed=embed)
+                            await thread.send(embeds=embeds)
                             await thread.edit(archived=True, locked=True, name=newname)
 
             del conf.suggestions[num]

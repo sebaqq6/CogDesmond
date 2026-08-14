@@ -12,25 +12,97 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
 "Generated-By: redgettext 3.4.2\n"
 
-#: common/listener.py:29
+#: common/embeds.py:30
+#: common/embeds.py:31
+msgid "Pending Approval"
+msgstr "Oczekuje na zatwierdzenie"
+
+#: common/embeds.py:32
+msgid "Approved"
+msgstr "Zatwierdzono"
+
+#: common/embeds.py:33
+msgid "Rejected"
+msgstr "Odrzucono"
+
+#: common/embeds.py:41
+msgid "Deleted"
+msgstr "Usunięto"
+
+#: common/embeds.py:42
+msgid "Votes for"
+msgstr "Głosy na tak"
+
+#: common/embeds.py:61 common/embeds.py:95
+msgid "Votes against"
+msgstr "Głosy na nie"
+
+#: common/embeds.py:63 common/embeds.py:104
+msgid "Suggestion #{}"
+msgstr "Sugestia #{}"
+
+#: common/embeds.py:67 common/embeds.py:100
+msgid "Posted anonymously"
+msgstr "Opublikowano anonimowo"
+
+#: common/embeds.py:69 common/embeds.py:105
+msgid "Posted by {}"
+msgstr "Opublikowano przez {}"
+
+#: common/embeds.py:71 common/embeds.py:106
+msgid "Status"
+msgstr "Status"
+
+#: common/embeds.py:102
+msgid "Votes"
+msgstr "Głosy"
+
+#: common/embeds.py:108
+msgid "Suggested by a user who is no longer in the server."
+msgstr "Zasugerowane przez użytkownika, którego już nie ma na serwerze."
+
+#: common/embeds.py:108
+msgid "Reason for Rejection"
+msgstr "Powód odrzucenia"
+
+#: common/embeds.py:118
+msgid "Reason"
+msgstr "Powód"
+
+#: common/embeds.py:120
+msgid "Approved by {}"
+msgstr "Zatwierdził(a): {}"
+
+#: common/embeds.py:122
+msgid "Rejected by {}"
+msgstr "Odrzucił(a): {}"
+
+#: common/embeds.py:124
+msgid "Decision Date"
+msgstr "Data decyzji"
+
+#: common/embeds.py:125
+msgid "Discussion"
+msgstr "Dyskusja"
+
+#: common/listener.py:30
 #, docstring
-#: common/listener.py:46
+msgid "Thread"
+msgstr "Wątek"
+
+#: common/listener.py:47
 #, docstring
 msgid "Get the number of suggestions a user has submitted"
 msgstr "Pobierz liczbę sugestii zgłoszonych przez użytkownika"
 
-#: common/listener.py:71
+#: common/listener.py:70
 msgid "Check if the message deleted was a suggestions"
 msgstr "Sprawdź, czy usunięta wiadomość była sugestią"
 
-#: common/listener.py:75
+#: common/listener.py:92
+#, docstring
 msgid " [Deleted]"
 msgstr " [Usunięto]"
-
-#: common/listener.py:87
-#, docstring
-msgid "Deleted Suggestion"
-msgstr "Usunięta sugestia"
 
 msgid "Remove all votes from a user when they leave the server"
 msgstr "Usuń wszystkie głosy użytkownika, gdy opuści serwer"

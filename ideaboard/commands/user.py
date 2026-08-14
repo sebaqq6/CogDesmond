@@ -11,6 +11,7 @@ from redbot.core.i18n import Translator, cog_i18n
 from redbot.core.utils.chat_formatting import humanize_timedelta
 
 from ..abc import MixinMeta
+from ..common.embeds import build_pending_embed
 from ..common.models import Suggestion
 from ..views.voteview import VoteView
 
@@ -157,25 +158,25 @@ class User(MixinMeta):
         suggestion_number = conf.counter + 1
         profile.last_suggestion = datetime.now()
 
-        count = _("Suggestion #{}").format(suggestion_number)
-        # Create the suggestion embed
-        embed = discord.Embed(color=discord.Color.blurple(), description=content)
-        if conf.anonymous:
-            embed.set_footer(text=_("Posted anonymously"))
-        else:
-            text = _("Posted by {}").format(f"{ctx.author.name} ({ctx.author.id})")
-            embed.set_footer(text=text, icon_url=ctx.author.display_avatar)
-
         suggestion_id = str(uuid4())
-        view = VoteView(self, ctx.guild, suggestion_number, suggestion_id)
-        message = await channel.send(count, embed=embed, view=view)
-
         suggestion = Suggestion(
             id=suggestion_id,
-            message_id=message.id,
+            message_id=0,
             author_id=ctx.author.id,
             content=content,
         )
+        embed = build_pending_embed(
+            bot=self.bot,
+            conf=conf,
+            suggestion=suggestion,
+            number=suggestion_number,
+            author=ctx.author,
+            anonymous=conf.anonymous,
+            show_votes=conf.show_vote_counts,
+        )
+        view = VoteView(self, ctx.guild, suggestion_number, suggestion_id)
+        message = await channel.send(embed=embed, view=view)
+        suggestion.message_id = message.id
         if conf.discussion_threads:
             try:
                 name = _("Suggestion #{} Discussion").format(suggestion_number)
@@ -233,28 +234,28 @@ class User(MixinMeta):
         conf = self.db.get_conf(user.guild)
         profile = conf.get_profile(user)
 
-        embed = discord.Embed(color=discord.Color.gold(), title=_("Stats for {}").format(user.display_name))
-        embed.set_thumbnail(url=user.display_avatar)
-
+        embed = discord.Embed(color=discord.Color.gold(), timestamp=datetime.now())
+        embed.set_author(name=_("Stats for {}").format(user.display_name), icon_url=user.display_avatar.url)
+        embed.set_thumbnail(url=user.display_avatar.url)
+        up, down = conf.get_emojis(self.bot)
         embed.add_field(
             name=_("Suggestion Summary"),
-            value=_(
-                "Suggestions Made: {}\n" "Suggestions Approved: {}\n" "Suggestions Denied: {}\n" "Karma: {}"
-            ).format(
-                profile.suggestions_made, profile.suggestions_approved, profile.suggestions_denied, profile.karma_str
-            ),
+            value="```\n"
+            f"{_('Suggestions Made')}: {profile.suggestions_made}\n"
+            f"{_('Suggestions Approved')}: {profile.suggestions_approved}\n"
+            f"{_('Suggestions Denied')}: {profile.suggestions_denied}\n"
+            f"{_('Karma')}: {profile.karma_str}\n"
+            "```",
             inline=False,
         )
-
         embed.add_field(
             name=_("Voting Summary"),
-            value=_(
-                "Total Upvotes: {}\n"
-                "Total Downvotes: {}\n"
-                "Successful Votes (Wins): {}\n"
-                "Unsuccessful Votes (Losses): {}"
-            ).format(profile.upvotes, profile.downvotes, profile.wins, profile.losses),
+            value="```\n"
+            f"{up} {_('Total Upvotes')}: {profile.upvotes}\n"
+            f"{down} {_('Total Downvotes')}: {profile.downvotes}\n"
+            f"{_('Wins')}: {profile.wins}\n"
+            f"{_('Losses')}: {profile.losses}\n"
+            "```",
             inline=False,
         )
-
         return embed

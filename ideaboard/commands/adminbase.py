@@ -10,6 +10,7 @@ from redbot.core.utils.chat_formatting import humanize_number, text_to_file
 from redbot.core.utils.predicates import MessagePredicate
 
 from ..abc import MixinMeta
+from ..common.embeds import build_decision_embeds, build_pending_embed
 from ..views.voteview import VoteView
 
 log = logging.getLogger("red.vrt.ideaboard.commands.adminbase")
@@ -73,49 +74,48 @@ class AdminBase(MixinMeta):
             txt = _("I couldn't delete the pending message: {}").format(e.text)
             await ctx.send(txt)
 
+        author = ctx.guild.get_member(suggestion.author_id)
+        thread: discord.Thread | None = None
         if suggestion.thread_id:
             with suppress(discord.NotFound):
-                thread: discord.Thread = await ctx.guild.fetch_channel(suggestion.thread_id)
+                thread = await ctx.guild.fetch_channel(suggestion.thread_id)
                 if thread:
                     if conf.delete_threads:
                         with suppress(discord.HTTPException):
                             await thread.delete()
+                        thread = None
                     else:
                         # Close and lock the thread
                         newname = thread.name + _(" [Approved]")
-                        embed = discord.Embed(
-                            color=discord.Color.green(),
-                            description=suggestion.content,
-                            title=_("Approved Suggestion"),
+                        embeds = build_decision_embeds(
+                            bot=self.bot,
+                            conf=conf,
+                            suggestion=suggestion,
+                            number=number,
+                            status="approved",
+                            approver=ctx.author,
+                            reason=reason,
+                            thread=None,
+                            author=author,
                         )
                         with suppress(discord.HTTPException):
-                            await thread.send(embed=embed)
+                            await thread.send(embeds=embeds)
                             await thread.edit(archived=True, locked=True, name=newname)
 
-        embed = discord.Embed(
-            color=discord.Color.green(),
-            description=suggestion.content,
-            title=_("Approved Suggestion"),
-        )
-        if author := ctx.guild.get_member(suggestion.author_id):
-            foot = _("Suggested by {}").format(f"{author.name} ({author.id})")
-            embed.set_footer(text=foot, icon_url=author.display_avatar)
-        else:
-            embed.set_footer(text=_("Suggested by a user who is no longer in the server."))
-
-        if reason:
-            embed.add_field(name=_("Reason"), value=reason)
-
-        up, down = conf.get_emojis(self.bot)
-        embed.add_field(
-            name=_("Results"),
-            value=f"{len(suggestion.upvotes)}x {up}\n{len(suggestion.downvotes)}x {down}",
-            inline=False,
+        embeds = build_decision_embeds(
+            bot=self.bot,
+            conf=conf,
+            suggestion=suggestion,
+            number=number,
+            status="approved",
+            approver=ctx.author,
+            reason=reason,
+            thread=thread,
+            author=author,
         )
 
         try:
-            txt = _("Suggestion #{}").format(number)
-            message = await approved_channel.send(txt, embed=embed)
+            message = await approved_channel.send(embeds=embeds)
         except discord.Forbidden:
             txt = _("I do not have the required permissions to send messages in the approved suggestions channel.")
             return await ctx.send(txt)
@@ -207,48 +207,48 @@ class AdminBase(MixinMeta):
             txt = _("I couldn't delete the pending message: {}").format(e.text)
             await ctx.send(txt)
 
+        author = ctx.guild.get_member(suggestion.author_id)
+        thread: discord.Thread | None = None
         if suggestion.thread_id:
             with suppress(discord.NotFound):
-                thread: discord.Thread = await ctx.guild.fetch_channel(suggestion.thread_id)
+                thread = await ctx.guild.fetch_channel(suggestion.thread_id)
                 if thread:
-                    with suppress(discord.HTTPException):
-                        if conf.delete_threads:
+                    if conf.delete_threads:
+                        with suppress(discord.HTTPException):
                             await thread.delete()
-                        else:
-                            # Close and lock the thread
-                            newname = thread.name + _(" [Rejected]")
-                            embed = discord.Embed(
-                                color=discord.Color.red(),
-                                description=suggestion.content,
-                                title=_("Rejected Suggestion"),
-                            )
-                            await thread.send(embed=embed)
+                        thread = None
+                    else:
+                        # Close and lock the thread
+                        newname = thread.name + _(" [Rejected]")
+                        embeds = build_decision_embeds(
+                            bot=self.bot,
+                            conf=conf,
+                            suggestion=suggestion,
+                            number=number,
+                            status="rejected",
+                            approver=ctx.author,
+                            reason=reason,
+                            thread=None,
+                            author=author,
+                        )
+                        with suppress(discord.HTTPException):
+                            await thread.send(embeds=embeds)
                             await thread.edit(archived=True, locked=True, name=newname)
 
-        embed = discord.Embed(
-            color=discord.Color.red(),
-            description=suggestion.content,
-            title=_("Rejected Suggestion"),
-        )
-        if conf.anonymous and not conf.reveal:
-            embed.set_footer(text=_("Suggested anonymously"))
-        elif author := ctx.guild.get_member(suggestion.author_id):
-            foot = _("Suggested by {}").format(f"{author.name} ({author.id})")
-            embed.set_footer(text=foot, icon_url=author.display_avatar)
-
-        if reason:
-            embed.add_field(name=_("Reason for Rejection"), value=reason)
-
-        up, down = conf.get_emojis(self.bot)
-        embed.add_field(
-            name=_("Results"),
-            value=f"{len(suggestion.upvotes)}x {up}\n{len(suggestion.downvotes)}x {down}",
-            inline=False,
+        embeds = build_decision_embeds(
+            bot=self.bot,
+            conf=conf,
+            suggestion=suggestion,
+            number=number,
+            status="rejected",
+            approver=ctx.author,
+            reason=reason,
+            thread=thread,
+            author=author,
         )
 
         try:
-            txt = _("Suggestion #{}").format(number)
-            message = await rejected_channel.send(txt, embed=embed)
+            message = await rejected_channel.send(embeds=embeds)
         except discord.Forbidden:
             txt = _("I do not have the required permissions to send messages in the denied suggestions channel.")
             return await ctx.send(txt)
@@ -326,18 +326,20 @@ class AdminBase(MixinMeta):
                 pred = MessagePredicate.yes_or_no(ctx)
                 await self.bot.wait_for("message", check=pred)
                 if pred.result:
-                    content = _("Suggestion #{}").format(number)
-                    embed = discord.Embed(color=discord.Color.blurple(), description=suggestion.content)
-                    if conf.anonymous:
-                        embed.set_footer(text=_("Posted anonymously"))
-                    else:
-                        user = ctx.guild.get_member(suggestion.author_id) or await self.bot.get_or_fetch_user(
-                            suggestion.author_id
-                        )
-                        text = _("Posted by {}").format(f"{user.name} ({user.id})")
-                        embed.set_footer(text=text, icon_url=user.display_avatar)
+                    user = ctx.guild.get_member(suggestion.author_id) or await self.bot.get_or_fetch_user(
+                        suggestion.author_id
+                    )
+                    embed = build_pending_embed(
+                        bot=self.bot,
+                        conf=conf,
+                        suggestion=suggestion,
+                        number=number,
+                        author=user,
+                        anonymous=conf.anonymous,
+                        show_votes=conf.show_vote_counts,
+                    )
                     view = VoteView(self, ctx.guild, number, suggestion.id)
-                    message = await pending.send(content=content, embed=embed, view=view)
+                    message = await pending.send(embed=embed, view=view)
                     conf.suggestions[number].message_id = message.id
                     await self.save()
                     await msg.edit(content=_("Suggestion #{} has been reposted.").format(number))
