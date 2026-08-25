@@ -145,6 +145,8 @@ class Tickets(DashboardIntegration, Cog):
 
         self.tickets: dict[int, dict[int, Tickets]] = {}
 
+        self.pending_close_confirmations: dict[int, dict] = {}
+
         self._pending_channel_name_updates: dict[int, tuple[str, str]] = {}
         self._channel_name_workers: set[int] = set()
         self._channel_name_note_timestamps: dict[int, float] = {}
@@ -490,6 +492,23 @@ class Tickets(DashboardIntegration, Cog):
         )
 
     async def check_tickets(self) -> None:
+        now = datetime.datetime.now(tz=datetime.timezone.utc)
+        for message_id, pending in list(self.pending_close_confirmations.items()):
+            if now < pending["expires_at"]:
+                continue
+            self.pending_close_confirmations.pop(message_id, None)
+            view = self.views.get(pending["message"])
+            if view is not None:
+                view.stop()
+                self.views.pop(pending["message"], None)
+            try:
+                await pending["message"].delete()
+            except discord.HTTPException:
+                pass
+            try:
+                await pending["ticket"].close(closer=None, reason=pending["reason"])
+            except RuntimeError:
+                pass
         for guild_id, tickets in self.tickets.copy().items():
             profiles = await self.config.guild_from_id(guild_id).profiles()
             for ticket in tickets.copy().values():

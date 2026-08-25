@@ -441,7 +441,7 @@ class ReasonModal(discord.ui.Modal):
 
 class OwnerCloseConfirmation(discord.ui.View):
     def __init__(self, cog: commands.Cog) -> None:
-        super().__init__(timeout=60)
+        super().__init__(timeout=None)
         self.cog: commands.Cog = cog
         self.ticket = None
         self.reason = None
@@ -501,20 +501,14 @@ class OwnerCloseConfirmation(discord.ui.View):
             message = await interaction.original_response()
         self._message = message
         self.cog.views[message] = self
+        self.cog.pending_close_confirmations[message.id] = {
+            "ticket": ticket,
+            "reason": reason,
+            "message": message,
+            "expires_at": datetime.datetime.now(tz=datetime.timezone.utc)
+            + datetime.timedelta(minutes=1),
+        }
         return message
-
-    async def on_timeout(self) -> None:
-        if self._message is not None:
-            self.cog.views.pop(self._message, None)
-            try:
-                await self._message.delete()
-            except discord.HTTPException:
-                pass
-        if self.ticket is not None:
-            try:
-                await self.ticket.close(closer=None, reason=self.reason)
-            except RuntimeError:
-                pass
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         ticket = discord.utils.get(
@@ -540,6 +534,7 @@ class OwnerCloseConfirmation(discord.ui.View):
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         if self._message is not None:
             self.cog.views.pop(self._message, None)
+            self.cog.pending_close_confirmations.pop(self._message.id, None)
         try:
             await interaction.message.delete()
         except discord.HTTPException:
@@ -554,6 +549,7 @@ class OwnerCloseConfirmation(discord.ui.View):
     async def close(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         if self._message is not None:
             self.cog.views.pop(self._message, None)
+            self.cog.pending_close_confirmations.pop(self._message.id, None)
         await interaction.response.defer(ephemeral=True, thinking=True)
         try:
             await interaction.message.delete()
