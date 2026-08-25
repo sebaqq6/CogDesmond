@@ -441,8 +441,11 @@ class ReasonModal(discord.ui.Modal):
 
 class OwnerCloseConfirmation(discord.ui.View):
     def __init__(self, cog: commands.Cog) -> None:
-        super().__init__(timeout=None)
+        super().__init__(timeout=60)
         self.cog: commands.Cog = cog
+        self.ticket = None
+        self.reason = None
+        self._message: discord.Message = None
 
         self.cancel.label = _("Cancel")
         self.cancel.custom_id = "Tickets_owner_close_cancel"
@@ -455,6 +458,8 @@ class OwnerCloseConfirmation(discord.ui.View):
         interaction: discord.Interaction | None = None,
         reason: str | None = None,
     ) -> discord.Message:
+        self.ticket = ticket
+        self.reason = reason
         embed: discord.Embed = discord.Embed(
             title=_("Close Ticket"),
             description=_(
@@ -494,8 +499,22 @@ class OwnerCloseConfirmation(discord.ui.View):
         )
         if message is None:
             message = await interaction.original_response()
+        self._message = message
         self.cog.views[message] = self
         return message
+
+    async def on_timeout(self) -> None:
+        if self._message is not None:
+            self.cog.views.pop(self._message, None)
+            try:
+                await self._message.delete()
+            except discord.HTTPException:
+                pass
+        if self.ticket is not None:
+            try:
+                await self.ticket.close(closer=None, reason=self.reason)
+            except RuntimeError:
+                pass
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         ticket = discord.utils.get(
@@ -519,6 +538,8 @@ class OwnerCloseConfirmation(discord.ui.View):
 
     @discord.ui.button(label=_("Cancel"), style=discord.ButtonStyle.secondary)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        if self._message is not None:
+            self.cog.views.pop(self._message, None)
         try:
             await interaction.message.delete()
         except discord.HTTPException:
@@ -530,6 +551,8 @@ class OwnerCloseConfirmation(discord.ui.View):
 
     @discord.ui.button(label=_("Close"), style=discord.ButtonStyle.danger)
     async def close(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        if self._message is not None:
+            self.cog.views.pop(self._message, None)
         await interaction.response.defer(ephemeral=True, thinking=True)
         try:
             await interaction.message.delete()
