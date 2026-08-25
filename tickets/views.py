@@ -488,17 +488,23 @@ class OwnerCloseConfirmation(discord.ui.View):
                 else None
             )
         self.close.emoji = e
-        message = await (
-            interaction.response.send_message if interaction is not None else ticket.channel.send
-        )(
-            _("{owner.mention}, is there anything else we can help you with?").format(
-                owner=ticket.owner,
-            ),
-            embed=embed,
-            view=self,
-        )
-        if message is None:
+        if interaction is not None:
+            await interaction.response.send_message(
+                _("{owner.mention}, is there anything else we can help you with?").format(
+                    owner=ticket.owner,
+                ),
+                embed=embed,
+                view=self,
+            )
             message = await interaction.original_response()
+        else:
+            message = await ticket.channel.send(
+                _("{owner.mention}, is there anything else we can help you with?").format(
+                    owner=ticket.owner,
+                ),
+                embed=embed,
+                view=self,
+            )
         self._message = message
         self.cog.views[message] = self
         self.cog.pending_close_confirmations[message.id] = {
