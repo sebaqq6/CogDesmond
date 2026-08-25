@@ -548,6 +548,7 @@ class OwnerCloseConfirmation(discord.ui.View):
             _("👍 This ticket has not been closed!"),
             ephemeral=True,
         )
+        self.stop()
 
     @discord.ui.button(label=_("Close"), style=discord.ButtonStyle.danger)
     async def close(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
@@ -569,6 +570,7 @@ class OwnerCloseConfirmation(discord.ui.View):
                 else None
             )
             await ticket.close(interaction.user, reason=reason)
+            self.stop()
             await interaction.followup.send(_("❌ This ticket has been closed!"), ephemeral=True)
         except RuntimeError as e:
             return await interaction.followup.send(
