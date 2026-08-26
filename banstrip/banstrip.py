@@ -10,7 +10,8 @@ from discord.ext import tasks
 from redbot.core import Config, commands
 from redbot.core.bot import Red
 from redbot.core.i18n import Translator, cog_i18n
-from redbot.core.utils.chat_formatting import box, humanize_list, pagify
+from redbot.core.utils.chat_formatting import box, humanize_list
+from redbot.core.utils.menus import SimpleMenu
 from redbot.core.utils.views import ConfirmView
 
 log = logging.getLogger("red.cogdesmond.banstrip")
@@ -263,27 +264,63 @@ class BanStrip(commands.Cog):
         members = [m for m in ctx.guild.members if ban_role in m.roles]
         if not members:
             return await self._reply(ctx, _("No members are currently banned."))
-        lines = []
-        for member in members:
+        members.sort(key=lambda m: m.display_name.casefold())
+        rows = []
+        for lp, member in enumerate(members, start=1):
             data = await self.config.member(member).all()
-            reason = data["reason"] or _("No reason")
+            reason = data["reason"] or "bez powodu"
             if expires := data["expires_at"]:
-                dt = datetime.datetime.fromtimestamp(expires, tz=datetime.timezone.utc)
-                duration = _("expires {time}").format(time=discord.utils.format_dt(dt, "R"))
+                now = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
+                days_left = (expires - now) // 86400
+                if days_left >= 1:
+                    duration = str(days_left)
+                else:
+                    duration = "<1"
             else:
-                duration = _("permanent")
+                duration = "∞"
+            banned_at = data["banned_at"]
+            date_str = ""
+            if banned_at:
+                date_str = datetime.datetime.fromtimestamp(
+                    banned_at,
+                    tz=datetime.timezone.utc,
+                ).strftime("%d.%m.%Y")
             banned_by = await self._format_banned_by(ctx.guild, data["banned_by"])
-            entry = _fmt(
-                _("{member} ({member_id})\n  Reason: {reason}\n  Duration: {duration}"),
-                member=member,
-                member_id=member.id,
-                reason=reason,
-                duration=duration,
+            rows.append(
+                (
+                    lp,
+                    self._truncate(member.display_name, 20),
+                    duration,
+                    date_str,
+                    self._truncate(reason, 15),
+                    self._truncate(banned_by, 15),
+                ),
             )
-            entry += _fmt(_("\n  Banned by: {banned_by}"), banned_by=banned_by)
-            lines.append(entry)
-        for page in pagify("\n".join(lines), shorten_by=10):
-            await self._send_settings_embed(ctx, _("Ban list"), [page])
+        header = f"{'#':>3}  {'Użytkownik':<20} {'Dni':<4} {'Data':<10} {'Powód':<15} {'Przez':<15}"
+        row_lines = [
+            f"{lp:>3}  {name:<20} {duration:<4} {date_str:<10} {reason:<15} {banned_by:<15}"
+            for lp, name, duration, date_str, reason, banned_by in rows
+        ]
+        pages = []
+        for start in range(0, len(row_lines), 15):
+            chunk = [header, "-" * len(header)] + row_lines[start : start + 15]
+            pages.append(
+                discord.Embed(
+                    title=f"Zbanowani ({len(members)})",
+                    description=box("\n".join(chunk)),
+                    color=await ctx.embed_color(),
+                ),
+            )
+        if len(pages) == 1:
+            await ctx.send(embed=pages[0])
+        else:
+            menu = SimpleMenu(
+                pages,
+                use_select_menu=True,
+                timeout=120,
+                delete_message_after=True,
+            )
+            await menu.start(ctx)
         return None
 
     @commands.guild_only()
@@ -677,6 +714,12 @@ class BanStrip(commands.Cog):
         if user is not None:
             return user.display_name
         return _("Unknown")
+
+    @staticmethod
+    def _truncate(text: str, max_len: int) -> str:
+        if len(text) <= max_len:
+            return text
+        return text[: max_len - 1] + "…"
 
     async def _notify_banned(self, member: discord.Member, guild: discord.Guild) -> None:
         data = await self.config.member(member).all()
