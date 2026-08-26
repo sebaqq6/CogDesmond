@@ -326,36 +326,52 @@ class BanStrip(commands.Cog):
         await confirm_view.wait()
         if not confirm_view.result:
             return await self._reply(ctx, "Anulowano czyszczenie.")
+        progress_msg = await self._reply(
+            ctx,
+            _fmt(
+                "Zaczynam czyszczenie wiadomości {member} z ostatnich {days} dni...",
+                member=member.mention,
+                days=days,
+            ),
+        )
         cutoff = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=days)
-        channels: list[discord.TextChannel | discord.Thread] = list(ctx.guild.text_channels)
-        channels.extend(ctx.guild.threads)
+        raw_channels: list[discord.TextChannel | discord.Thread] = list(ctx.guild.text_channels)
+        raw_channels.extend(ctx.guild.threads)
         for channel in ctx.guild.text_channels:
-            channels.extend(channel.threads)
-        seen: set[int] = set()
+            raw_channels.extend(channel.threads)
+        channels = list(dict.fromkeys(raw_channels))
+        total = len(channels)
         deleted = 0
         touched = 0
         skipped = 0
+        done = 0
         for channel in channels:
-            if channel.id in seen:
-                continue
-            seen.add(channel.id)
             if not channel.permissions_for(ctx.guild.me).manage_messages:
                 skipped += 1
-                continue
-            try:
-                removed = await channel.purge(
-                    limit=None,
-                    after=cutoff,
-                    check=lambda m: m.author.id == member.id,
-                    reason=f"banstrip: cleanup by {ctx.author} ({ctx.author.id})",
-                )
-            except (discord.Forbidden, discord.HTTPException) as e:
-                log.warning("Failed to purge %s in %s: %s", channel.id, ctx.guild.id, e)
-                skipped += 1
-                continue
-            if removed:
-                deleted += len(removed)
-                touched += 1
+            else:
+                try:
+                    removed = await channel.purge(
+                        limit=None,
+                        after=cutoff,
+                        check=lambda m: m.author.id == member.id,
+                        reason=f"banstrip: cleanup by {ctx.author} ({ctx.author.id})",
+                    )
+                except (discord.Forbidden, discord.HTTPException) as e:
+                    log.warning("Failed to purge %s in %s: %s", channel.id, ctx.guild.id, e)
+                    skipped += 1
+                else:
+                    if removed:
+                        deleted += len(removed)
+                        touched += 1
+            done += 1
+            await progress_msg.edit(
+                content=_fmt(
+                    "Postęp czyszczenia: {done}/{total} kanałów, usunięto {deleted} wiadomości.",
+                    done=done,
+                    total=total,
+                    deleted=deleted,
+                ),
+            )
         summary = (
             "Usunięto {count} wiadomości {member} z ostatnich {days} dni "
             "na {channels} kanałach. Pominięto {skipped} kanałów bez uprawnień."
