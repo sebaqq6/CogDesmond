@@ -101,7 +101,11 @@ class BanStrip(commands.Cog):
 
     @commands.guild_only()
     @commands.admin_or_permissions(manage_roles=True)
-    @commands.hybrid_group(name="banstrip", aliases=["banstripset", "bs"])
+    @commands.hybrid_group(
+        name="banstrip",
+        aliases=["banstripset", "bs"],
+        description="Zbanuj/odbanuj członków rolą BAN i zarządzaj ustawieniami banstrip.",
+    )
     async def banstrip(self, ctx: commands.Context):
         """
         Ban/unban members with the BAN role and manage banstrip settings.
@@ -115,7 +119,7 @@ class BanStrip(commands.Cog):
         member="Członek, któremu ma zostać nadana rola BAN.",
         details="Opcjonalnie: `powód` (np. `spam`) = ban permanentny, lub `dni powód` (np. `7 spam`) = ban czasowy. Puste = permanentny.",
     )
-    @banstrip.command(name="ban")
+    @banstrip.command(name="ban", description="Nadaj członkowi rolę BAN (zdejmuje jego inne role).")
     async def ban(
         self,
         ctx: commands.Context,
@@ -197,7 +201,7 @@ class BanStrip(commands.Cog):
     @commands.guild_only()
     @_action_check("unban_roles")
     @app_commands.describe(member="Członek, któremu ma zostać usunięta rola BAN.")
-    @banstrip.command(name="unban")
+    @banstrip.command(name="unban", description="Usuń rolę BAN z członka.")
     async def unban(self, ctx: commands.Context, member: discord.Member):
         """
         Remove the BAN role from a member and run the restore command.
@@ -229,7 +233,10 @@ class BanStrip(commands.Cog):
 
     @commands.guild_only()
     @_action_check("view_roles")
-    @banstrip.command(name="banlist")
+    @banstrip.command(
+        name="banlist",
+        description="Lista zbanowanych członków (z rolą BAN) wraz z powodami i długością banów.",
+    )
     async def banlist(self, ctx: commands.Context):
         """
         List currently banned members (with the BAN role), their reasons and durations.
