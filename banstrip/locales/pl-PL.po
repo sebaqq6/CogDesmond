@@ -442,6 +442,47 @@ msgstr "Ustawienia BanStrip"
 msgid "Ban list"
 msgstr "Lista banów"
 
+#: banstrip.py:285
+#, docstring
+msgid ""
+"\n"
+"        Delete all of a user's messages from the last N days across the server.\n"
+"        "
+msgstr ""
+"\n"
+"        Usuwa wszystkie wiadomości użytkownika z ostatnich N dni na całym serwerze.\n"
+"        "
+
+#: banstrip.py:290
+msgid "The number of days must be at least 1."
+msgstr "Liczba dni musi wynosić co najmniej 1."
+
+#: banstrip.py:292
+msgid ""
+"Delete all messages of {member} from the last {days} days across the server? "
+"This cannot be undone."
+msgstr ""
+"Usunąć wszystkie wiadomości {member} z ostatnich {days} dni na serwerze? "
+"Tej operacji nie można cofnąć."
+
+#: banstrip.py:299
+msgid "Cleanup cancelled."
+msgstr "Anulowano czyszczenie."
+
+#: banstrip.py:330
+msgid ""
+"Deleted {count} messages of {member} from the last {days} days "
+"across {channels} channels. Skipped {skipped} channels without permission."
+msgstr ""
+"Usunięto {count} wiadomości {member} z ostatnich {days} dni "
+"na {channels} kanałach. Pominięto {skipped} kanałów bez uprawnień."
+
+#: banstrip.py:331
+msgid ""
+"\nNote: messages older than 14 days are deleted one by one, so large cleanups may take a while."
+msgstr ""
+"\nUwaga: wiadomości starsze niż 14 dni są usuwane pojedynczo, więc duże czyszczenie może potrwać."
+
 #: banstrip.py:338
 msgid "Cleared the log channel."
 msgstr "Wyczyszczono kanał logów."

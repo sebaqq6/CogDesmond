@@ -11,6 +11,7 @@ from redbot.core import Config, commands
 from redbot.core.bot import Red
 from redbot.core.i18n import Translator, cog_i18n
 from redbot.core.utils.chat_formatting import box, humanize_list, pagify
+from redbot.core.utils.views import ConfirmView
 
 log = logging.getLogger("red.cogdesmond.banstrip")
 
@@ -273,6 +274,82 @@ class BanStrip(commands.Cog):
             lines.append(entry)
         for page in pagify("\n".join(lines), shorten_by=10):
             await self._send_settings_embed(ctx, _("Ban list"), [page])
+        return None
+
+    @commands.guild_only()
+    @commands.admin_or_permissions(manage_messages=True)
+    @commands.bot_has_permissions(manage_messages=True)
+    @app_commands.describe(
+        member="Użytkownik, którego wiadomości mają zostać usunięte.",
+        days="Ile dni wstecz usuwać wiadomości (min. 1).",
+    )
+    @banstrip.command(
+        name="cleanup",
+        description="Usuwa wiadomości wybranego użytkownika z ostatnich N dni na całym serwerze.",
+    )
+    async def cleanup(self, ctx: commands.Context, member: discord.User, days: int):
+        """
+        Delete all of a user's messages from the last N days across the server.
+        """
+        if days < 1:
+            raise commands.UserFeedbackCheckFailure(_("The number of days must be at least 1."))
+        confirm_view = ConfirmView(ctx.author, disable_buttons=True)
+        prompt = _(
+            "Delete all messages of {member} from the last {days} days across the server? "
+            "This cannot be undone.",
+        )
+        await ctx.send(_fmt(prompt, member=member.mention, days=days), view=confirm_view)
+        await confirm_view.wait()
+        if not confirm_view.result:
+            return await self._reply(ctx, _("Cleanup cancelled."))
+        cutoff = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=days)
+        channels: list[discord.TextChannel | discord.Thread] = list(ctx.guild.text_channels)
+        channels.extend(ctx.guild.threads)
+        for channel in ctx.guild.text_channels:
+            channels.extend(channel.threads)
+        seen: set[int] = set()
+        deleted = 0
+        touched = 0
+        skipped = 0
+        for channel in channels:
+            if channel.id in seen:
+                continue
+            seen.add(channel.id)
+            if not channel.permissions_for(ctx.guild.me).manage_messages:
+                skipped += 1
+                continue
+            try:
+                removed = await channel.purge(
+                    limit=None,
+                    after=cutoff,
+                    check=lambda m: m.author.id == member.id,
+                    reason=f"banstrip: cleanup by {ctx.author} ({ctx.author.id})",
+                )
+            except (discord.Forbidden, discord.HTTPException) as e:
+                log.warning("Failed to purge %s in %s: %s", channel.id, ctx.guild.id, e)
+                skipped += 1
+                continue
+            if removed:
+                deleted += len(removed)
+                touched += 1
+        summary = _(
+            "Deleted {count} messages of {member} from the last {days} days "
+            "across {channels} channels. Skipped {skipped} channels without permission.",
+        )
+        summary += _(
+            "\nNote: messages older than 14 days are deleted one by one, so large cleanups may take a while.",
+        )
+        await self._reply(
+            ctx,
+            _fmt(
+                summary,
+                count=deleted,
+                member=member.mention,
+                days=days,
+                channels=touched,
+                skipped=skipped,
+            ),
+        )
         return None
 
     # ---------- Settings ----------
