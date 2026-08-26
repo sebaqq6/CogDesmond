@@ -113,7 +113,7 @@ class BanStrip(commands.Cog):
     @_action_check("ban_roles")
     @app_commands.describe(
         member="Członek, któremu ma zostać nadana rola BAN.",
-        details="Opcjonalnie: liczba dni, a potem powód. Przykład: `7 spamming`. Puste = permanentny.",
+        details="Opcjonalnie: `powód` (np. `spam`) = ban permanentny, lub `dni powód` (np. `7 spam`) = ban czasowy. Puste = permanentny.",
     )
     @banstrip.command(name="ban")
     async def ban(
