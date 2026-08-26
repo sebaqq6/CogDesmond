@@ -284,7 +284,7 @@ class BanStrip(commands.Cog):
         return None
 
     @commands.guild_only()
-    @commands.admin_or_permissions(manage_messages=True)
+    @_action_check("ban_roles")
     @commands.bot_has_permissions(manage_messages=True)
     @app_commands.describe(
         member="Użytkownik, którego wiadomości mają zostać usunięte.",
@@ -300,6 +300,8 @@ class BanStrip(commands.Cog):
         """
         if days < 1 or days > 30:
             raise commands.UserFeedbackCheckFailure("Liczba dni musi wynosić od 1 do 30.")
+        if not await self._check_action(ctx, "ban_roles"):
+            return await self._reply(ctx, "Nie masz uprawnień do czyszczenia wiadomości.")
         if member.id == ctx.author.id:
             raise commands.UserFeedbackCheckFailure("Nie możesz wyczyścić własnych wiadomości.")
         if member.id == ctx.guild.owner_id:
