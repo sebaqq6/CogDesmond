@@ -292,7 +292,7 @@ class BanStrip(commands.Cog):
                     self._truncate(member.display_name, 25),
                     duration,
                     date_str,
-                    self._truncate(reason, 40),
+                    self._truncate(reason, 500),
                     self._truncate(banned_by, 25),
                 ),
             )
