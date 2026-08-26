@@ -58,6 +58,7 @@ class BanStrip(commands.Cog):
             ban_roles=[],
             unban_roles=[],
             view_roles=[],
+            protected_roles=[],
         )
         self.config.register_member(
             reason=None,
@@ -157,6 +158,8 @@ class BanStrip(commands.Cog):
                 ctx,
                 "Nie możesz zbanować osoby z rolą uprawnień banstrip.",
             )
+        if await self._is_protected(member):
+            return await self._reply(ctx, "Nie możesz zbanować osoby z rolą chronioną.")
         if member.top_role >= ctx.author.top_role and ctx.author != ctx.guild.owner:
             return await self._reply(
                 ctx,
@@ -313,6 +316,11 @@ class BanStrip(commands.Cog):
         target = ctx.guild.get_member(member.id)
         if target is not None:
             data = await self.config.guild(ctx.guild).all()
+            protected_roles = set(data["protected_roles"])
+            if protected_roles and any(r.id in protected_roles for r in target.roles):
+                raise commands.UserFeedbackCheckFailure(
+                    "Nie możesz wyczyścić wiadomości osoby z rolą chronioną.",
+                )
             protected = set(data["ban_roles"]) | set(data["unban_roles"]) | set(data["view_roles"])
             if protected and any(r.id in protected for r in target.roles):
                 raise commands.UserFeedbackCheckFailure(
@@ -549,8 +557,18 @@ class BanStrip(commands.Cog):
                 roles=await self._format_roles(data["unban_roles"], ctx),
             ),
             _("Can view: {roles}").format(roles=await self._format_roles(data["view_roles"], ctx)),
+            "Role chronione: {}".format(await self._format_roles(data["protected_roles"], ctx)),
         ]
         await self._send_settings_embed(ctx, _("BanStrip settings"), lines)
+
+    @commands.guild_only()
+    @commands.admin_or_permissions(manage_roles=True)
+    @banstrip.command(name="protectrole", with_app_command=False)
+    async def protectrole(self, ctx: commands.Context, role: discord.Role | None = None):
+        """
+        Add/remove a role that is fully protected from banstrip actions. Leave empty to clear.
+        """
+        await self._toggle_protected_role(ctx, role)
 
     # ---------- Listener ----------
 
@@ -572,6 +590,9 @@ class BanStrip(commands.Cog):
         had_ban = any(role.id == ban_role_id for role in before.roles)
         has_ban = any(role.id == ban_role_id for role in after.roles)
         if not had_ban and has_ban:
+            if await self._is_protected(after):
+                await self._remove_ban_role_for_protected(after, ban_role_id)
+                return
             await self._strip_roles(after, ban_role_id)
             await self._ensure_ban_record(after)
             await self._notify_banned(after, guild)
@@ -580,8 +601,12 @@ class BanStrip(commands.Cog):
             marker = self._removal_markers.pop((guild.id, after.id), None)
             await self.config.member(after).clear()
             await self._log_unban(after, guild, marker)
-            await self._run_restore(guild, after)
+            if marker is None or marker[0] != "protected":
+                await self._run_restore(guild, after)
         elif has_ban:
+            if await self._is_protected(after):
+                await self._remove_ban_role_for_protected(after, ban_role_id)
+                return
             await self._strip_roles(after, ban_role_id)
 
     @commands.Cog.listener()
@@ -607,6 +632,9 @@ class BanStrip(commands.Cog):
             return
         ban_role = guild.get_role(ban_role_id)
         if ban_role is None:
+            return
+        if await self._is_protected(member):
+            await self.config.member(member).clear()
             return
         try:
             await member.add_roles(ban_role, reason="banstrip: re-applying ban role on rejoin")
@@ -718,6 +746,9 @@ class BanStrip(commands.Cog):
             if kind == "unban":
                 title = _("Unban")
                 actor_name = actor.display_name if actor else _("Unknown")
+            elif kind == "protected":
+                title = "Ban zablokowany"
+                actor_name = "Rola chroniona"
             else:
                 title = _("Ban expired")
                 actor_name = _("Automatic")
@@ -924,6 +955,48 @@ class BanStrip(commands.Cog):
             return _("admins only")
         roles = [ctx.guild.get_role(rid).mention for rid in role_ids if ctx.guild.get_role(rid)]
         return humanize_list(roles) if roles else _("None")
+
+    async def _is_protected(self, member: discord.Member) -> bool:
+        role_ids = await self.config.guild(member.guild).protected_roles()
+        return bool(role_ids) and any(r.id in role_ids for r in member.roles)
+
+    async def _remove_ban_role_for_protected(self, member: discord.Member, ban_role_id: int) -> None:
+        ban_role = member.guild.get_role(ban_role_id)
+        if ban_role is None or ban_role not in member.roles:
+            return
+        self._removal_markers[(member.guild.id, member.id)] = ("protected", None)
+        try:
+            await member.remove_roles(ban_role, reason="banstrip: protected member")
+        except (discord.Forbidden, discord.HTTPException) as e:
+            self._removal_markers.pop((member.guild.id, member.id), None)
+            log.warning(
+                "Failed to remove BAN role from protected member %s in %s: %s",
+                member.id,
+                member.guild.id,
+                e,
+            )
+
+    async def _toggle_protected_role(
+        self,
+        ctx: commands.Context,
+        role: discord.Role | None,
+    ) -> None:
+        guild_conf = self.config.guild(ctx.guild)
+        if role is None:
+            await guild_conf.set_raw("protected_roles", value=[])
+            return await self._reply(ctx, "Wyczyszczono listę ról chronionych.")
+        role_ids = await guild_conf.get_raw("protected_roles")
+        if role.id in role_ids:
+            role_ids.remove(role.id)
+            state = "usunięta z"
+        else:
+            role_ids.append(role.id)
+            state = "dodana do"
+        await guild_conf.set_raw("protected_roles", value=role_ids)
+        await self._reply(
+            ctx,
+            _fmt("Rola {role} {state} listy ról chronionych.", role=role.mention, state=state),
+        )
 
     async def _reply(self, ctx: commands.Context, content: str, **kwargs) -> discord.Message:
         if ctx.interaction is not None:
