@@ -67,10 +67,6 @@ msgstr "Nie możesz zbanować samego siebie."
 msgid "You can't ban the server owner."
 msgstr "Nie możesz zbanować właściciela serwera."
 
-#: banstrip.py:117
-msgid "You can't ban the bot."
-msgstr "Nie możesz zbanować bota."
-
 #: banstrip.py:121
 msgid "You can't ban someone whose role has the `ban_members` permission."
 msgstr "Nie możesz zbanować kogoś, czyja rola ma uprawnienie `ban_members`."

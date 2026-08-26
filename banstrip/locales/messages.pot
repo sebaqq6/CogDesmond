@@ -51,10 +51,6 @@ msgstr ""
 msgid "You can't ban the server owner."
 msgstr ""
 
-#: banstrip.py:137
-msgid "You can't ban the bot."
-msgstr ""
-
 #: banstrip.py:141
 msgid "You can't ban someone whose role has the `ban_members` permission."
 msgstr ""
