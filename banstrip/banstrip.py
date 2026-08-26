@@ -281,7 +281,7 @@ class BanStrip(commands.Cog):
     @commands.bot_has_permissions(manage_messages=True)
     @app_commands.describe(
         member="Użytkownik, którego wiadomości mają zostać usunięte.",
-        days="Ile dni wstecz usuwać wiadomości (min. 1).",
+        days="Ile dni wstecz usuwać wiadomości (1–30).",
     )
     @banstrip.command(
         name="cleanup",
@@ -291,17 +291,34 @@ class BanStrip(commands.Cog):
         """
         Delete all of a user's messages from the last N days across the server.
         """
-        if days < 1:
-            raise commands.UserFeedbackCheckFailure(_("The number of days must be at least 1."))
+        if days < 1 or days > 30:
+            raise commands.UserFeedbackCheckFailure("Liczba dni musi wynosić od 1 do 30.")
+        if member.id == ctx.author.id:
+            raise commands.UserFeedbackCheckFailure("Nie możesz wyczyścić własnych wiadomości.")
+        if member.id == ctx.guild.owner_id:
+            raise commands.UserFeedbackCheckFailure(
+                "Nie możesz wyczyścić wiadomości właściciela serwera.",
+            )
+        if member.bot:
+            raise commands.UserFeedbackCheckFailure("Nie możesz wyczyścić wiadomości bota.")
+        target = ctx.guild.get_member(member.id)
+        if target is not None:
+            data = await self.config.guild(ctx.guild).all()
+            protected = set(data["ban_roles"]) | set(data["unban_roles"]) | set(data["view_roles"])
+            if protected and any(r.id in protected for r in target.roles):
+                raise commands.UserFeedbackCheckFailure(
+                    "Nie możesz wyczyścić wiadomości osoby z rolą uprawnień banstrip.",
+                )
+            if target.top_role >= ctx.author.top_role and ctx.author != ctx.guild.owner:
+                raise commands.UserFeedbackCheckFailure(
+                    "Nie możesz wyczyścić wiadomości osoby z rangą równą lub wyższą od twojej.",
+                )
         confirm_view = ConfirmView(ctx.author, disable_buttons=True)
-        prompt = _(
-            "Delete all messages of {member} from the last {days} days across the server? "
-            "This cannot be undone.",
-        )
+        prompt = "Usunąć wszystkie wiadomości {member} z ostatnich {days} dni na serwerze? Tej operacji nie można cofnąć."
         await ctx.send(_fmt(prompt, member=member.mention, days=days), view=confirm_view)
         await confirm_view.wait()
         if not confirm_view.result:
-            return await self._reply(ctx, _("Cleanup cancelled."))
+            return await self._reply(ctx, "Anulowano czyszczenie.")
         cutoff = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=days)
         channels: list[discord.TextChannel | discord.Thread] = list(ctx.guild.text_channels)
         channels.extend(ctx.guild.threads)
@@ -332,12 +349,13 @@ class BanStrip(commands.Cog):
             if removed:
                 deleted += len(removed)
                 touched += 1
-        summary = _(
-            "Deleted {count} messages of {member} from the last {days} days "
-            "across {channels} channels. Skipped {skipped} channels without permission.",
+        summary = (
+            "Usunięto {count} wiadomości {member} z ostatnich {days} dni "
+            "na {channels} kanałach. Pominięto {skipped} kanałów bez uprawnień."
         )
-        summary += _(
-            "\nNote: messages older than 14 days are deleted one by one, so large cleanups may take a while.",
+        summary += (
+            "\nUwaga: wiadomości starsze niż 14 dni są usuwane pojedynczo, "
+            "więc duże czyszczenie może potrwać."
         )
         await self._reply(
             ctx,

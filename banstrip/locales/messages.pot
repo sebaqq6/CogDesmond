@@ -178,39 +178,6 @@ msgstr ""
 msgid "Ban list"
 msgstr ""
 
-#: banstrip.py:285
-#, docstring
-msgid ""
-"\n"
-"        Delete all of a user's messages from the last N days across the server.\n"
-"        "
-msgstr ""
-
-#: banstrip.py:290
-msgid "The number of days must be at least 1."
-msgstr ""
-
-#: banstrip.py:292
-msgid ""
-"Delete all messages of {member} from the last {days} days across the server? "
-"This cannot be undone."
-msgstr ""
-
-#: banstrip.py:299
-msgid "Cleanup cancelled."
-msgstr ""
-
-#: banstrip.py:330
-msgid ""
-"Deleted {count} messages of {member} from the last {days} days "
-"across {channels} channels. Skipped {skipped} channels without permission."
-msgstr ""
-
-#: banstrip.py:331
-msgid ""
-"\nNote: messages older than 14 days are deleted one by one, so large cleanups may take a while."
-msgstr ""
-
 #: banstrip.py:271
 #, docstring
 msgid ""
