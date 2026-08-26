@@ -4,6 +4,7 @@ from io import BytesIO
 from typing import Literal
 
 import discord
+from discord import app_commands
 from discord.ext import tasks
 
 from redbot.core import Config, commands
@@ -110,6 +111,10 @@ class BanStrip(commands.Cog):
 
     @commands.guild_only()
     @_action_check("ban_roles")
+    @app_commands.describe(
+        member="Członek, któremu ma zostać nadana rola BAN.",
+        details="Opcjonalnie: liczba dni, a potem powód. Przykład: `7 spamming`. Puste = permanentny.",
+    )
     @banstrip.command(name="ban")
     async def ban(
         self,
@@ -191,6 +196,7 @@ class BanStrip(commands.Cog):
 
     @commands.guild_only()
     @_action_check("unban_roles")
+    @app_commands.describe(member="Członek, któremu ma zostać usunięta rola BAN.")
     @banstrip.command(name="unban")
     async def unban(self, ctx: commands.Context, member: discord.Member):
         """
