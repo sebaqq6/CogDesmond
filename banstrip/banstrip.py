@@ -277,7 +277,7 @@ class BanStrip(commands.Cog):
                 else:
                     duration = "<1"
             else:
-                duration = "∞"
+                duration = "perm"
             banned_at = data["banned_at"]
             date_str = ""
             if banned_at:
@@ -289,16 +289,16 @@ class BanStrip(commands.Cog):
             rows.append(
                 (
                     lp,
-                    self._truncate(member.display_name, 20),
+                    self._truncate(member.display_name, 16),
                     duration,
                     date_str,
-                    self._truncate(reason, 15),
-                    self._truncate(banned_by, 15),
+                    self._truncate(reason, 10),
+                    self._truncate(banned_by, 10),
                 ),
             )
-        header = f"{'#':>3}  {'Użytkownik':<20} {'Dni':<4} {'Data':<10} {'Powód':<15} {'Przez':<15}"
+        header = f"{'#':>3}  {'Użytkownik':<16} {'Dni':<4} {'Data':<10} {'Powód':<10} {'Przez':<10}"
         row_lines = [
-            f"{lp:>3}  {name:<20} {duration:<4} {date_str:<10} {reason:<15} {banned_by:<15}"
+            f"{lp:>3}  {name:<16} {duration:<4} {date_str:<10} {reason:<10} {banned_by:<10}"
             for lp, name, duration, date_str, reason, banned_by in rows
         ]
         pages = []
@@ -719,7 +719,7 @@ class BanStrip(commands.Cog):
     def _truncate(text: str, max_len: int) -> str:
         if len(text) <= max_len:
             return text
-        return text[: max_len - 1] + "…"
+        return text[: max_len - 3] + "..."
 
     async def _notify_banned(self, member: discord.Member, guild: discord.Guild) -> None:
         data = await self.config.member(member).all()
