@@ -378,7 +378,7 @@ class BanStrip(commands.Cog):
         """
         data = await self.config.guild(ctx.guild).all()
         lines = []
-        for key, label in PERM_KEYS.items():
+        for label, key in PERM_KEYS.items():
             role_ids = data[key]
             if not role_ids:
                 lines.append(_("{label}: admins only").format(label=label))
