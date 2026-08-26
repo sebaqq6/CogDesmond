@@ -265,7 +265,7 @@ class BanStrip(commands.Cog):
         if not members:
             return await self._reply(ctx, _("No members are currently banned."))
         members.sort(key=lambda m: m.display_name.casefold())
-        rows = []
+        entries = []
         for lp, member in enumerate(members, start=1):
             data = await self.config.member(member).all()
             reason = data["reason"] or "bez powodu"
@@ -273,44 +273,50 @@ class BanStrip(commands.Cog):
                 now = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
                 days_left = (expires - now) // 86400
                 if days_left >= 1:
-                    duration = str(days_left)
+                    duration = f"{days_left} dni"
                 else:
-                    duration = "<1"
+                    duration = "wygasa wkrótce"
             else:
-                duration = "perm"
+                duration = "permanentny"
             banned_at = data["banned_at"]
-            date_str = ""
+            date_str = "brak"
             if banned_at:
                 date_str = datetime.datetime.fromtimestamp(
                     banned_at,
                     tz=datetime.timezone.utc,
                 ).strftime("%d.%m.%Y")
             banned_by = await self._format_banned_by(ctx.guild, data["banned_by"])
-            rows.append(
+            entries.append(
                 (
                     lp,
-                    self._truncate(member.display_name, 16),
+                    self._truncate(member.display_name, 25),
                     duration,
                     date_str,
-                    self._truncate(reason, 10),
-                    self._truncate(banned_by, 10),
+                    self._truncate(reason, 40),
+                    self._truncate(banned_by, 25),
                 ),
             )
-        header = f"{'#':>3}  {'Użytkownik':<16} {'Dni':<4} {'Data':<10} {'Powód':<10} {'Przez':<10}"
-        row_lines = [
-            f"{lp:>3}  {name:<16} {duration:<4} {date_str:<10} {reason:<10} {banned_by:<10}"
-            for lp, name, duration, date_str, reason, banned_by in rows
-        ]
+        fields_per_page = 24
         pages = []
-        for start in range(0, len(row_lines), 15):
-            chunk = [header, "-" * len(header)] + row_lines[start : start + 15]
-            pages.append(
-                discord.Embed(
-                    title=f"Zbanowani ({len(members)})",
-                    description=box("\n".join(chunk)),
-                    color=await ctx.embed_color(),
-                ),
+        for start in range(0, len(entries), fields_per_page):
+            embed = discord.Embed(
+                title=f"Zbanowani ({len(members)})",
+                color=await ctx.embed_color(),
             )
+            for lp, name, duration, date_str, reason, banned_by in entries[
+                start : start + fields_per_page
+            ]:
+                embed.add_field(
+                    name=f"{lp}. {name}",
+                    value=(
+                        f"**Dni:** {duration}\n"
+                        f"**Powód:** {reason}\n"
+                        f"**Przez:** {banned_by}\n"
+                        f"**Data:** {date_str}"
+                    ),
+                    inline=True,
+                )
+            pages.append(embed)
         if len(pages) == 1:
             await ctx.send(embed=pages[0])
         else:
