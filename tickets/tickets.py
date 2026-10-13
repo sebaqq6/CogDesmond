@@ -1567,7 +1567,7 @@ class Tickets(DashboardIntegration, AiTools, Cog):
         pass
 
     @commands.is_owner()
-    @settickets_ai.command(name="token")
+    @settickets_ai.command(name="token", with_app_command=False)
     async def settickets_ai_token(
         self,
         ctx: commands.Context,
@@ -1596,7 +1596,7 @@ class Tickets(DashboardIntegration, AiTools, Cog):
         await self.config.guild(ctx.guild).ai_token.set(token)
         await ctx.send(_("The AI API token has been set."))
 
-    @settickets_ai.command(name="status")
+    @settickets_ai.command(name="status", with_app_command=False)
     @commands.bot_has_permissions(embed_links=True)
     async def settickets_ai_status(self, ctx: commands.Context) -> None:
         """Check the AI API health."""
@@ -1611,7 +1611,7 @@ class Tickets(DashboardIntegration, AiTools, Cog):
             embed.add_field(name=str(key), value=f"`{value}`", inline=True)
         await ctx.send(embed=embed)
 
-    @settickets_ai.command(name="reports")
+    @settickets_ai.command(name="reports", with_app_command=False)
     async def settickets_ai_reports(self, ctx: commands.Context) -> None:
         """List the reports known by the AI API."""
         try:
@@ -1630,7 +1630,7 @@ class Tickets(DashboardIntegration, AiTools, Cog):
             text = text[:3900] + "…"
         await ctx.send(text)
 
-    @settickets_ai.command(name="cache")
+    @settickets_ai.command(name="cache", with_app_command=False)
     async def settickets_ai_cache(self, ctx: commands.Context, clear: bool = False) -> None:
         """View or clear the local AI report cache."""
         cache = await self.config.guild(ctx.guild).ai_reports()
@@ -1648,7 +1648,7 @@ class Tickets(DashboardIntegration, AiTools, Cog):
         text = "\n".join(lines)[:3900]
         await ctx.send(text)
 
-    @settickets_ai.command(name="auto")
+    @settickets_ai.command(name="auto", with_app_command=False)
     async def settickets_ai_auto(
         self,
         ctx: commands.Context,
@@ -1670,7 +1670,7 @@ class Tickets(DashboardIntegration, AiTools, Cog):
             ),
         )
 
-    @settickets_ai.command(name="roles")
+    @settickets_ai.command(name="roles", with_app_command=False)
     async def settickets_ai_roles(
         self,
         ctx: commands.Context,
@@ -1703,7 +1703,7 @@ class Tickets(DashboardIntegration, AiTools, Cog):
         mentions = [role.mention for role_id in roles if (role := ctx.guild.get_role(role_id))]
         await ctx.send(_("The AI report roles are set to: {}.").format(", ".join(mentions)))
 
-    @settickets_ai.command(name="map")
+    @settickets_ai.command(name="map", with_app_command=False)
     async def settickets_ai_map(
         self,
         ctx: commands.Context,
