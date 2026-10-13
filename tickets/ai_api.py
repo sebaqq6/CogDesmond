@@ -253,6 +253,7 @@ class AiTools:
             "ticket_key": ticket_key,
             "report_id": None,
             "report_url": None,
+            "view_url": None,
             "status": None,
             "cached": False,
         }
@@ -270,6 +271,7 @@ class AiTools:
                     {
                         "report_id": entry_id,
                         "report_url": entry.get("report_url"),
+                        "view_url": entry.get("view_url"),
                         "status": status,
                         "cached": True,
                     },
@@ -308,10 +310,12 @@ class AiTools:
 
         report_id = (data or {}).get("report_id")
         report_url = AiTools._absolutize_report_url((data or {}).get("report_url"))
+        view_url = AiTools._absolutize_report_url((data or {}).get("view_url"))
         result.update(
             {
                 "report_id": report_id,
                 "report_url": report_url,
+                "view_url": view_url,
                 "status": status,
                 "cached": bool((data or {}).get("cached")),
             },
@@ -321,6 +325,7 @@ class AiTools:
         cache[ticket_key] = {
             "report_id": report_id,
             "report_url": report_url,
+            "view_url": view_url,
             "cached": bool(result["cached"]),
             "created_at": time.strftime("%Y-%m-%d %H:%M:%S"),
         }
@@ -347,9 +352,10 @@ class AiTools:
 
     @staticmethod
     def _report_link(result: dict[str, Any]) -> str:
-        report_url = AiTools._absolutize_report_url(result.get("report_url"))
-        if report_url:
-            return f"🔗 {report_url}"
+        link = result.get("view_url") or result.get("report_url")
+        link = AiTools._absolutize_report_url(link)
+        if link:
+            return f"🔗 {link}"
         report_id = result.get("report_id")
         if report_id:
             return f"ID: `{report_id}`"
@@ -419,6 +425,7 @@ class AiTools:
             entry = cache.get(ticket_key)
             if entry and entry.get("report_id") == report_id:
                 result["report_url"] = entry.get("report_url") or result["report_url"]
+                result["view_url"] = entry.get("view_url") or result["view_url"]
         content = f"{self._report_line(result, done=True)}\n{self._report_link(result)}"
         if msg is not None and getattr(ctx, "interaction", None) is None:
             try:
