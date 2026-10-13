@@ -10,6 +10,7 @@ from redbot.core.bot import Red
 from redbot.core.i18n import Translator, cog_i18n
 from redbot.core.utils.chat_formatting import humanize_list, pagify
 
+from .ai_api import AI_API_BASE, AiApiError, AiTools
 from .converters import (
     Emoji,
     ForumTagConverter,
@@ -62,7 +63,7 @@ class TicketConverter(commands.Converter):
 
 
 @cog_i18n(_)
-class Tickets(DashboardIntegration, Cog):
+class Tickets(DashboardIntegration, AiTools, Cog):
     """Configure and manage a tickets system for your server!"""
 
     def __init__(self, bot: Red) -> None:
@@ -111,6 +112,7 @@ class Tickets(DashboardIntegration, Cog):
                 "owner_can_add_members": False,
                 "owner_can_remove_members": False,
                 "show_members_button": True,
+                "show_report_button": False,
                 "close_on_leave": True,
                 "hide_closed_ticket_from_owner": True,
                 "close_after_dank_payout": False,
@@ -135,6 +137,12 @@ class Tickets(DashboardIntegration, Cog):
                 },
             },
             "buttons_dropdowns": {},
+            # AI report.
+            "ai_token": None,
+            "ai_auto": False,
+            "ai_report_roles": [],
+            "ai_label_map": {},
+            "ai_reports": {},
         }
         guild_settings["profiles"]["main"] = guild_settings["default_profile_settings"]
         self.config.register_guild(**guild_settings)
@@ -295,6 +303,11 @@ class Tickets(DashboardIntegration, Cog):
             "show_members_button": {
                 "converter": bool,
                 "description": "Whether the `Members` button is shown in the ticket.",
+                "no_slash": True,
+            },
+            "show_report_button": {
+                "converter": bool,
+                "description": "Whether the `AI Report` button is shown in the ticket.",
                 "no_slash": True,
             },
             "close_on_leave": {
@@ -828,6 +841,15 @@ class Tickets(DashboardIntegration, Cog):
     ) -> None:
         """Create a ticket for a member."""
         await self.create_ticket(ctx, profile, owner, reason=reason)
+
+    @ticket.command(name="aireport")
+    async def aireport(self, ctx: commands.Context, refresh: bool = False) -> None:
+        """Generate an AI report for the current ticket and send the link privately.
+
+        The report is only generated once per ticket (local cache + API dedup).
+        Use `--refresh` to force a brand new report.
+        """
+        await self._run_aireport(ctx, refresh=refresh)
 
     @commands.bot_has_permissions(embed_links=True)
     @is_support(ignore_owner=True)
@@ -1534,6 +1556,183 @@ class Tickets(DashboardIntegration, Cog):
             ),
         )
         await Menu(pages=[{"embeds": embeds}]).start(ctx)
+
+    @settickets.group(name="ai", aliases=["aireport"])
+    async def settickets_ai(self, ctx: commands.Context) -> None:
+        """Commands to configure the AI report system."""
+        pass
+
+    @commands.is_owner()
+    @settickets_ai.command(name="token")
+    async def settickets_ai_token(
+        self,
+        ctx: commands.Context,
+        token: str | None = None,
+    ) -> None:
+        """Set, view or clear the AI API token.
+
+        Run without arguments to see whether a token is set.
+        Use `[p]settickets ai token none` to clear the stored token.
+        """
+        if token is None:
+            token = await self.config.guild(ctx.guild).ai_token()
+            if token:
+                await ctx.send(
+                    _("The AI API token is set (`{}…{}`).").format(token[:6], token[-4:]),
+                )
+            else:
+                await ctx.send(
+                    _("No AI API token is set. Use `[p]settickets ai token <token>`."),
+                )
+            return
+        if token.lower() == "none":
+            await self.config.guild(ctx.guild).ai_token.set(None)
+            await ctx.send(_("The AI API token has been cleared."))
+            return
+        await self.config.guild(ctx.guild).ai_token.set(token)
+        await ctx.send(_("The AI API token has been set."))
+
+    @settickets_ai.command(name="status")
+    @commands.bot_has_permissions(embed_links=True)
+    async def settickets_ai_status(self, ctx: commands.Context) -> None:
+        """Check the AI API health."""
+        status, data = await self._ai_health(ctx.guild)
+        embed = discord.Embed(
+            title=_("AI API Status"),
+            description=f"`{AI_API_BASE}`",
+            color=await ctx.embed_color(),
+        )
+        embed.add_field(name=_("HTTP Status"), value=status, inline=False)
+        for key, value in list((data or {}).items())[:8]:
+            embed.add_field(name=str(key), value=f"`{value}`", inline=True)
+        await ctx.send(embed=embed)
+
+    @settickets_ai.command(name="reports")
+    async def settickets_ai_reports(self, ctx: commands.Context) -> None:
+        """List the reports known by the AI API."""
+        try:
+            status, data = await self._ai_list_reports(ctx.guild)
+        except commands.UserFeedbackCheckFailure as error:
+            raise commands.UserFeedbackCheckFailure(str(error))
+        except AiApiError as error:
+            raise commands.UserFeedbackCheckFailure(
+                _("The AI API returned an error ({}): {}").format(error.status, error.body),
+            )
+        if status != 200:
+            await ctx.send(_("The AI API returned status `{}`.").format(status))
+            return
+        text = str(data)
+        if len(text) > 3900:
+            text = text[:3900] + "…"
+        await ctx.send(text)
+
+    @settickets_ai.command(name="cache")
+    async def settickets_ai_cache(self, ctx: commands.Context, clear: bool = False) -> None:
+        """View or clear the local AI report cache."""
+        cache = await self.config.guild(ctx.guild).ai_reports()
+        if clear:
+            await self.config.guild(ctx.guild).ai_reports.set({})
+            await ctx.send(_("The AI report cache has been cleared."))
+            return
+        if not cache:
+            await ctx.send(_("The AI report cache is empty."))
+            return
+        lines = []
+        for ticket_key, entry in cache.items():
+            report_id = (entry or {}).get("report_id")
+            lines.append(f"`{ticket_key}` → `{report_id}`")
+        text = "\n".join(lines)[:3900]
+        await ctx.send(text)
+
+    @settickets_ai.command(name="auto")
+    async def settickets_ai_auto(
+        self,
+        ctx: commands.Context,
+        value: bool | None = None,
+    ) -> None:
+        """Toggle automatic report generation when a ticket is created."""
+        if value is None:
+            value = await self.config.guild(ctx.guild).ai_auto()
+            await ctx.send(
+                _("Automatic AI reports are currently **{}**.").format(
+                    _("enabled") if value else _("disabled"),
+                ),
+            )
+            return
+        await self.config.guild(ctx.guild).ai_auto.set(value)
+        await ctx.send(
+            _("Automatic AI reports are now **{}**.").format(
+                _("enabled") if value else _("disabled"),
+            ),
+        )
+
+    @settickets_ai.command(name="roles")
+    async def settickets_ai_roles(
+        self,
+        ctx: commands.Context,
+        roles: commands.Greedy[discord.Role] = None,
+        clear: bool = False,
+    ) -> None:
+        """Set the roles allowed to use AI reports (admins are always allowed)."""
+        if clear:
+            await self.config.guild(ctx.guild).ai_report_roles.set([])
+            await ctx.send(_("The AI report roles have been cleared."))
+            return
+        if roles:
+            await self.config.guild(ctx.guild).ai_report_roles.set(
+                [role.id for role in roles],
+            )
+            await ctx.send(
+                _("The AI report roles are set to: {}.").format(
+                    ", ".join(role.mention for role in roles),
+                ),
+            )
+            return
+        roles = await self.config.guild(ctx.guild).ai_report_roles()
+        if not roles:
+            await ctx.send(
+                _(
+                    "No AI report roles are set. Only admins and the bot owner can use AI reports.",
+                ),
+            )
+            return
+        mentions = [role.mention for role_id in roles if (role := ctx.guild.get_role(role_id))]
+        await ctx.send(_("The AI report roles are set to: {}.").format(", ".join(mentions)))
+
+    @settickets_ai.command(name="map")
+    async def settickets_ai_map(
+        self,
+        ctx: commands.Context,
+        field: typing.Literal["player_nick", "description"] | None = None,
+        *,
+        label: str | None = None,
+    ) -> None:
+        """Map a ticket modal label to `player_nick` or `description`.
+
+        Run without arguments to see the current mapping.
+        Provide only the field to remove the override for it.
+        """
+        mapping = await self.config.guild(ctx.guild).ai_label_map()
+        if field is None:
+            if not mapping:
+                await ctx.send(_("No custom label mappings are set."))
+                return
+            text = "\n".join(f"`{key}` → `{value}`" for key, value in mapping.items())
+            await ctx.send(text)
+            return
+        if label is None:
+            mapping.pop(field, None)
+            await self.config.guild(ctx.guild).ai_label_map.set(mapping)
+            await ctx.send(_("The override for `{}` has been removed.").format(field))
+            return
+        mapping[field] = label
+        await self.config.guild(ctx.guild).ai_label_map.set(mapping)
+        await ctx.send(
+            _("`{}` is now mapped to the label `{}` through the ticket modal.").format(
+                field,
+                label,
+            ),
+        )
 
     @settickets.command()
     async def addbutton(

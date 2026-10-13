@@ -9,6 +9,8 @@ from redbot.core import commands
 from redbot.core.i18n import Translator
 from redbot.core.utils.chat_formatting import box
 
+from .ai_api import AiApiError
+
 _: Translator = Translator("Tickets", __file__)
 
 
@@ -158,6 +160,12 @@ class TicketView(discord.ui.View):
                 self.remove_item(self.members)
             except ValueError:
                 pass
+        self.ai_report.custom_id = f"Tickets_#{self.ticket.id}_ai_report"
+        if not config.get("show_report_button", False):
+            try:
+                self.remove_item(self.ai_report)
+            except ValueError:
+                pass
         if edit_message:
             try:
                 await self._message.edit(view=self)
@@ -279,6 +287,18 @@ class TicketView(discord.ui.View):
             view: OwnerCloseConfirmation = OwnerCloseConfirmation(self.cog)
             await view.start(self.ticket)
         return None
+
+    @discord.ui.button(label=_("AI Report"), style=discord.ButtonStyle.primary)
+    async def ai_report(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        try:
+            await self.cog._run_aireport_button(interaction, self.ticket, refresh=False)
+        except (commands.UserFeedbackCheckFailure, RuntimeError, AiApiError) as error:
+            await interaction.followup.send(f"⛔ {error}", ephemeral=True)
+        except (discord.HTTPException, discord.Forbidden):
+            await interaction.followup.send(
+                _("⛔ Nie udało się wygenerować raportu AI."),
+                ephemeral=True,
+            )
 
 
 class MembersView(discord.ui.View):
