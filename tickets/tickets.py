@@ -1557,7 +1557,11 @@ class Tickets(DashboardIntegration, AiTools, Cog):
         )
         await Menu(pages=[{"embeds": embeds}]).start(ctx)
 
-    @settickets.group(name="ai", aliases=["aireport"])
+    @settickets.group(
+        name="ai",
+        aliases=["aireport"],
+        with_app_command=False,
+    )
     async def settickets_ai(self, ctx: commands.Context) -> None:
         """Commands to configure the AI report system."""
         pass
