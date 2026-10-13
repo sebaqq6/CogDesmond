@@ -335,6 +335,7 @@ class AiTools:
             return _("✅ Raport AI gotowy")
         return _("⏳ Raport AI w trakcie generowania…")
 
+    @staticmethod
     def _absolutize_report_url(report_url: str | None) -> str | None:
         if not report_url:
             return None
