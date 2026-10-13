@@ -459,6 +459,7 @@ class Tickets(DashboardIntegration, AiTools, Cog):
             ],
         )
         await self.settings.add_commands()
+        self._normalize_hybrid_descriptions()
         asyncio.create_task(self.load_tickets())
 
     async def cog_unload(self) -> None:

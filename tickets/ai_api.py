@@ -173,6 +173,20 @@ class AiTools:
             task.cancel()
         await super().cog_unload()
 
+    def _normalize_hybrid_descriptions(self) -> None:
+        """Ensure every hybrid command has a usable app_command description.
+
+        Some discord.py versions leave ``app_command.description`` as a
+        ``_MissingSentinel``, which crashes AAA3A_utils'
+        ``CogsUtils.add_hybrid_commands`` on the following reload.
+        """
+        for _object in self.walk_commands():
+            if isinstance(_object, (commands.HybridCommand, commands.HybridGroup)):
+                if _object.app_command is None:
+                    continue
+                if getattr(_object.app_command, "description", None) is discord.utils.MISSING:
+                    _object.app_command.description = _object.short_doc or _object.qualified_name
+
     def _get_ticket_by_channel(self, guild, channel):
         if guild is None or channel is None:
             return None
