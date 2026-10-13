@@ -276,6 +276,34 @@ class AiTools:
                         "cached": True,
                     },
                 )
+                if not entry.get("view_url"):
+                    # Old cache entries have no browser-safe link. Ask the API
+                    # (server-side dedup, same ticket_id) to return the existing
+                    # report again, this time with its view_url.
+                    player_nick, description = _extract_ticket_data(
+                        ticket,
+                        await self.config.guild(guild).ai_label_map(),
+                    )
+                    if player_nick and await self._ai_token(guild):
+                        try:
+                            _, data = await self._ai_api.create_ticket_report(
+                                await self._ai_token(guild) or "",
+                                {
+                                    "player_nick": player_nick[:36],
+                                    "description": description[:2000],
+                                    "ticket_id": ticket_key,
+                                },
+                            )
+                        except AiApiError:
+                            data = {}
+                        view_url = AiTools._absolutize_report_url(
+                            (data or {}).get("view_url"),
+                        )
+                        if view_url:
+                            entry["view_url"] = view_url
+                            cache[ticket_key] = entry
+                            await self.config.guild(guild).ai_reports.set(cache)
+                            result["view_url"] = view_url
                 return result
 
         player_nick, description = _extract_ticket_data(
