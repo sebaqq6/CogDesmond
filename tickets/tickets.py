@@ -842,7 +842,7 @@ class Tickets(DashboardIntegration, AiTools, Cog):
         """Create a ticket for a member."""
         await self.create_ticket(ctx, profile, owner, reason=reason)
 
-    @ticket.command(name="aireport")
+    @ticket.command(name="aireport", with_app_command=False)
     async def aireport(self, ctx: commands.Context, refresh: bool = False) -> None:
         """Generate an AI report for the current ticket and send the link privately.
 
