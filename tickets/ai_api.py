@@ -18,8 +18,8 @@ AI_API_BASE = "https://ai.eadventure.pl"
 
 # The API rate limits to 30 req/min/IP -> keep at least one request every 2s.
 _AI_MIN_INTERVAL = 2.0
-_AI_POLL_INTERVAL = 3
-_AI_POLL_TIMEOUT = 120
+_AI_POLL_INTERVAL = 5
+_AI_POLL_TIMEOUT = 900
 
 
 class AiApiError(RuntimeError):
@@ -307,7 +307,7 @@ class AiTools:
             )
 
         report_id = (data or {}).get("report_id")
-        report_url = (data or {}).get("report_url")
+        report_url = AiTools._absolutize_report_url((data or {}).get("report_url"))
         result.update(
             {
                 "report_id": report_id,
@@ -335,9 +335,18 @@ class AiTools:
             return _("✅ Raport AI gotowy")
         return _("⏳ Raport AI w trakcie generowania…")
 
+    def _absolutize_report_url(report_url: str | None) -> str | None:
+        if not report_url:
+            return None
+        if report_url.startswith(("http://", "https://")):
+            return report_url
+        if report_url.startswith("/"):
+            return f"{AI_API_BASE}{report_url}"
+        return report_url
+
     @staticmethod
     def _report_link(result: dict[str, Any]) -> str:
-        report_url = result.get("report_url")
+        report_url = AiTools._absolutize_report_url(result.get("report_url"))
         if report_url:
             return f"🔗 {report_url}"
         report_id = result.get("report_id")
