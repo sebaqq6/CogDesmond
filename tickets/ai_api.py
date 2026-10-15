@@ -306,21 +306,11 @@ class AiTools:
                             result["view_url"] = view_url
                 return result
 
-        player_nick, description = _extract_ticket_data(
-            ticket,
-            await self.config.guild(guild).ai_label_map(),
-        )
-        if not player_nick:
-            raise commands.UserFeedbackCheckFailure(
-                _(
-                    "Nie znaleziono nicku gracza w odpowiedziach modala ticketa. "
-                    "Upewnij się, że modal zawiera pole z nickiem.",
-                ),
-            )
+        # Nick nie jest wyciagany - wszystko leci w modal_answers, AI ogarnie
+        owner_answers = dict(getattr(ticket, "owner_answers", None) or {})
 
         payload: dict[str, Any] = {
-            "player_nick": player_nick[:36],
-            "description": description[:2000],
+            "modal_answers": owner_answers,
         }
         if not refresh:
             payload["ticket_id"] = ticket_key
