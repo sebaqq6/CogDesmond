@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import time
-from collections.abc import Callable, Sequence
+from collections.abc import Callable
 from typing import Any
 
 import aiohttp
@@ -102,59 +102,6 @@ class AIAPI:
                     data = (await response.text())[:300]
                 return response.status, data
             raise AiApiError(response.status, (await response.text())[:300])
-
-
-def _match_answers(
-    answers: dict[str, str],
-    keywords: Sequence[str],
-) -> str | None:
-    for label, value in answers.items():
-        label_lower = label.lower()
-        if any(keyword in label_lower for keyword in keywords):
-            return value
-    return None
-
-
-def _extract_ticket_data(
-    ticket,
-    label_map: dict[str, str] | None = None,
-) -> tuple[str | None, str]:
-    """Extract the player nick and a description from the ticket modal answers.
-
-    This returns ``(player_nick, description)``. ``player_nick`` may be None
-    when the ticket has no modal answers containing a nick.
-    """
-    answers: dict[str, str] = dict(getattr(ticket, "owner_answers", None) or {})
-    label_map = dict(label_map or {})
-
-    player_nick: str | None = None
-    if label_map.get("player_nick") in answers:
-        player_nick = answers[label_map["player_nick"]]
-    if not player_nick:
-        player_nick = _match_answers(answers, ("zgłaszanego gracza",))
-    if not player_nick:
-        player_nick = _match_answers(answers, ("twój nick w grze",))
-
-    description: str | None = None
-    if label_map.get("description") in answers:
-        description = answers[label_map["description"]]
-    if not description:
-        description = _match_answers(
-            answers,
-            (
-                "na czym polega problem",
-                "opis sytuacji",
-                "opis błędu",
-                "opis",
-            ),
-        )
-    if not description:
-        description = "\n".join(f"• {label} {value}" for label, value in answers.items())
-    if not description:
-        description = getattr(ticket, "reason", None) or ""
-
-    description = (description or "").strip()[:2000]
-    return (player_nick or "").strip() or None, description
 
 
 class AiTools:
@@ -280,17 +227,15 @@ class AiTools:
                     # Old cache entries have no browser-safe link. Ask the API
                     # (server-side dedup, same ticket_id) to return the existing
                     # report again, this time with its view_url.
-                    player_nick, description = _extract_ticket_data(
-                        ticket,
-                        await self.config.guild(guild).ai_label_map(),
-                    )
-                    if player_nick and await self._ai_token(guild):
+                    token = await self._ai_token(guild)
+                    if token:
                         try:
                             _, data = await self._ai_api.create_ticket_report(
-                                await self._ai_token(guild) or "",
+                                token,
                                 {
-                                    "player_nick": player_nick[:36],
-                                    "description": description[:2000],
+                                    "modal_answers": dict(
+                                        getattr(ticket, "owner_answers", None) or {},
+                                    ),
                                     "ticket_id": ticket_key,
                                 },
                             )

@@ -141,7 +141,6 @@ class Tickets(DashboardIntegration, AiTools, Cog):
             "ai_token": None,
             "ai_auto": False,
             "ai_report_roles": [],
-            "ai_label_map": {},
             "ai_reports": {},
         }
         guild_settings["profiles"]["main"] = guild_settings["default_profile_settings"]
@@ -1703,41 +1702,6 @@ class Tickets(DashboardIntegration, AiTools, Cog):
             return
         mentions = [role.mention for role_id in roles if (role := ctx.guild.get_role(role_id))]
         await ctx.send(_("The AI report roles are set to: {}.").format(", ".join(mentions)))
-
-    @settickets_ai.command(name="map", with_app_command=False)
-    async def settickets_ai_map(
-        self,
-        ctx: commands.Context,
-        field: typing.Literal["player_nick", "description"] | None = None,
-        *,
-        label: str | None = None,
-    ) -> None:
-        """Map a ticket modal label to `player_nick` or `description`.
-
-        Run without arguments to see the current mapping.
-        Provide only the field to remove the override for it.
-        """
-        mapping = await self.config.guild(ctx.guild).ai_label_map()
-        if field is None:
-            if not mapping:
-                await ctx.send(_("No custom label mappings are set."))
-                return
-            text = "\n".join(f"`{key}` → `{value}`" for key, value in mapping.items())
-            await ctx.send(text)
-            return
-        if label is None:
-            mapping.pop(field, None)
-            await self.config.guild(ctx.guild).ai_label_map.set(mapping)
-            await ctx.send(_("The override for `{}` has been removed.").format(field))
-            return
-        mapping[field] = label
-        await self.config.guild(ctx.guild).ai_label_map.set(mapping)
-        await ctx.send(
-            _("`{}` is now mapped to the label `{}` through the ticket modal.").format(
-                field,
-                label,
-            ),
-        )
 
     @settickets.command()
     async def addbutton(
