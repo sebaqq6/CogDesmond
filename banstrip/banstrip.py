@@ -119,19 +119,25 @@ class BanStrip(commands.Cog):
     @commands.guild_only()
     @_action_check("ban_roles")
     @app_commands.describe(
-        member="Członek, któremu ma zostać nadana rola BAN.",
+        member="Członek serwera lub ID użytkownika, któremu ma zostać nadana rola BAN.",
         details="Opcjonalnie: `powód` (np. `spam`) = ban permanentny, lub `dni powód` (np. `7 spam`) = ban czasowy. Puste = permanentny.",
     )
-    @banstrip.command(name="ban", description="Nadaj członkowi rolę BAN (zdejmuje jego inne role).")
+    @banstrip.command(
+        name="ban",
+        description="Nadaj rolę BAN członkowi lub zapisz ban po ID użytkownika.",
+    )
     async def ban(
         self,
         ctx: commands.Context,
-        member: discord.Member,
+        member: discord.User,
         *,
         details: str | None = None,
     ):
         """
         Apply the BAN role to a member (stripping their other roles).
+
+        You may pass a member or a raw user ID. If the user is not on the
+        server, the ban is stored and applied automatically when they rejoin.
 
         `details` may start with a number of days (0 or empty = permanent),
         optionally followed by a reason.
@@ -141,67 +147,82 @@ class BanStrip(commands.Cog):
             return await self._reply(ctx, _("You don't have permission to ban members."))
         if not await self._require_ban_role(ctx):
             return None
-        if member == ctx.author:
+        if member.id == ctx.author.id:
             return await self._reply(ctx, _("You can't ban yourself."))
-        if member == ctx.guild.owner:
+        if member.id == ctx.guild.owner_id:
             return await self._reply(ctx, _("You can't ban the server owner."))
         if member.bot:
             return await self._reply(ctx, "Nie możesz zbanować bota.")
-        if member.guild_permissions.ban_members:
-            return await self._reply(
-                ctx,
-                _("You can't ban someone whose role has the `ban_members` permission."),
-            )
-        data = await self.config.guild(ctx.guild).all()
-        protected = set(data["ban_roles"]) | set(data["unban_roles"]) | set(data["view_roles"])
-        if protected and any(r.id in protected for r in member.roles):
-            return await self._reply(
-                ctx,
-                "Nie możesz zbanować osoby z rolą uprawnień banstrip.",
-            )
-        if await self._is_protected(member):
-            return await self._reply(ctx, "Nie możesz zbanować osoby z rolą chronioną.")
-        if member.top_role >= ctx.author.top_role and ctx.author != ctx.guild.owner:
-            return await self._reply(
-                ctx,
-                _("You can't ban someone with a role equal to or higher than yours."),
-            )
-        if member.top_role >= ctx.guild.me.top_role:
-            return await self._reply(
-                ctx,
-                _("I can't manage that member's roles (their top role is too high)."),
-            )
+
+        target = ctx.guild.get_member(member.id)
+        ban_role = None
+        already = False
+        if target is not None:
+            if target.guild_permissions.ban_members:
+                return await self._reply(
+                    ctx,
+                    _("You can't ban someone whose role has the `ban_members` permission."),
+                )
+            data = await self.config.guild(ctx.guild).all()
+            protected = set(data["ban_roles"]) | set(data["unban_roles"]) | set(data["view_roles"])
+            if protected and any(r.id in protected for r in target.roles):
+                return await self._reply(
+                    ctx,
+                    "Nie możesz zbanować osoby z rolą uprawnień banstrip.",
+                )
+            if await self._is_protected(target):
+                return await self._reply(ctx, "Nie możesz zbanować osoby z rolą chronioną.")
+            if target.top_role >= ctx.author.top_role and ctx.author != ctx.guild.owner:
+                return await self._reply(
+                    ctx,
+                    _("You can't ban someone with a role equal to or higher than yours."),
+                )
+            if target.top_role >= ctx.guild.me.top_role:
+                return await self._reply(
+                    ctx,
+                    _("I can't manage that member's roles (their top role is too high)."),
+                )
+            ban_role = ctx.guild.get_role(await self.config.guild(ctx.guild).ban_role())
+            already = ban_role in target.roles
 
         days, reason = self._parse_details(details)
         expires_at = self._expiry_from_days(days)
 
-        ban_role = ctx.guild.get_role(await self.config.guild(ctx.guild).ban_role())
-        already = ban_role in member.roles
-
-        member_conf = self.config.member(member)
+        member_conf = self.config.member_from_ids(ctx.guild.id, member.id)
         await member_conf.reason.set(reason)
         await member_conf.banned_by.set(ctx.author.id)
         await member_conf.banned_at.set(
             int(datetime.datetime.now(datetime.timezone.utc).timestamp()),
         )
         await member_conf.expires_at.set(expires_at)
-        try:
-            await member.add_roles(ban_role, reason=reason or "banstrip: banned")
-        except discord.Forbidden:
-            await member_conf.clear()
-            return await self._reply(ctx, _("I don't have permission to add the BAN role."))
-        except discord.HTTPException as e:
-            await member_conf.clear()
-            return await self._reply(
-                ctx,
-                _fmt(_("Failed to add the BAN role: {error}"), error=e),
+
+        if target is not None:
+            try:
+                await target.add_roles(ban_role, reason=reason or "banstrip: banned")
+            except discord.Forbidden:
+                await member_conf.clear()
+                return await self._reply(ctx, _("I don't have permission to add the BAN role."))
+            except discord.HTTPException as e:
+                await member_conf.clear()
+                return await self._reply(
+                    ctx,
+                    _fmt(_("Failed to add the BAN role: {error}"), error=e),
+                )
+            msg = (
+                _("{member} is already banned.").format(member=target.mention)
+                if already
+                else _("{member} has been banned.").format(member=target.mention)
+            )
+        else:
+            await self._log_ban(member, ctx.guild)
+            await self._notify_banned(member, ctx.guild)
+            msg = _fmt(
+                "Zapisano ban dla {member} ({id}). "
+                "Rola BAN zostanie nadana po dołączeniu na serwer.",
+                member=member.mention,
+                id=member.id,
             )
 
-        msg = (
-            _("{member} is already banned.").format(member=member.mention)
-            if already
-            else _("{member} has been banned.").format(member=member.mention)
-        )
         if reason:
             msg += _fmt(_("\nReason: {reason}"), reason=reason)
         msg += (
@@ -212,34 +233,57 @@ class BanStrip(commands.Cog):
 
     @commands.guild_only()
     @_action_check("unban_roles")
-    @app_commands.describe(member="Członek, któremu ma zostać usunięta rola BAN.")
-    @banstrip.command(name="unban", description="Usuń rolę BAN z członka.")
-    async def unban(self, ctx: commands.Context, member: discord.Member):
+    @app_commands.describe(
+        member="Członek serwera lub ID użytkownika, któremu ma zostać usunięta rola BAN.",
+    )
+    @banstrip.command(
+        name="unban",
+        description="Usuń rolę BAN z członka lub wyczyść zapisany ban po ID.",
+    )
+    async def unban(self, ctx: commands.Context, member: discord.User):
         """
         Remove the BAN role from a member and run the restore command.
+
+        You may pass a member or a raw user ID. If the user is not on the
+        server, their stored ban record is cleared so they won't be re-banned
+        on rejoin.
         """
         if not await self._check_action(ctx, "unban_roles"):
             return await self._reply(ctx, _("You don't have permission to unban members."))
         if not await self._require_ban_role(ctx):
             return None
         ban_role = ctx.guild.get_role(await self.config.guild(ctx.guild).ban_role())
-        if ban_role not in member.roles:
+        member_conf = self.config.member_from_ids(ctx.guild.id, member.id)
+        data = await member_conf.all()
+        has_record = bool(data["banned_at"] or data["reason"])
+        target = ctx.guild.get_member(member.id)
+        if target is None or ban_role not in target.roles:
+            if not has_record:
+                return await self._reply(
+                    ctx,
+                    _("{member} does not have the BAN role.").format(member=member.mention),
+                )
+            await member_conf.clear()
             return await self._reply(
                 ctx,
-                _("{member} does not have the BAN role.").format(member=member.mention),
+                _fmt(
+                    "Usunięto zapis bana dla {member} ({id}).",
+                    member=member.mention,
+                    id=member.id,
+                ),
             )
-        self._removal_markers[(ctx.guild.id, member.id)] = ("unban", ctx.author)
+        self._removal_markers[(ctx.guild.id, target.id)] = ("unban", ctx.author)
         try:
-            await member.remove_roles(ban_role, reason=f"banstrip: unbanned by {ctx.author}")
+            await target.remove_roles(ban_role, reason=f"banstrip: unbanned by {ctx.author}")
         except (discord.Forbidden, discord.HTTPException) as e:
-            self._removal_markers.pop((ctx.guild.id, member.id), None)
+            self._removal_markers.pop((ctx.guild.id, target.id), None)
             return await self._reply(
                 ctx,
                 _fmt(_("Failed to remove the BAN role: {error}"), error=e),
             )
         await self._reply(
             ctx,
-            _("{member} has been unbanned.").format(member=member.mention),
+            _("{member} has been unbanned.").format(member=target.mention),
         )
         return None
 
@@ -289,6 +333,7 @@ class BanStrip(commands.Cog):
             entries.append(
                 (
                     lp,
+                    member.id,
                     self._truncate(member.display_name, 25),
                     duration,
                     date_str,
@@ -303,12 +348,13 @@ class BanStrip(commands.Cog):
                 title=f"Zbanowani ({len(members)})",
                 color=await ctx.embed_color(),
             )
-            for lp, name, duration, date_str, reason, banned_by in entries[
+            for lp, member_id, name, duration, date_str, reason, banned_by in entries[
                 start : start + fields_per_page
             ]:
                 embed.add_field(
                     name=f"{lp}. {name}",
                     value=(
+                        f"**ID:** {member_id}\n"
                         f"**Dni:** {duration}\n"
                         f"**Powód:** {reason}\n"
                         f"**Przez:** {banned_by}\n"
@@ -727,8 +773,8 @@ class BanStrip(commands.Cog):
             return text
         return text[: max_len - 3] + "..."
 
-    async def _notify_banned(self, member: discord.Member, guild: discord.Guild) -> None:
-        data = await self.config.member(member).all()
+    async def _notify_banned(self, member: discord.User, guild: discord.Guild) -> None:
+        data = await self.config.member_from_ids(guild.id, member.id).all()
         reason = data["reason"] or _("No reason")
         if expires := data["expires_at"]:
             dt = datetime.datetime.fromtimestamp(expires, tz=datetime.timezone.utc)
@@ -762,8 +808,8 @@ class BanStrip(commands.Cog):
         except discord.HTTPException as e:
             log.warning("Failed to strip roles from %s in %s: %s", member.id, member.guild.id, e)
 
-    async def _log_ban(self, member: discord.Member, guild: discord.Guild) -> None:
-        data = await self.config.member(member).all()
+    async def _log_ban(self, member: discord.User, guild: discord.Guild) -> None:
+        data = await self.config.member_from_ids(guild.id, member.id).all()
         banned_by = guild.get_member(data["banned_by"]) if data["banned_by"] else None
         reason = data["reason"] or _("No reason")
         if expires := data["expires_at"]:
