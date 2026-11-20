@@ -48,6 +48,8 @@ class BanStrip(commands.Cog):
     in days (with automatic expiry), and per-guild permissions for each action.
     """
 
+    _MAX_REPAIRS_PER_RUN = 10
+
     def __init__(self, bot: Red):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=5498761210, force_registration=True)
@@ -966,19 +968,49 @@ class BanStrip(commands.Cog):
             ban_role = guild.get_role(ban_role_id)
             if ban_role is None:
                 continue
+            repairs = 0
             for user_id, data in members_data.items():
                 expires_at = data.get("expires_at")
-                if not expires_at or expires_at > now:
-                    continue
                 member = guild.get_member(int(user_id))
-                if member is None or ban_role not in member.roles:
+                if member is None:
                     continue
-                self._removal_markers[(guild.id, member.id)] = ("expiry", None)
-                try:
-                    await member.remove_roles(ban_role, reason="banstrip: ban expired")
-                except (discord.Forbidden, discord.HTTPException) as e:
-                    self._removal_markers.pop((guild.id, member.id), None)
-                    log.warning("Failed to expire ban for %s in %s: %s", user_id, guild.id, e)
+                if expires_at and expires_at <= now:
+                    if ban_role not in member.roles:
+                        continue
+                    self._removal_markers[(guild.id, member.id)] = ("expiry", None)
+                    try:
+                        await member.remove_roles(ban_role, reason="banstrip: ban expired")
+                    except (discord.Forbidden, discord.HTTPException) as e:
+                        self._removal_markers.pop((guild.id, member.id), None)
+                        log.warning("Failed to expire ban for %s in %s: %s", user_id, guild.id, e)
+                    continue
+                # Repair sweep: member on the banstrip list who joined (or got roles)
+                # while the bot was offline.
+                if not (data.get("banned_at") or data.get("reason")):
+                    continue
+                if repairs >= self._MAX_REPAIRS_PER_RUN:
+                    break
+                if await self._is_protected(member):
+                    continue
+                if ban_role not in member.roles:
+                    try:
+                        # on_member_update then strips the remaining roles,
+                        # exactly like after a rejoin.
+                        await member.add_roles(
+                            ban_role, reason="banstrip: sweep, BAN role missing for listed member",
+                        )
+                    except (discord.Forbidden, discord.HTTPException) as e:
+                        log.warning("Sweep: failed to add BAN role to %s in %s: %s", user_id, guild.id, e)
+                        continue
+                    repairs += 1
+                    log.info("Sweep: re-applied BAN role to %s in %s", user_id, guild.id)
+                elif any(
+                    not r.is_default() and not r.managed and r.id != ban_role_id and r < guild.me.top_role
+                    for r in member.roles
+                ):
+                    await self._strip_roles(member, ban_role_id)
+                    repairs += 1
+                    log.info("Sweep: stripped extra roles from banned member %s in %s", user_id, guild.id)
 
     @_expiry_loop.before_loop
     async def _before_expiry_loop(self) -> None:
