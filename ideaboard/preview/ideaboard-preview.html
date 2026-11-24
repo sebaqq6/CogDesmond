@@ -1,17 +1,18 @@
 <!doctype html>
-<html lang="pl">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>IdeaBoard – podgląd wiadomości</title>
+<title>IdeaBoard – message preview</title>
 <!--
-  Podgląd wszystkich wiadomości cogu IdeaBoard (bez serwera Discord).
-  Dane i teksty edytujesz w sekcji "SCENY" w <script> na dole – odśwież stronę (F5).
-  Źródła prawdy w kodzie:
-    embedy sugestii  -> common/embeds.py
-    przyciski        -> views/voteview.py
-    pozostałe        -> commands/user.py, adminbase.py, admin.py, common/listener.py
-  Po dopracowaniu wyglądu przenieś zmiany do kodu Pythona (+ pl-PL.po).
+  Preview of every message the IdeaBoard cog sends (no Discord server needed).
+  Edit texts and sample data in the SCENES / SETTINGS sections of the script below, then reload (F5).
+  Sources of truth in the code:
+    suggestion embeds -> common/embeds.py
+    buttons           -> views/voteview.py
+    everything else   -> commands/user.py, adminbase.py, admin.py, common/listener.py
+  Message texts below are the Polish (pl-PL) translations on purpose.
+  Once the look is final, port the changes to the Python code (+ pl-PL.po).
 -->
 <style>
   :root { --bg:#313338; --bg2:#2b2d31; --bg3:#1e1f22; --text:#dbdee1; --muted:#949ba4; --link:#00a8fc;
@@ -69,22 +70,22 @@
 </head>
 <body>
 <header>
-  <h1>💡 IdeaBoard – podgląd</h1>
-  <label>Motyw <select id="theme"><option value="dark">ciemny</option><option value="light">jasny</option></select></label>
-  <label>Anonimowo <input type="checkbox" id="anon" checked></label>
-  <label>Liczniki głosów <input type="checkbox" id="counts" checked></label>
-  <label>Reveal po odrzuceniu <input type="checkbox" id="reveal" checked></label>
-  <label>Górny emoji <input type="text" id="up" value="👍" size="3"></label>
-  <label>Dolny emoji <input type="text" id="down" value="👎" size="3"></label>
+  <h1>💡 IdeaBoard – preview</h1>
+  <label>Theme <select id="theme"><option value="dark">dark</option><option value="light">light</option></select></label>
+  <label>Anonymous <input type="checkbox" id="anon" checked></label>
+  <label>Vote counts <input type="checkbox" id="counts" checked></label>
+  <label>Reveal on rejection <input type="checkbox" id="reveal" checked></label>
+  <label>Upvote emoji <input type="text" id="up" value="👍" size="3"></label>
+  <label>Downvote emoji <input type="text" id="down" value="👎" size="3"></label>
 </header>
 <main id="root"></main>
 
 <script>
-/* ======================= USTAWIENIA / DANE PRZYKŁADOWE ======================= */
+/* ======================= SETTINGS / SAMPLE DATA ======================= */
 const COLORS = { pending:"#5865f2", approved:"#57f287", rejected:"#ed4245", deleted:"#607d8b", gold:"#f1c40f", blue:"#3498db" };
 const STATUS = { pending:["🕐","Pending Approval"], approved:["✅","Approved"], rejected:["❌","Rejected"], deleted:["🗑️","Deleted"] };
 
-// Teksty w PL (zgodnie z pl-PL.po) – podmień na własne, by zobaczyć efekt
+// Polish texts (as in pl-PL.po) – replace with your own to see the effect
 const T = {
   suggestion:"Sugestia #{n}", postedBy:"Autor: {name}", anon:"Opublikowano anonimowo", status:"Status",
   approvedBy:"Zatwierdził {name}", rejectedBy:"Odrzucił {name}", reason:"Powód", reasonRej:"Powód odrzucenia",
@@ -103,7 +104,7 @@ const SAMPLE = {
   time: "Dzisiaj o 14:32"
 };
 
-/* ============================ NARZĘDZIA RENDERU ============================ */
+/* ============================ RENDER HELPERS ============================ */
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 const fmt = (s,o={}) => String(s).replace(/\{(\w+)\}/g,(_,k)=>o[k]);
@@ -137,9 +138,9 @@ function message({user="IdeaBoard", bot=true, me=false, slash, tag, eph=false, c
   return `<div class="msg">
     <div class="avatar ${me?"me":""}">${esc(initial(user))}</div>
     <div class="body">
-      ${slash?`<div class="slash"><b>${esc(me?SAMPLE.author.name:"")}</b> użył <b>${esc(slash)}</b></div>`:""}
+      ${slash?`<div class="slash"><b>${esc(me?SAMPLE.author.name:"")}</b> used <b>${esc(slash)}</b></div>`:""}
       <div class="head"><span class="name">${esc(user)}</span>${bot?'<span class="bot">APP</span>':""}<span class="time">${esc(SAMPLE.time)}</span></div>
-      ${eph?'<div class="tag eph">Widoczne tylko dla Ciebie</div>':""}
+      ${eph?'<div class="tag eph">Only visible to you</div>':""}
       ${tag?`<div class="tag">${esc(tag)}</div>`:""}
       ${content?`<div class="content">${md(content)}</div>`:""}
       ${embeds.map(embed).join("")}
@@ -150,7 +151,7 @@ function message({user="IdeaBoard", bot=true, me=false, slash, tag, eph=false, c
 }
 const section = (title, src, html) => `<section><h2>${esc(title)}</h2><p class="src">${esc(src)}</p>${html}</section>`;
 
-/* =============================== SCENY =============================== */
+/* =============================== SCENES =============================== */
 function build(){
   const S = SAMPLE, anon=$("#anon").checked, counts=$("#counts").checked, reveal=$("#reveal").checked;
   const up=$("#up").value||"👍", down=$("#down").value||"👎";
@@ -161,7 +162,7 @@ function build(){
   const statusField = k=>({name:T.status, value:STATUS[k][0]+" "+STATUS[k][1]});
   const created = "Dzisiaj o 14:32";
 
-  // --- embed oczekującej sugestii (embeds.build_pending_embed)
+  // --- pending suggestion embed (embeds.build_pending_embed)
   const pending = (showAnon)=>({
     color:COLORS.pending, desc:S.content,
     author:{name:fmt(T.suggestion,{n:S.n})},
@@ -171,7 +172,7 @@ function build(){
     ts:created
   });
 
-  // --- embedy decyzji (embeds.build_decision_embeds)
+  // --- decision embeds (embeds.build_decision_embeds)
   const decision = (status)=>{
     const rev = status==="approved" || !anon || reveal;
     const proposal = {
@@ -198,57 +199,57 @@ function build(){
 
   let h = "";
 
-  h += section("1. Nowa sugestia – kanał „pending”", "common/embeds.py → build_pending_embed + views/voteview.py",
+  h += section("1. New suggestion – pending channel", "common/embeds.py → build_pending_embed + views/voteview.py",
     message({embeds:[pending(anon)], components:voteButtons}) +
-    message({tag:"wariant: autor widoczny (anonymous = off)", embeds:[pending(false)], components:voteButtons}) +
-    message({tag:"wariant: bez liczników (show_vote_counts = off)", embeds:[{...pending(anon), fields:[statusField("pending")]}], components:[{emoji:up},{emoji:down}]}));
+    message({tag:"variant: author visible (anonymous = off)", embeds:[pending(false)], components:voteButtons}) +
+    message({tag:"variant: no counters (show_vote_counts = off)", embeds:[{...pending(anon), fields:[statusField("pending")]}], components:[{emoji:up},{emoji:down}]}));
 
-  h += section("2. Potwierdzenie dla autora (/idea)", "commands/user.py → idea",
+  h += section("2. Confirmation to the author (/idea)", "commands/user.py → idea",
     message({me:true,user:S.author.name,bot:false,content:"/idea content:"+S.content}) +
     message({eph:true, slash:"/idea", me:false, content:"Twoja [sugestia #42](#) została opublikowana!", embeds:[pending(anon)]}));
 
-  h += section("3. Sugestia zatwierdzona – kanał „approved”", "commands/adminbase.py → approve + build_decision_embeds(status=approved)",
+  h += section("3. Approved suggestion – approved channel", "commands/adminbase.py → approve + build_decision_embeds(status=approved)",
     message({embeds:decision("approved")}) +
-    message({user:"IdeaBoard", content:"Wiadomość od `/approve`:\nSugestia #42 została zatwierdzona.", tag:"odpowiedź na komendę w kanale moderatora"}));
+    message({user:"IdeaBoard", content:"Sugestia #42 została zatwierdzona.", tag:"reply to the command in the moderator's channel"}));
 
-  h += section("4. Sugestia odrzucona – kanał „rejected”", "commands/adminbase.py → reject + build_decision_embeds(status=rejected)",
+  h += section("4. Rejected suggestion – rejected channel", "commands/adminbase.py → reject + build_decision_embeds(status=rejected)",
     message({embeds:decision("rejected")}) +
-    message({tag:"odpowiedź na komendę", content:"Sugestia #42 została odrzucona."}));
+    message({tag:"reply to the command", content:"Sugestia #42 została odrzucona."}));
 
-  h += section("5. Wiadomość w wątku dyskusji (po decyzji, delete_threads = off)", "commands/adminbase.py → approve/reject; listener.on_message_delete (status=deleted)",
+  h += section("5. Message in the discussion thread (after decision, delete_threads = off)", "commands/adminbase.py → approve/reject; listener.on_message_delete (status=deleted)",
     message({embeds:decision("approved")}) +
-    message({tag:"wątek zostaje zarchiwizowany i zablokowany, nazwa: „Sugestia #42 Dyskusja [Zatwierdzona]”", embeds:[{color:COLORS.deleted, desc:S.content, author:{name:fmt(T.suggestion,{n:S.n})}, fields:[statusField("deleted"), ...votes()], footer:{text:T.anon}, ts:created}]}));
+    message({tag:"thread gets archived and locked, name: “Suggestion #42 Discussion [Approved]”", embeds:[{color:COLORS.deleted, desc:S.content, author:{name:fmt(T.suggestion,{n:S.n})}, fields:[statusField("deleted"), ...votes()], footer:{text:T.anon}, ts:created}]}));
 
-  h += section("6. Wiadomości prywatne (DM) do autora", "commands/adminbase.py (conf.dm)",
+  h += section("6. Direct messages to the author", "commands/adminbase.py (conf.dm)",
     message({content:"Twoja [sugestia #42](#) została zatwierdzona!"}) +
     message({content:"Twoja [sugestia #42](#) została odrzucona!\nPowód: "+S.reasonRejected}));
 
-  h += section("7. Odpowiedzi po kliknięciu przycisku (ephemeral, znikają po 60 s)", "views/voteview.py",
+  h += section("7. Replies after clicking a button (ephemeral, deleted after 60 s)", "views/voteview.py",
     ["Oddałeś głos za tą sugestią.","Cofnąłeś swój głos za.","Zmieniłeś głos przeciw na głos za.","Nie możesz głosować na własną sugestię.",
      "Nie masz żadnej z wymaganych ról, aby głosować.\n@Członek, @Weteran",
      "Twoje konto jest zbyt nowe! Musisz poczekać `2 dni` zanim zagłosujesz.",
      "Musisz mieć poziom 5 lub wyższy, aby głosować.",
      "Ta sugestia już nie istnieje w konfiguracji!"].map(t=>message({eph:true,content:t})).join(""));
 
-  h += section("8. Błędy i walidacje /idea", "commands/user.py",
+  h += section("8. /idea errors and validations", "commands/user.py",
     ["Kanał oczekujących sugestii nie został ustawiony!","Nie masz wymaganych ról, aby tworzyć sugestie.","Musisz odczekać `3 minuty`, zanim złożysz kolejną sugestię.",
      "Brak ustawionych zatwierdzających! Admin musi użyć komendy `[p]ideaset approverole @rola`.","Jesteś na czarnej liście i nie możesz składać sugestii."]
     .map(t=>message({eph:true,content:t})).join(""));
 
-  h += section("9. /ideastats – profil użytkownika", "commands/user.py → fetch_profile",
+  h += section("9. /ideastats – user profile", "commands/user.py → fetch_profile",
     message({embeds:[{color:COLORS.gold, author:{name:"Statystyki: "+S.author.display, icon:S.author.name}, thumb:S.author.name, ts:"Dzisiaj o 14:35",
       fields:[
        {name:"Podsumowanie sugestii", value:"```\nZłożone sugestie: 12\nZatwierdzone: 5\nOdrzucone: 3\nKarma: 31 (40↑ 9↓)\n```"},
        {name:"Podsumowanie głosów", value:"```\n"+up+" Oddane głosy za: 58\n"+down+" Oddane głosy przeciw: 7\nWygrane: 33\nPrzegrane: 9\n```"}]}]}));
 
-  h += section("10. /viewvotes – kto zagłosował (ephemeral)", "commands/adminbase.py → view_votes",
+  h += section("10. /viewvotes – who voted (ephemeral)", "commands/adminbase.py → view_votes",
     message({eph:true, embeds:[{color:COLORS.blue, title:"Głosy dla sugestii #42", desc:S.content, ts:created,
       fields:[{name:"Głosy za ("+S.voters.up.length+")", value:S.voters.up.join(", ")}, {name:"Głosy przeciw ("+S.voters.down.length+")", value:S.voters.down.join(", ")}],
       footer:{text:"Autor: "+S.author.name+" (123456789012345678)", icon:S.author.name}}]}) +
-    message({eph:true, content:"", embeds:[{color:COLORS.blue, title:"Głosy dla sugestii #42", desc:S.content, fields:[{name:"Głosy za (310)", value:"310"},{name:"Głosy przeciw (95)", value:"310"}], footer:{text:"Autor: Kasia (123456789012345678)", icon:"Kasia"}}], attach:"votes.txt", tag:"wariant: za dużo głosów → plik"}) +
+    message({eph:true, content:"", embeds:[{color:COLORS.blue, title:"Głosy dla sugestii #42", desc:S.content, fields:[{name:"Głosy za (310)", value:"310"},{name:"Głosy przeciw (95)", value:"310"}], footer:{text:"Autor: Kasia (123456789012345678)", icon:"Kasia"}}], attach:"votes.txt", tag:"variant: too many votes → file"}) +
     message({content:"Nie mogę znaleźć wiadomości tej sugestii, czy mam ją opublikować ponownie? (t/n)"}));
 
-  h += section("11. /ideaset view – ustawienia", "commands/admin.py → view_settings",
+  h += section("11. /ideaset view – settings", "commands/admin.py → view_settings",
     message({embeds:[{color:"#b9bbbe", author:{name:"Ustawienia Ideaboard", icon:"S"},
       desc:"`Approved Channel:   `#zatwierdzone\n`Rejected Channel:   `#odrzucone\n`Pending Channel:    `#sugestie\n`Anonymous:          `"+(anon?"✅":"❌")+"\n`Reveal Complete:    `"+(reveal?"✅":"❌")+"\n`DM Result:          `✅\n`Discussion Threads: `✅\n`Delete Threads:     `❌\n`Upvote Emoji:       `"+up+"\n`Downvote Emoji:     `"+down+"\n`Show Vote Counts:   `"+(counts?"✅":"❌")+"\n`Suggestions:        `7\n`Suggestion #:       `42",
       fields:[
@@ -260,7 +261,7 @@ function build(){
        {name:"Zatwierdzający", value:"Roles required to approve suggestions\n@Moderator\n@Admin"},
        {name:"Integracja LevelUp", value:"```\nMinimum level required to vote or make suggestions.\nVote: 3\nSuggest: 5\n```"}]}]}));
 
-  h += section("12. /ideaset insights – statystyki serwera", "commands/admin.py → view_insights",
+  h += section("12. /ideaset insights – server stats", "commands/admin.py → view_insights",
     message({embeds:[{color:COLORS.gold, title:"Statystyki serwera", thumb:"S", footer:{text:"Mój Serwer"}, ts:"Dzisiaj o 14:40",
       fields:[
        {name:"Średnia liczba sugestii na użytkownika", value:"2,4"},
@@ -269,21 +270,21 @@ function build(){
        {name:"Najwyższy współczynnik zatwierdzeń", value:"🥇 @Kasia (1,67)\n🥈 @Ania (1,33)\n🥉 @Darek (1)"},
        {name:"Najwyższa karma", value:"🥇 @Kasia 31 (40↑ 9↓)\n🥈 @Ania 22 (30↑ 8↓)\n🥉 @Darek 10 (12↑ 2↓)"},
        {name:"Najniższa karma", value:"🥇 @Filip -4 (2↑ 6↓)\n🥈 @Ewa 0 (1↑ 1↓)\n🥉 @Celina 3 (5↑ 2↓)"}]}]}) +
-    `<p class="src">Pełny embed ma 12 pól (Least Successful, Lowest Approval Ratio, Most Wins/Losses, Most Optimistic/Negative…) – tu skrócono.</p>`);
+    `<p class="src">The real embed has 12 fields (Least Successful, Lowest Approval Ratio, Most Wins/Losses, Most Optimistic/Negative…) – shortened here.</p>`);
 
-  h += section("13. Komendy konfiguracyjne `ideaset` – krótkie odpowiedzi", "commands/admin.py",
+  h += section("13. `ideaset` config commands – short replies", "commands/admin.py",
     ["Anonimowe sugestie: **włączone**.","Kanał oczekujących ustawiony na #sugestie.","Emoji głosu za ustawione na 👍.","Cooldown ustawiony na 300 sekund.",
      "Statystyki użytkownika Kasia zostały zresetowane.","Czy na pewno chcesz zresetować wszystkie statystyki użytkowników?",
      "- Usunięto 2 profile użytkowników, którzy opuścili serwer.\n- Usunięto sugestię #17, ponieważ wiadomość już nie istnieje."]
     .map(t=>message({content:t})).join(""));
 
-  h += section("14. Funkcja dla cogu Assistant (tekst zwracany do AI)", "common/listener.py → get_user_suggestion_stats",
-    message({content:"```\nSuggestion Stats for Kasia\nTotal suggestions that the user made: 12\nSuggestions user made that were approved: 5\nSuggestions user made that were denied: 3\nTotal upvotes: 58\nTotal downvotes: 7\nSuggestions user voted on that won in their favor: 33\nSuggestions user voted on that did not go in their favor: 9\n```", tag:"nie jest wysyłane na Discord – tylko do modelu AI"}));
+  h += section("14. Assistant cog function (text returned to the AI)", "common/listener.py → get_user_suggestion_stats",
+    message({content:"```\nSuggestion Stats for Kasia\nTotal suggestions that the user made: 12\nSuggestions user made that were approved: 5\nSuggestions user made that were denied: 3\nTotal upvotes: 58\nTotal downvotes: 7\nSuggestions user voted on that won in their favor: 33\nSuggestions user voted on that did not go in their favor: 9\n```", tag:"not sent to Discord – only to the AI model"}));
 
   $("#root").innerHTML = h;
 }
 
-/* ============================== INICJALIZACJA ============================== */
+/* ============================== INIT ============================== */
 document.querySelectorAll("header input, header select").forEach(el=>el.addEventListener("input",()=>{
   document.body.classList.toggle("light", $("#theme").value==="light"); build(); }));
 build();
