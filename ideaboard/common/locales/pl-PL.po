@@ -95,3 +95,56 @@ msgstr " [Usunięto]"
 msgid "Remove all votes from a user when they leave the server"
 msgstr "Usuń wszystkie głosy użytkownika, gdy opuści serwer"
 
+
+#: common/embeds.py
+msgid "Community Vote"
+msgstr "Głosowanie społeczności"
+
+#: common/embeds.py
+msgid "No votes yet"
+msgstr "Brak głosów"
+
+msgid "Got an idea for the server?"
+msgstr "Masz pomysł dla serwera?"
+
+msgid "Share it with the community – we implement the best proposals!"
+msgstr "Podziel się nim ze społecznością – najlepsze propozycje wdrażamy!"
+
+msgid "How it works"
+msgstr "Jak to działa"
+
+msgid "Click **Submit suggestion** below"
+msgstr "Kliknij **Zgłoś sugestię** poniżej"
+
+msgid "Describe your idea in the window that appears"
+msgstr "Opisz swój pomysł w oknie, które się pojawi"
+
+msgid "The community votes {} / {}"
+msgstr "Społeczność głosuje {} / {}"
+
+msgid "Moderators approve or reject – you get the result in a DM"
+msgstr "Moderatorzy zatwierdzają lub odrzucają – wynik dostaniesz w wiadomości prywatnej"
+
+msgid "Rules"
+msgstr "Zasady"
+
+msgid "One suggestion = one idea"
+msgstr "Jedna sugestia = jeden pomysł"
+
+msgid "Check whether someone has already posted it – use Discord search and type `in: #{}` + a keyword"
+msgstr "Sprawdź, czy ktoś już tego nie zgłosił – użyj wyszukiwarki Discorda i wpisz `w: #{}` + słowo kluczowe"
+
+msgid "No spam, insults or unban requests (use a ticket for that)"
+msgstr "Bez spamu, obrażania i próśb o odbanowanie (od tego są tickety)"
+
+msgid "🕶️ Suggestions are posted anonymously"
+msgstr "🕶️ Sugestie są publikowane anonimowo"
+
+msgid "👤 Suggestions are posted with your name"
+msgstr "👤 Sugestie są publikowane z Twoim nickiem"
+
+msgid "Pending"
+msgstr "Oczekujące"
+
+msgid "Cooldown"
+msgstr "Cooldown"

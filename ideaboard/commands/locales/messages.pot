@@ -1039,3 +1039,13 @@ msgstr ""
 #: commands/user.py:257
 msgid "Losses"
 msgstr ""
+
+#, docstring
+msgid "Toggle the sticky \"Submit suggestion\" message at the bottom of the pending channel"
+msgstr ""
+
+msgid "The sticky suggestion message is now **enabled**."
+msgstr ""
+
+msgid "The sticky suggestion message is now **disabled**."
+msgstr ""

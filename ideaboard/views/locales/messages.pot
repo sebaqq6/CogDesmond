@@ -78,3 +78,24 @@ msgstr ""
 #: views/voteview.py:249
 msgid "You have downvoted this suggestion."
 msgstr ""
+
+msgid "Submit a suggestion"
+msgstr ""
+
+msgid "Title"
+msgstr ""
+
+msgid "In a few words – what is your idea about?"
+msgstr ""
+
+msgid "Your idea"
+msgstr ""
+
+msgid "Describe your idea. The more detail, the better."
+msgstr ""
+
+msgid "Something went wrong while posting your suggestion."
+msgstr ""
+
+msgid "Submit suggestion"
+msgstr ""

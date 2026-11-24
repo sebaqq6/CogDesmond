@@ -16,6 +16,7 @@ class Suggestion(Base):
     message_id: int
     author_id: int
     content: str
+    title: str = ""
     created: datetime = Field(default_factory=datetime.now)
     thread_id: int = 0
 
@@ -71,6 +72,9 @@ class GuildSettings(Base):
     discussion_threads: bool = False
     # Delete threads when suggestion is approved/denied
     delete_threads: bool = True
+    # Sticky "Submit suggestion" message kept at the bottom of the pending channel
+    sticky_enabled: bool = False
+    sticky_message_id: int = 0
 
     # Roles required to make suggestions and vote
     vote_roles: list[int] = []

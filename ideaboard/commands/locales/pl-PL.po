@@ -931,3 +931,13 @@ msgstr "Wygrane"
 msgid "Losses"
 msgstr "Przegrane"
 
+
+#, docstring
+msgid "Toggle the sticky \"Submit suggestion\" message at the bottom of the pending channel"
+msgstr "Włącza/wyłącza stałą wiadomość z przyciskiem zgłaszania na dole kanału oczekujących"
+
+msgid "The sticky suggestion message is now **enabled**."
+msgstr "Stała wiadomość z przyciskiem zgłaszania jest teraz **włączona**."
+
+msgid "The sticky suggestion message is now **disabled**."
+msgstr "Stała wiadomość z przyciskiem zgłaszania jest teraz **wyłączona**."

@@ -93,3 +93,56 @@ msgstr ""
 #, docstring
 msgid "Remove all votes from a user when they leave the server"
 msgstr ""
+
+#: common/embeds.py
+msgid "Community Vote"
+msgstr ""
+
+#: common/embeds.py
+msgid "No votes yet"
+msgstr ""
+
+msgid "Got an idea for the server?"
+msgstr ""
+
+msgid "Share it with the community – we implement the best proposals!"
+msgstr ""
+
+msgid "How it works"
+msgstr ""
+
+msgid "Click **Submit suggestion** below"
+msgstr ""
+
+msgid "Describe your idea in the window that appears"
+msgstr ""
+
+msgid "The community votes {} / {}"
+msgstr ""
+
+msgid "Moderators approve or reject – you get the result in a DM"
+msgstr ""
+
+msgid "Rules"
+msgstr ""
+
+msgid "One suggestion = one idea"
+msgstr ""
+
+msgid "Check whether someone has already posted it – use Discord search and type `in: #{}` + a keyword"
+msgstr ""
+
+msgid "No spam, insults or unban requests (use a ticket for that)"
+msgstr ""
+
+msgid "🕶️ Suggestions are posted anonymously"
+msgstr ""
+
+msgid "👤 Suggestions are posted with your name"
+msgstr ""
+
+msgid "Pending"
+msgstr ""
+
+msgid "Cooldown"
+msgstr ""

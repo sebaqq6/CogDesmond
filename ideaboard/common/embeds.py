@@ -4,6 +4,7 @@ from datetime import datetime
 import discord
 from redbot.core.bot import Red
 from redbot.core.i18n import Translator
+from redbot.core.utils.chat_formatting import humanize_timedelta
 
 from .models import GuildSettings, Suggestion
 
@@ -16,6 +17,16 @@ STATUS_EMOJI = {
     "rejected": "❌",
     "deleted": "🗑️",
 }
+
+# Title emoji (pending gets a lightbulb instead of the clock used in the status line)
+TITLE_EMOJI = {
+    "pending": "💡",
+    "approved": "✅",
+    "rejected": "❌",
+    "deleted": "🗑️",
+}
+
+BAR_LENGTH = 10
 
 STATUS_COLORS = {
     "pending": discord.Color.blurple(),
@@ -35,17 +46,39 @@ def _status_label(status: str) -> str:
     return labels[status]
 
 
-def vote_fields(bot: Red, conf: GuildSettings, suggestion: Suggestion) -> tuple[str, str]:
+def quote(text: str) -> str:
+    """Turn text into a Discord block quote (one `> ` per line)."""
+    return "\n".join(f"> {line}" if line else ">" for line in text.splitlines()) or "> "
+
+
+def vote_bar(up: int, down: int, length: int = BAR_LENGTH) -> str:
+    """Emoji progress bar: green = upvotes, red = downvotes, black = no votes yet."""
+    total = up + down
+    if not total:
+        return "⬛" * length
+    green = round(length * up / total)
+    if up and not green:
+        green = 1
+    if down and green == length:
+        green = length - 1
+    return "🟩" * green + "🟥" * (length - green)
+
+
+def vote_field(bot: Red, conf: GuildSettings, suggestion: Suggestion) -> tuple[str, str]:
+    """Return (name, value) for the single full-width vote field."""
     up, down = conf.get_emojis(bot)
     up_count = len(suggestion.upvotes)
     down_count = len(suggestion.downvotes)
     total = up_count + down_count
     up_pct = round(up_count / total * 100) if total else 0
     down_pct = round(down_count / total * 100) if total else 0
-    return (
-        f"```\n{up_count} ({up_pct}%)\n```",
-        f"```\n{down_count} ({down_pct}%)\n```",
+    value = (
+        f"{vote_bar(up_count, down_count)}\n"
+        f"{up} **{up_count}** ({up_pct}%)  ・  {down} **{down_count}** ({down_pct}%)"
     )
+    if not total:
+        value += f"\n-# {_('No votes yet')}"
+    return f"📊 {_('Community Vote')}", value
 
 
 def add_vote_fields(
@@ -54,10 +87,28 @@ def add_vote_fields(
     conf: GuildSettings,
     suggestion: Suggestion,
 ) -> None:
-    up, down = conf.get_emojis(bot)
-    up_val, down_val = vote_fields(bot, conf, suggestion)
-    embed.add_field(name=str(up), value=up_val, inline=True)
-    embed.add_field(name=str(down), value=down_val, inline=True)
+    name, value = vote_field(bot, conf, suggestion)
+    embed.add_field(name=name, value=value, inline=False)
+
+
+def thread_url(guild_id: int | None, suggestion: Suggestion) -> str | None:
+    """Jump URL of the suggestion's discussion thread (a thread is a channel, so guild/thread id is enough)."""
+    if guild_id and suggestion.thread_id:
+        return f"https://discord.com/channels/{guild_id}/{suggestion.thread_id}"
+    return None
+
+
+def suggestion_body(number: int, status: str, content: str, url: str | None = None, title: str = "") -> str:
+    """Embed description: big title, small status line, quoted suggestion text."""
+    suggestion_title = title
+    title = f"{TITLE_EMOJI[status]} {_('Suggestion #{}').format(number)}"
+    if url:
+        title = f"[{title}]({url})"  # clickable title -> discussion thread
+    status_line = f"{STATUS_EMOJI[status]} {_status_label(status)}"
+    heading = f"## {title}\n-# {status_line}\n\n"
+    if suggestion_title:
+        heading += f"### {suggestion_title}\n"
+    return heading + quote(content)
 
 
 def build_pending_embed(
@@ -68,21 +119,19 @@ def build_pending_embed(
     author: discord.User | None,
     anonymous: bool,
     show_votes: bool,
+    guild_id: int | None = None,
 ) -> discord.Embed:
     embed = discord.Embed(
         color=STATUS_COLORS["pending"],
-        description=suggestion.content,
+        description=suggestion_body(number, "pending", suggestion.content, thread_url(guild_id, suggestion), suggestion.title),
         timestamp=suggestion.created,
     )
-    embed.set_author(name=_("Suggestion #{}").format(number))
     if anonymous or author is None:
         embed.set_footer(text=_("Posted anonymously"))
     else:
         avatar = author.display_avatar.url
         embed.set_thumbnail(url=avatar)
         embed.set_footer(text=_("Posted by {}").format(author.name), icon_url=avatar)
-    status = f"{STATUS_EMOJI['pending']} {_status_label('pending')}"
-    embed.add_field(name=_("Status"), value=status, inline=False)
     if show_votes:
         add_vote_fields(embed, bot, conf, suggestion)
     return embed
@@ -100,15 +149,12 @@ def build_decision_embeds(
     author: discord.User | None,
 ) -> list[discord.Embed]:
     color = STATUS_COLORS[status]
-    emoji = STATUS_EMOJI[status]
-    label = _status_label(status)
 
     proposal = discord.Embed(
         color=color,
-        description=suggestion.content,
+        description=suggestion_body(number, status, suggestion.content, thread.jump_url if thread else None, suggestion.title),
         timestamp=suggestion.created,
     )
-    proposal.set_author(name=_("Suggestion #{}").format(number))
     reveal = status == "approved" or not conf.anonymous or conf.reveal
     if reveal and author is not None:
         avatar = author.display_avatar.url
@@ -118,14 +164,14 @@ def build_decision_embeds(
         proposal.set_footer(text=_("Suggested by a user who is no longer in the server."))
     else:
         proposal.set_footer(text=_("Posted anonymously"))
-    proposal.add_field(name=_("Status"), value=f"{emoji} {label}", inline=False)
     add_vote_fields(proposal, bot, conf, suggestion)
 
     embeds = [proposal]
     if approver is None:
         return embeds
 
-    details = discord.Embed(color=color, timestamp=datetime.now())
+    now = datetime.now()
+    details = discord.Embed(color=color, timestamp=now)
     avatar = approver.display_avatar.url
     if status == "approved":
         details.set_author(name=_("Approved by {}").format(approver.display_name), icon_url=avatar)
@@ -133,11 +179,42 @@ def build_decision_embeds(
         details.set_author(name=_("Rejected by {}").format(approver.display_name), icon_url=avatar)
     if reason:
         name = _("Reason for Rejection") if status == "rejected" else _("Reason")
-        details.add_field(name=name, value=reason, inline=False)
-    decision_date = discord.utils.format_dt(datetime.now(), "R")
-    details.add_field(name=_("Decision Date"), value=decision_date, inline=True)
+        details.add_field(name=f"💬 {name}", value=quote(reason), inline=False)
+    decision_date = f"{discord.utils.format_dt(now, 'f')}\n-# {discord.utils.format_dt(now, 'R')}"
+    details.add_field(name=f"📅 {_('Decision Date')}", value=decision_date, inline=True)
     if thread is not None:
         thread_link = f"[{_('Discussion')}]({thread.jump_url})"
-        details.add_field(name=_("Thread"), value=thread_link, inline=True)
+        details.add_field(name=f"🧵 {_('Thread')}", value=thread_link, inline=True)
     embeds.append(details)
     return embeds
+
+
+def build_sticky_embed(bot: Red, conf: GuildSettings, channel_name: str) -> discord.Embed:
+    """The sticky 'Submit suggestion' message kept at the bottom of the pending channel."""
+    up, down = conf.get_emojis(bot)
+    lines = [
+        f"## 💡 {_('Got an idea for the server?')}",
+        _("Share it with the community – we implement the best proposals!"),
+        "",
+        f"### 📜 {_('How it works')}",
+        "1️⃣ " + _("Click **Submit suggestion** below"),
+        "2️⃣ " + _("Describe your idea in the window that appears"),
+        "3️⃣ " + _("The community votes {} / {}").format(up, down),
+        "4️⃣ " + _("Moderators approve or reject – you get the result in a DM"),
+        "",
+        f"### ⚠️ {_('Rules')}",
+        "- " + _("One suggestion = one idea"),
+        "- " + _("Check whether someone has already posted it – use Discord search and type `in: #{}` + a keyword").format(
+            channel_name
+        ),
+        "- " + _("No spam, insults or unban requests (use a ticket for that)"),
+        "",
+        "-# " + (_("🕶️ Suggestions are posted anonymously") if conf.anonymous else _("👤 Suggestions are posted with your name")),
+    ]
+    approved = sum(p.suggestions_approved for p in conf.profiles.values())
+    cooldown = humanize_timedelta(seconds=conf.base_cooldown) if conf.base_cooldown else "–"
+    embed = discord.Embed(color=discord.Color.gold(), description="\n".join(lines))
+    embed.add_field(name=f"📥 {_('Pending')}", value=f"**{len(conf.suggestions)}**", inline=True)
+    embed.add_field(name=f"✅ {_('Approved')}", value=f"**{approved}**", inline=True)
+    embed.add_field(name=f"⏱️ {_('Cooldown')}", value=f"**{cooldown}**", inline=True)
+    return embed

@@ -21,6 +21,166 @@ _ = Translator("IdeaBoard", __file__)
 
 @cog_i18n(_)
 class User(MixinMeta):
+    async def validate_suggester(self, guild: discord.Guild, member: discord.Member, prefix: str) -> str | None:
+        """Check whether `member` may post a suggestion right now.
+
+        Returns a user-facing error message, or None when everything is fine.
+        Shared by the /idea command and the sticky-message modal.
+        """
+        conf = self.db.get_conf(guild)
+        if not conf.pending:
+            return _("The pending suggestions channel has not been set!")
+
+        channel = guild.get_channel(conf.pending)
+        if not channel:
+            return _("The pending suggestions channel no longer exists!")
+
+        my_perms = channel.permissions_for(guild.me)
+        if not (my_perms.send_messages and my_perms.embed_links):
+            return _("I do not have the required permissions to send messages in the pending suggestions channel.")
+
+        role_ids = [r.id for r in member.roles]
+
+        # Check user's permission to suggest
+        if conf.suggest_roles and not any(r in role_ids for r in conf.suggest_roles):
+            return _("You do not have the required roles to make suggestions.")
+
+        # Check account age
+        if conf.min_account_age_to_suggest:
+            account_age = (datetime.now().astimezone() - member.created_at).total_seconds() / 3600
+            if account_age < conf.min_account_age_to_suggest:
+                return _("Your account is too young to make suggestions.")
+
+        # Check join time
+        if conf.min_join_time_to_suggest:
+            join_age = (datetime.now().astimezone() - member.joined_at).total_seconds() / 3600
+            if join_age < conf.min_join_time_to_suggest:
+                return _("You haven't been in the server long enough to make suggestions.")
+
+        # Check role blacklist
+        if conf.role_blacklist and any(r in role_ids for r in conf.role_blacklist):
+            return _("You are not allowed to make suggestions due to a blacklisted role.")
+
+        # Check user blacklist
+        if conf.user_blacklist and member.id in conf.user_blacklist:
+            return _("You are blacklisted from making suggestions.")
+
+        if not conf.approvers:
+            return _("No approvers have been set! Admins needs to use the {} command to add one.").format(
+                f"`{prefix}ideaset approverole @role`"
+            )
+
+        # Check LevelUp requirement
+        try:
+            if conf.min_level_to_suggest and self.bot.get_cog("LevelUp"):
+                levelup = self.bot.get_cog("LevelUp")
+                if guild.id in levelup.data:
+                    levelup.init_user(guild.id, str(member.id))
+                    level = levelup.data[guild.id]["users"][str(member.id)]["level"]
+                    if level < conf.min_level_to_suggest:
+                        return _(
+                            "You must be level {} or higher to make suggestions.\nUse the {} command to check your level."
+                        ).format(conf.min_level_to_suggest, f"`{prefix}pf`")
+        except Exception as e:
+            log.exception(f"Failed to check LevelUp requirement in {guild.name}", exc_info=e)
+
+        # Check ArkTools requirement
+        try:
+            if conf.min_playtime_to_suggest and self.bot.get_cog("ArkTools"):
+                arktools = self.bot.get_cog("ArkTools")
+                players = await arktools.db_utils.search_players(guild, member)
+                if not players:
+                    return _("You must be registered in the ArkTools database to make suggestions.")
+                playtime_hours = players[0].total_playtime / 3600
+                if playtime_hours < conf.min_playtime_to_suggest:
+                    return _("You must have at least {} hours of playtime to make suggestions.").format(
+                        conf.min_playtime_to_suggest
+                    )
+        except Exception as e:
+            log.exception(f"Failed to check ArkTools requirement in {guild.name}", exc_info=e)
+
+        # Cooldowns only apply to non approvers
+        is_approver = any(r in role_ids for r in conf.approvers)
+        profile = conf.get_profile(member)
+        if profile.last_suggestion and not is_approver:
+            delta = datetime.now() - profile.last_suggestion
+            cooldown = conf.base_cooldown
+            # Use the lowest cooldown of all roles the member has
+            cooldowns = {k: v for k, v in conf.role_cooldowns.items() if k in role_ids}
+            if cooldowns:
+                cooldown = min(cooldowns.values())
+            if delta.total_seconds() < cooldown:
+                return _("You must wait `{}` before making another suggestion.").format(
+                    humanize_timedelta(seconds=cooldown - delta.total_seconds())
+                )
+        return None
+
+    async def post_suggestion(
+        self, guild: discord.Guild, member: discord.Member, title: str, content: str
+    ) -> tuple[int, discord.Message, discord.Embed]:
+        """Post an already validated suggestion to the pending channel and register it."""
+        conf = self.db.get_conf(guild)
+        channel = guild.get_channel(conf.pending)
+        profile = conf.get_profile(member)
+
+        suggestion_number = conf.counter + 1
+        profile.last_suggestion = datetime.now()
+
+        suggestion_id = str(uuid4())
+        suggestion = Suggestion(
+            id=suggestion_id,
+            message_id=0,
+            author_id=member.id,
+            title=title,
+            content=content,
+        )
+
+        def make_embed() -> discord.Embed:
+            return build_pending_embed(
+                bot=self.bot,
+                conf=conf,
+                suggestion=suggestion,
+                number=suggestion_number,
+                author=member,
+                anonymous=conf.anonymous,
+                show_votes=conf.show_vote_counts,
+                guild_id=guild.id,
+            )
+
+        embed = make_embed()
+        view = VoteView(self, guild, suggestion_number, suggestion_id)
+        message = await channel.send(embed=embed, view=view)
+        suggestion.message_id = message.id
+        if conf.discussion_threads:
+            try:
+                name = _("Suggestion #{} Discussion").format(suggestion_number)
+                reason = _("Discussion thread for suggestion #{}").format(suggestion_number)
+                thread = await message.create_thread(name=name, reason=reason)
+                suggestion.thread_id = thread.id
+                # Make the embed title link to the freshly created thread
+                embed = make_embed()
+                with suppress(discord.HTTPException):
+                    await message.edit(embed=embed)
+            except discord.Forbidden:
+                log.warning(f"Missing permissions to create a discussion thread in {guild}")
+
+        conf.suggestions[suggestion_number] = suggestion
+        conf.counter = suggestion_number
+        profile.suggestions_made += 1
+        await self.save()
+        return suggestion_number, message, embed
+
+    def posted_text(self, number: int, message: discord.Message, member: discord.Member, kind: str = "suggestion") -> str:
+        """Confirmation text for the author. `kind` is the word they used (idea/suggestion)."""
+        can_see = message.channel.permissions_for(member).view_channel
+        if can_see:
+            if kind == "idea":
+                return _("Your [idea #{}]({}) has been posted!").format(number, message.jump_url)
+            return _("Your [suggestion #{}]({}) has been posted!").format(number, message.jump_url)
+        if kind == "idea":
+            return _("Your idea #{} has been posted!").format(number)
+        return _("Your suggestion #{} has been posted!").format(number)
+
     @commands.hybrid_command(name="idea", aliases=["suggest"], description=_("Share an idea/make a suggestion."))
     @app_commands.describe(content="Your idea or suggestion")
     @commands.guild_only()
@@ -42,164 +202,15 @@ class User(MixinMeta):
                 with suppress(discord.NotFound, discord.Forbidden):
                     await ctx.message.delete()
 
-        conf = self.db.get_conf(ctx.guild)
-        if not conf.pending:
-            txt = _("The pending suggestions channel has not been set!")
-            return await resp(txt)
-
-        channel = ctx.guild.get_channel(conf.pending)
-        if not channel:
-            txt = _("The pending suggestions channel no longer exists!")
-            return await resp(txt)
-
-        perms = [
-            channel.permissions_for(ctx.me).send_messages,
-            channel.permissions_for(ctx.me).embed_links,
-        ]
-        if not all(perms):
-            txt = _("I do not have the required permissions to send messages in the pending suggestions channel.")
-            return await resp(txt)
-
-        # Check user's permission to suggest
-        if conf.suggest_roles and not any(
-            role in [role.id for role in ctx.author.roles] for role in conf.suggest_roles
-        ):
-            return await resp(_("You do not have the required roles to make suggestions."))
-
-        # Check account age
-        if conf.min_account_age_to_suggest:
-            account_age = (datetime.now().astimezone() - ctx.author.created_at).total_seconds() / 3600
-            if account_age < conf.min_account_age_to_suggest:
-                return await resp(_("Your account is too young to make suggestions."))
-
-        # Check join time
-        if conf.min_join_time_to_suggest:
-            join_age = (datetime.now().astimezone() - ctx.author.joined_at).total_seconds() / 3600
-            if join_age < conf.min_join_time_to_suggest:
-                return await resp(_("You haven't been in the server long enough to make suggestions."))
-
-        # Check role blacklist
-        if conf.role_blacklist and any(role in [role.id for role in ctx.author.roles] for role in conf.role_blacklist):
-            return await resp(_("You are not allowed to make suggestions due to a blacklisted role."))
-
-        # Check user blacklist
-        if conf.user_blacklist and ctx.author.id in conf.user_blacklist:
-            return await resp(_("You are blacklisted from making suggestions."))
-
-        if not conf.approvers:
-            txt = _("No approvers have been set! Admins needs to use the {} command to add one.").format(
-                f"`{ctx.clean_prefix}ideaset approverole @role`"
-            )
-            return await resp(txt)
-
-        # Check LevelUp requirement
-        try:
-            txt = _("You must be level {} or higher to make suggestions.\nUse the {} command to check your level.")
-            if conf.min_level_to_suggest and self.bot.get_cog("LevelUp"):
-                levelup = self.bot.get_cog("LevelUp")
-                if ctx.guild.id in levelup.data:
-                    levelup.init_user(ctx.guild.id, str(ctx.author.id))
-                    level = levelup.data[ctx.guild.id]["users"][str(ctx.author.id)]["level"]
-                    if level < conf.min_level_to_suggest:
-                        return await resp(txt.format(conf.min_level_to_suggest, f"`{ctx.clean_prefix}pf`"))
-        except Exception as e:
-            log.exception(f"Failed to check LevelUp requirement in {ctx.guild.name}", exc_info=e)
-
-        # Check ArkTools requirement
-        try:
-            if conf.min_playtime_to_suggest and self.bot.get_cog("ArkTools"):
-                arktools = self.bot.get_cog("ArkTools")
-                players = await arktools.db_utils.search_players(ctx.guild, ctx.author)
-                if not players:
-                    txt = _("You must be registered in the ArkTools database to make suggestions.")
-                    return await resp(txt)
-                player = players[0]
-                playtime_hours = player.total_playtime / 3600
-                if playtime_hours < conf.min_playtime_to_suggest:
-                    return await resp(
-                        _("You must have at least {} hours of playtime to make suggestions.").format(
-                            conf.min_playtime_to_suggest
-                        )
-                    )
-        except Exception as e:
-            log.exception(f"Failed to check ArkTools requirement in {ctx.guild.name}", exc_info=e)
-
-        # Check if user has an approver role
-        is_approver = False
-        if any(role in [role.id for role in ctx.author.roles] for role in conf.approvers):
-            is_approver = True
-
-        # Check cooldowns
-        profile = conf.get_profile(ctx.author)
-        if profile.last_suggestion and not is_approver:
-            # Cooldown only applies to non approvers
-            delta = datetime.now() - profile.last_suggestion
-            cooldown = conf.base_cooldown
-            # Check role cooldowns, use the lowest cooldown of all roles the user has
-            if conf.role_cooldowns:
-                # Fetch all cooldowns of roles the user has
-                user_roles = [r.id for r in ctx.author.roles]
-                cooldowns = {k: v for k, v in conf.role_cooldowns.items() if k in user_roles}
-                # If user has roles with cooldowns, use that instead of the base cooldown
-                if cooldowns:
-                    cooldown = min(cooldowns.values())
-
-            if delta.total_seconds() < cooldown:
-                return await resp(
-                    _("You must wait `{}` before making another suggestion.").format(
-                        humanize_timedelta(seconds=cooldown - delta.total_seconds())
-                    )
-                )
+        if error := await self.validate_suggester(ctx.guild, ctx.author, ctx.clean_prefix):
+            return await resp(error)
 
         if ctx.channel.permissions_for(ctx.me).manage_messages:
             with suppress(discord.NotFound, discord.Forbidden):
                 await ctx.message.delete()
 
-        suggestion_number = conf.counter + 1
-        profile.last_suggestion = datetime.now()
-
-        suggestion_id = str(uuid4())
-        suggestion = Suggestion(
-            id=suggestion_id,
-            message_id=0,
-            author_id=ctx.author.id,
-            content=content,
-        )
-        embed = build_pending_embed(
-            bot=self.bot,
-            conf=conf,
-            suggestion=suggestion,
-            number=suggestion_number,
-            author=ctx.author,
-            anonymous=conf.anonymous,
-            show_votes=conf.show_vote_counts,
-        )
-        view = VoteView(self, ctx.guild, suggestion_number, suggestion_id)
-        message = await channel.send(embed=embed, view=view)
-        suggestion.message_id = message.id
-        if conf.discussion_threads:
-            try:
-                name = _("Suggestion #{} Discussion").format(suggestion_number)
-                reason = _("Discussion thread for suggestion #{}").format(suggestion_number)
-                thread = await message.create_thread(name=name, reason=reason)
-                suggestion.thread_id = thread.id
-            except discord.Forbidden:
-                log.warning(f"Missing permissions to create a discussion thread in {ctx.guild}")
-
-        conf.suggestions[suggestion_number] = suggestion
-        conf.counter = suggestion_number
-        profile.suggestions_made += 1
-
-        if channel.permissions_for(ctx.author).view_channel:
-            if ctx.invoked_with == "idea":
-                txt = _("Your [idea #{}]({}) has been posted!").format(suggestion_number, message.jump_url)
-            else:
-                txt = _("Your [suggestion #{}]({}) has been posted!").format(suggestion_number, message.jump_url)
-        else:
-            if ctx.invoked_with == "idea":
-                txt = _("Your idea #{} has been posted!").format(suggestion_number)
-            else:
-                txt = _("Your suggestion #{} has been posted!").format(suggestion_number)
+        number, message, embed = await self.post_suggestion(ctx.guild, ctx.author, "", content)
+        txt = self.posted_text(number, message, ctx.author, "idea" if ctx.invoked_with == "idea" else "suggestion")
 
         if ctx.interaction:
             try:
@@ -217,8 +228,6 @@ class User(MixinMeta):
                 await ctx.author.send(txt, embed=embed)
             except discord.Forbidden:
                 await ctx.channel.send(txt, embed=embed, delete_after=10)
-
-        await self.save()
 
     @commands.hybrid_command(
         name="ideastats",

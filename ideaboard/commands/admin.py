@@ -250,6 +250,21 @@ class Admin(MixinMeta):
         await ctx.send(_("Anonymous suggestions are now {}.").format(state))
         await self.save()
 
+    @ideaset.command(name="sticky")
+    async def toggle_sticky(self, ctx: commands.Context):
+        """Toggle the sticky "Submit suggestion" message at the bottom of the pending channel"""
+        conf = self.db.get_conf(ctx.guild)
+        if not conf.pending:
+            return await ctx.send(_("The pending suggestions channel has not been set!"))
+        conf.sticky_enabled = not conf.sticky_enabled
+        if conf.sticky_enabled:
+            await self.refresh_sticky(ctx.guild)
+            await ctx.send(_("The sticky suggestion message is now **enabled**."))
+        else:
+            await self.remove_sticky(ctx.guild)
+            await ctx.send(_("The sticky suggestion message is now **disabled**."))
+        await self.save()
+
     @ideaset.command(name="togglereveal", aliases=["reveal"])
     async def toggle_reveal(self, ctx: commands.Context):
         """

@@ -43,6 +43,18 @@ class Listeners(MixinMeta):
         return txt
 
     @commands.Cog.listener()
+    async def on_message(self, message: discord.Message) -> None:
+        """Keep the sticky 'Submit suggestion' message at the bottom of the pending channel"""
+        if message.guild is None:
+            return
+        conf = self.db.configs.get(message.guild.id)
+        if not conf or not conf.sticky_enabled or message.channel.id != conf.pending:
+            return
+        if self.is_sticky_message(message):
+            return
+        self.schedule_sticky(message.guild.id)
+
+    @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message) -> None:
         """Check if the message deleted was a suggestions"""
         if message.guild is None:

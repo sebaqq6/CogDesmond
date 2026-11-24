@@ -9,6 +9,8 @@ from .abc import CompositeMetaClass
 from .commands import Commands
 from .common.listener import Listeners
 from .common.models import DB, run_migrations
+from .common.sticky import Sticky
+from .views.sticky import StickyView
 from .views.voteview import VoteView
 
 log = logging.getLogger("red.vrt.ideaboard")
@@ -16,7 +18,7 @@ _ = Translator("IdeaBoard", __file__)
 # redgettext -D views/voteview.py commands/user.py commands/admin.py --command-docstring
 
 
-class IdeaBoard(Commands, Listeners, commands.Cog, metaclass=CompositeMetaClass):
+class IdeaBoard(Commands, Listeners, Sticky, commands.Cog, metaclass=CompositeMetaClass):
     """Share Ideas and Suggestions"""
 
     __author__ = "[vertyco](https://github.com/vertyco/vrt-cogs)"
@@ -31,12 +33,16 @@ class IdeaBoard(Commands, Listeners, commands.Cog, metaclass=CompositeMetaClass)
         self.db: DB = DB()
         self.saving = False
         self.views = []
+        self.sticky_tasks: dict[int, asyncio.Task] = {}
+        self.sticky_locks: dict[int, asyncio.Lock] = {}
         self.initialized = False
 
     async def cog_load(self) -> None:
         asyncio.create_task(self.initialize())
 
     async def cog_unload(self) -> None:
+        for task in self.sticky_tasks.values():
+            task.cancel()
         for view in self.views:
             view.stop()
         await self.save()
@@ -49,6 +55,11 @@ class IdeaBoard(Commands, Listeners, commands.Cog, metaclass=CompositeMetaClass)
         log.info("Config loaded")
         if migrated:
             await self.save()
+
+        # One persistent view serves the sticky message in every guild
+        sticky_view = StickyView(self)
+        self.bot.add_view(sticky_view)
+        self.views.append(sticky_view)
 
         for gid, conf in self.db.configs.items():
             guild = self.bot.get_guild(gid)

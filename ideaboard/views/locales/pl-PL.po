@@ -77,3 +77,24 @@ msgstr "Usunąłeś swój głos na nie."
 msgid "You have downvoted this suggestion."
 msgstr "Zagłosowałeś na tę sugestię na nie."
 
+
+msgid "Submit a suggestion"
+msgstr "Zgłoś sugestię"
+
+msgid "Title"
+msgstr "Tytuł"
+
+msgid "In a few words – what is your idea about?"
+msgstr "W kilku słowach – czego dotyczy Twój pomysł?"
+
+msgid "Your idea"
+msgstr "Twój pomysł"
+
+msgid "Describe your idea. The more detail, the better."
+msgstr "Opisz swój pomysł. Im więcej szczegółów, tym lepiej."
+
+msgid "Something went wrong while posting your suggestion."
+msgstr "Coś poszło nie tak podczas publikowania sugestii."
+
+msgid "Submit suggestion"
+msgstr "Zgłoś sugestię"

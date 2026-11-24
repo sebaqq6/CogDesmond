@@ -58,12 +58,19 @@
   .embed.hasthumb .desc, .embed.hasthumb .title { margin-right:96px; }
   .embed.hasthumb .fields { }
   .ava { width:24px; height:24px; border-radius:50%; background:#5865f2; color:#fff; font-size:11px; display:grid; place-items:center; flex:none; }
+  .h { font-weight:700; line-height:1.2; margin:2px 0 2px; }
+  .h1 { font-size:1.5em; } .h2 { font-size:1.25em; } .h3 { font-size:1.1em; }
+  .sub { font-size:12px; color:var(--muted); }
+  .quote { border-left:4px solid var(--hr); padding-left:8px; }
   code { background:var(--code); border-radius:3px; padding:0 4px; font:85% Consolas,"DejaVu Sans Mono",monospace; }
   pre { background:var(--code); border:1px solid var(--hr); border-radius:4px; padding:6px 8px; margin:4px 0; font:85% Consolas,"DejaVu Sans Mono",monospace; white-space:pre-wrap; }
   .mention { background:var(--mention-bg); color:var(--mention); border-radius:3px; padding:0 2px; font-weight:500; }
   a.l { color:var(--link); text-decoration:none; }
   .buttons { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
   .button { background:var(--btn); color:#fff; border-radius:3px; padding:2px 16px; height:32px; font-size:14px; font-weight:500; display:inline-flex; align-items:center; gap:6px; cursor:default; }
+  .button.success { background:#248046; }
+  .button.secondary { background:#4e5058; }
+  .field-box { background:var(--bg3); border-radius:4px; padding:8px 10px; font-size:14px; margin-top:4px; }
   .attach { margin-top:6px; background:var(--bg2); border:1px solid var(--hr); border-radius:6px; padding:8px 12px; display:inline-block; font-size:14px; color:var(--link); }
   .thread { margin-top:6px; background:var(--bg2); border:1px solid var(--hr); border-radius:6px; padding:8px 12px; font-size:14px; max-width:520px; }
 </style>
@@ -73,6 +80,7 @@
   <h1>💡 IdeaBoard – preview</h1>
   <label>Theme <select id="theme"><option value="dark">dark</option><option value="light">light</option></select></label>
   <label>Anonymous <input type="checkbox" id="anon" checked></label>
+  <label>Discussion threads <input type="checkbox" id="threads" checked></label>
   <label>Vote counts <input type="checkbox" id="counts" checked></label>
   <label>Reveal on rejection <input type="checkbox" id="reveal" checked></label>
   <label>Upvote emoji <input type="text" id="up" value="👍" size="3"></label>
@@ -89,11 +97,14 @@ const STATUS = { pending:["🕐","Pending Approval"], approved:["✅","Approved"
 const T = {
   suggestion:"Sugestia #{n}", postedBy:"Autor: {name}", anon:"Opublikowano anonimowo", status:"Status",
   approvedBy:"Zatwierdził {name}", rejectedBy:"Odrzucił {name}", reason:"Powód", reasonRej:"Powód odrzucenia",
-  decisionDate:"Data decyzji", thread:"Wątek", discussion:"Dyskusja", gone:"Autor sugestii nie jest już na serwerze."
+  decisionDate:"Data decyzji", thread:"Wątek", discussion:"Dyskusja", vote:"Głosowanie społeczności", noVotes:"Brak głosów",
+  statusLabel:{pending:"Oczekuje na zatwierdzenie",approved:"Zatwierdzono",rejected:"Odrzucono",deleted:"Usunięto"},
+  gone:"Autor sugestii nie jest już na serwerze."
 };
 
 const SAMPLE = {
   n: 42,
+  title: "Kanał głosowy „Muzyka”",
   content: "Dodajmy kanał głosowy „Muzyka”, żeby można było słuchać razem muzyki bez zajmowania ogólnego voice'a.",
   up: 14, down: 3,
   author: { name:"Kasia", display:"Kasia" },
@@ -109,12 +120,19 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 const fmt = (s,o={}) => String(s).replace(/\{(\w+)\}/g,(_,k)=>o[k]);
 function md(src){
-  let s = esc(src);
+  // block level: ## heading, -# subtext, > quote (as in Discord embeds)
+  let s = esc(src).split("\n").map(l=>{
+    let m;
+    if((m=l.match(/^(#{1,3}) (.*)$/))) return `<div class="h h${m[1].length}">${m[2]}</div>`;
+    if((m=l.match(/^-# (.*)$/))) return `<div class="sub">${m[1]}</div>`;
+    if((m=l.match(/^&gt; ?(.*)$/))) return `<div class="quote">${m[1]||"&nbsp;"}</div>`;
+    return l+"\n";
+  }).join("").replace(/\n$/,"");
   s = s.replace(/```\n?([\s\S]*?)```/g,(_,c)=>`<pre>${c.replace(/\n$/,"")}</pre>`);
   s = s.replace(/`([^`\n]+)`/g,"<code>$1</code>");
   s = s.replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>");
   s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a class="l">$1</a>');
-  s = s.replace(/(&lt;[#@]&amp;?\w*&gt;)|(@[\wąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)|(#[\wąćęłńóśźż-]+)/g,m=>`<span class="mention">${m.replace(/&lt;.*&gt;/,"@mention")}</span>`);
+  s = s.replace(/(&lt;[#@]&amp;?\w*&gt;)|(@[\wąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)|(#[a-ząćęłńóśźż][\w-]+)/g,m=>`<span class="mention">${m.replace(/&lt;.*&gt;/,"@mention")}</span>`);
   return s;
 }
 const initial = n => n.trim()[0].toUpperCase();
@@ -132,7 +150,7 @@ function embed(e){
   </div>`;
 }
 function buttons(list){
-  return `<div class="buttons">${list.map(b=>`<span class="button">${esc(b.emoji||"")}${b.label?" "+esc(b.label):""}</span>`).join("")}</div>`;
+  return `<div class="buttons">${list.map(b=>`<span class="button ${b.style||""}">${esc(b.emoji||"")}${b.label?" "+esc(b.label):""}</span>`).join("")}</div>`;
 }
 function message({user="IdeaBoard", bot=true, me=false, slash, tag, eph=false, content, embeds=[], components, attach, extra}){
   return `<div class="msg">
@@ -153,21 +171,23 @@ const section = (title, src, html) => `<section><h2>${esc(title)}</h2><p class="
 
 /* =============================== SCENES =============================== */
 function build(){
-  const S = SAMPLE, anon=$("#anon").checked, counts=$("#counts").checked, reveal=$("#reveal").checked;
+  const S = SAMPLE, anon=$("#anon").checked, counts=$("#counts").checked, reveal=$("#reveal").checked, threads=$("#threads").checked;
   const up=$("#up").value||"👍", down=$("#down").value||"👎";
   const pct = (a,b)=> (a+b) ? Math.round(a/(a+b)*100) : 0;
-  const votes = (u=S.up,d=S.down)=>[
-    {name:up,   value:"```\n"+u+" ("+pct(u,d)+"%)\n```", inline:true},
-    {name:down, value:"```\n"+d+" ("+pct(d,u)+"%)\n```", inline:true}];
-  const statusField = k=>({name:T.status, value:STATUS[k][0]+" "+STATUS[k][1]});
+  const bar = (u,d,n=10)=>{ const t=u+d; if(!t) return "⬛".repeat(n);
+    let g=Math.round(n*u/t); if(u&&!g) g=1; if(d&&g===n) g=n-1; return "🟩".repeat(g)+"🟥".repeat(n-g); };
+  const votes = (u=S.up,d=S.down)=>[{name:"📊 "+T.vote, inline:false,
+    value: bar(u,d)+"\n"+up+" **"+u+"** ("+pct(u,d)+"%)  ・  "+down+" **"+d+"** ("+pct(d,u)+"%)"+((u+d)?"":"\n-# "+T.noVotes)}];
+  const quote = t=>t.split("\n").map(l=>"> "+l).join("\n");
+  const TITLE = {pending:"💡",approved:"✅",rejected:"❌",deleted:"🗑️"};
+  const body = (k,text)=>"## "+(threads&&k!=="deleted"?"[":"")+TITLE[k]+" "+fmt(T.suggestion,{n:S.n})+(threads&&k!=="deleted"?"](#)":"")+"\n-# "+STATUS[k][0]+" "+T.statusLabel[k]+"\n\n"+(S.title?"### "+S.title+"\n":"")+quote(text);
   const created = "Dzisiaj o 14:32";
 
   // --- pending suggestion embed (embeds.build_pending_embed)
   const pending = (showAnon)=>({
-    color:COLORS.pending, desc:S.content,
-    author:{name:fmt(T.suggestion,{n:S.n})},
+    color:COLORS.pending, desc:body("pending",S.content),
     thumb: showAnon?null:S.author.name,
-    fields:[statusField("pending"), ...(counts?votes():[])],
+    fields:[...(counts?votes():[])],
     footer: showAnon?{text:T.anon}:{text:fmt(T.postedBy,{name:S.author.name}), icon:S.author.name},
     ts:created
   });
@@ -176,16 +196,16 @@ function build(){
   const decision = (status)=>{
     const rev = status==="approved" || !anon || reveal;
     const proposal = {
-      color:COLORS[status], desc:S.content, author:{name:fmt(T.suggestion,{n:S.n})},
+      color:COLORS[status], desc:body(status,S.content),
       thumb: rev?S.author.name:null,
-      fields:[statusField(status), ...votes()],
+      fields:[...votes()],
       footer: rev?{text:fmt(T.postedBy,{name:S.author.name}), icon:S.author.name}:{text:T.anon},
       ts:created };
     const f=[];
     const reason = status==="approved"?S.reasonApproved:S.reasonRejected;
-    f.push({name: status==="rejected"?T.reasonRej:T.reason, value:reason});
-    f.push({name:T.decisionDate, value:"za chwilę", inline:true});
-    f.push({name:T.thread, value:`[${T.discussion}](#)`, inline:true});
+    f.push({name:"💬 "+(status==="rejected"?T.reasonRej:T.reason), value:quote(reason)});
+    f.push({name:"📅 "+T.decisionDate, value:"24 listopada 2026 14:40\n-# za chwilę", inline:true});
+    f.push({name:"🧵 "+T.thread, value:`[${T.discussion}](#)`, inline:true});
     const details = {
       color:COLORS[status],
       author:{name: fmt(status==="approved"?T.approvedBy:T.rejectedBy,{name:S.mod.display}), icon:S.mod.name},
@@ -197,12 +217,42 @@ function build(){
     {emoji:up,   label: counts? String(S.up):""},
     {emoji:down, label: counts? String(S.down):""}];
 
+  // --- sticky "report a suggestion" message (always the last message in the pending channel)
+  const sticky = {
+    color:COLORS.gold,
+    desc:"## 💡 Masz pomysł dla serwera?\nPodziel się nim ze społecznością – najlepsze propozycje wdrażamy!\n\n"+
+      "### 📜 Jak to działa\n"+
+      "1️⃣ Kliknij **Zgłoś sugestię** poniżej\n"+
+      "2️⃣ Opisz swój pomysł w oknie, które się pojawi\n"+
+      "3️⃣ Społeczność głosuje "+up+" / "+down+"\n"+
+      "4️⃣ Moderatorzy zatwierdzają lub odrzucają – wynik dostaniesz w wiadomości prywatnej\n\n"+
+      "### ⚠️ Zasady\n"+
+      "- Jedna sugestia = jeden pomysł\n"+
+      "- Sprawdź, czy ktoś już tego nie zgłosił – użyj wyszukiwarki Discorda i wpisz `w: #propozycje` + słowo kluczowe\n"+
+      "- Bez spamu, obrażania i próśb o odbanowanie (od tego są tickety)\n\n"+
+      "-# "+(anon?"🕶️ Sugestie są publikowane anonimowo":"👤 Sugestie są publikowane z Twoim nickiem"),
+    fields:[
+      {name:"📥 Oczekujące", value:"**7**", inline:true},
+      {name:"✅ Zatwierdzono", value:"**128**", inline:true},
+      {name:"⏱️ Cooldown", value:"**5 min**", inline:true}],
+  };
+  const modal = (
+    '<div class="embed" style="--c:#5865f2;max-width:420px"><div class="title">Zgłoś sugestię</div>'+
+    '<div class="fname" style="margin-top:12px">TYTUŁ *</div><div class="field-box">Kanał głosowy „Muzyka”</div>'+
+    '<div class="fname" style="margin-top:12px">TWÓJ POMYSŁ *</div><div class="field-box" style="min-height:90px">Dodajmy kanał głosowy „Muzyka”, żeby można było słuchać razem muzyki…</div>'+
+    '<div class="buttons"><span class="button">Wyślij</span></div></div>');
+  const stickyButtons = [{emoji:"📝", label:"Zgłoś sugestię", style:"success"}];
+
   let h = "";
+  h += section("0. Stała wiadomość na kanale sugestii (zawsze ostatnia)", "NEW – bot usuwa poprzednią i wysyła ją ponownie po każdej nowej wiadomości; przycisk otwiera okno zgłoszenia",
+    message({embeds:[pending(anon)], components:voteButtons}) +
+    message({tag:"← poprzednia wersja tej wiadomości zostaje usunięta, nowa ląduje zawsze na dole", embeds:[sticky], components:stickyButtons}) +
+    message({tag:"po kliknięciu przycisku otwiera się okno (modal) z polami Tytuł i Twój pomysł", extra:modal}));
 
   h += section("1. New suggestion – pending channel", "common/embeds.py → build_pending_embed + views/voteview.py",
     message({embeds:[pending(anon)], components:voteButtons}) +
     message({tag:"variant: author visible (anonymous = off)", embeds:[pending(false)], components:voteButtons}) +
-    message({tag:"variant: no counters (show_vote_counts = off)", embeds:[{...pending(anon), fields:[statusField("pending")]}], components:[{emoji:up},{emoji:down}]}));
+    message({tag:"variant: no counters (show_vote_counts = off)", embeds:[{...pending(anon), fields:[]}], components:[{emoji:up},{emoji:down}]}));
 
   h += section("2. Confirmation to the author (/idea)", "commands/user.py → idea",
     message({me:true,user:S.author.name,bot:false,content:"/idea content:"+S.content}) +
@@ -218,7 +268,7 @@ function build(){
 
   h += section("5. Message in the discussion thread (after decision, delete_threads = off)", "commands/adminbase.py → approve/reject; listener.on_message_delete (status=deleted)",
     message({embeds:decision("approved")}) +
-    message({tag:"thread gets archived and locked, name: “Suggestion #42 Discussion [Approved]”", embeds:[{color:COLORS.deleted, desc:S.content, author:{name:fmt(T.suggestion,{n:S.n})}, fields:[statusField("deleted"), ...votes()], footer:{text:T.anon}, ts:created}]}));
+    message({tag:"thread gets archived and locked, name: “Suggestion #42 Discussion [Approved]”", embeds:[{color:COLORS.deleted, desc:body("deleted",S.content), fields:[...votes()], footer:{text:T.anon}, ts:created}]}));
 
   h += section("6. Direct messages to the author", "commands/adminbase.py (conf.dm)",
     message({content:"Twoja [sugestia #42](#) została zatwierdzona!"}) +

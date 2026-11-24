@@ -337,6 +337,7 @@ class AdminBase(MixinMeta):
                         author=user,
                         anonymous=conf.anonymous,
                         show_votes=conf.show_vote_counts,
+                        guild_id=ctx.guild.id,
                     )
                     view = VoteView(self, ctx.guild, number, suggestion.id)
                     message = await pending.send(embed=embed, view=view)

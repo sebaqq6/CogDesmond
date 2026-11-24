@@ -67,6 +67,7 @@ class VoteView(discord.ui.View):
             author=author,
             anonymous=conf.anonymous,
             show_votes=conf.show_vote_counts,
+            guild_id=self.guild.id,
         )
         self.update_labels()
         with suppress(discord.HTTPException):
