@@ -941,3 +941,12 @@ msgstr "Stała wiadomość z przyciskiem zgłaszania jest teraz **włączona**."
 
 msgid "The sticky suggestion message is now **disabled**."
 msgstr "Stała wiadomość z przyciskiem zgłaszania jest teraz **wyłączona**."
+
+msgid "Specify the suggestion number, or run this command inside the suggestion's thread."
+msgstr "Podaj numer sugestii albo użyj tej komendy w wątku sugestii."
+
+msgid "Suggestion number (not needed inside the suggestion's thread)"
+msgstr "Numer sugestii (niepotrzebny w wątku sugestii)"
+
+msgid "Reason"
+msgstr "Powód"

@@ -1049,3 +1049,12 @@ msgstr ""
 
 msgid "The sticky suggestion message is now **disabled**."
 msgstr ""
+
+msgid "Specify the suggestion number, or run this command inside the suggestion's thread."
+msgstr ""
+
+msgid "Suggestion number (not needed inside the suggestion's thread)"
+msgstr ""
+
+msgid "Reason"
+msgstr ""

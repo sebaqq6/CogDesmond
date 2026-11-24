@@ -19,12 +19,23 @@ _ = Translator("IdeaBoard", __file__)
 
 @cog_i18n(_)
 class AdminBase(MixinMeta):
+    def resolve_suggestion_number(self, ctx: commands.Context, number: int | None) -> int | None:
+        """Use the given number, or find the suggestion whose discussion thread is the current channel."""
+        if number is not None:
+            return number
+        conf = self.db.get_conf(ctx.guild)
+        for num, suggestion in conf.suggestions.items():
+            if suggestion.thread_id and suggestion.thread_id == ctx.channel.id:
+                return num
+        return None
+
     @commands.hybrid_command(name="approve", description=_("Approve a suggestion."))
-    @app_commands.describe(number=_("Suggestion number"))
-    @app_commands.checks.has_permissions(manage_messages=True)
-    @commands.mod_or_permissions(manage_messages=True)
+    @app_commands.describe(
+        number=_("Suggestion number (not needed inside the suggestion's thread)"),
+        reason=_("Reason"),
+    )
     @commands.guild_only()
-    async def approve_suggestion(self, ctx: commands.Context, number: int, *, reason: str = None):
+    async def approve_suggestion(self, ctx: commands.Context, number: int | None = None, *, reason: str = None):
         """Approve an idea/suggestion."""
         conf = self.db.get_conf(ctx.guild)
         if not conf.approvers:
@@ -35,6 +46,11 @@ class AdminBase(MixinMeta):
         if not any(role in [role.id for role in ctx.author.roles] for role in conf.approvers):
             txt = _("You do not have the required roles to approve suggestions.")
             return await ctx.send(txt)
+
+        number = self.resolve_suggestion_number(ctx, number)
+        if number is None:
+            txt = _("Specify the suggestion number, or run this command inside the suggestion's thread.")
+            return await ctx.send(txt, ephemeral=True)
 
         if not conf.pending:
             txt = _("The pending suggestions channel has not been set!")
@@ -148,16 +164,19 @@ class AdminBase(MixinMeta):
         if number in conf.suggestions:
             del conf.suggestions[number]
 
-        await ctx.send(_("Suggestion #{} has been approved.").format(number))
+        # The command may have been run inside the thread that was just deleted
+        with suppress(discord.HTTPException):
+            await ctx.send(_("Suggestion #{} has been approved.").format(number))
 
         await self.save()
 
-    @commands.hybrid_command(name="reject", description=_("Reject a suggestion."))
-    @app_commands.describe(number=_("Suggestion number"))
-    @app_commands.checks.has_permissions(manage_messages=True)
-    @commands.mod_or_permissions(manage_messages=True)
+    @commands.hybrid_command(name="reject", aliases=["deny"], description=_("Reject a suggestion."))
+    @app_commands.describe(
+        number=_("Suggestion number (not needed inside the suggestion's thread)"),
+        reason=_("Reason"),
+    )
     @commands.guild_only()
-    async def reject_suggestion(self, ctx: commands.Context, number: int, *, reason: str = None):
+    async def reject_suggestion(self, ctx: commands.Context, number: int | None = None, *, reason: str = None):
         """Reject an idea/suggestion."""
         conf = self.db.get_conf(ctx.guild)
         if not conf.approvers:
@@ -168,6 +187,11 @@ class AdminBase(MixinMeta):
         if not any(role in [role.id for role in ctx.author.roles] for role in conf.approvers):
             txt = _("You do not have the required roles to reject suggestions.")
             return await ctx.send(txt)
+
+        number = self.resolve_suggestion_number(ctx, number)
+        if number is None:
+            txt = _("Specify the suggestion number, or run this command inside the suggestion's thread.")
+            return await ctx.send(txt, ephemeral=True)
 
         if not conf.pending:
             txt = _("The pending suggestions channel has not been set!")
@@ -281,7 +305,8 @@ class AdminBase(MixinMeta):
         if number in conf.suggestions:
             del conf.suggestions[number]
 
-        await ctx.send(_("Suggestion #{} has been rejected.").format(number))
+        with suppress(discord.HTTPException):
+            await ctx.send(_("Suggestion #{} has been rejected.").format(number))
 
         await self.save()
 

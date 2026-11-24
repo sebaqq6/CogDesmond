@@ -108,7 +108,7 @@ const SAMPLE = {
   title: "Kanał głosowy „Muzyka”",
   content: "Dodajmy kanał głosowy „Muzyka”, żeby można było słuchać razem muzyki bez zajmowania ogólnego voice'a.",
   up: 14, down: 3,
-  author: { name:"Kasia", display:"Kasia" },
+  author: { name:"Kasia", display:"Kasia", handle:"kasia_pl" },
   mod:    { name:"Desmond", display:"Desmond" },
   reasonApproved: "Świetny pomysł, wdrażamy w tym tygodniu.",
   reasonRejected: "Mamy już bota muzycznego na kanale #muzyka.",
@@ -189,7 +189,7 @@ function build(){
     color:COLORS.pending, desc:body("pending",S.content),
     thumb: showAnon?null:S.author.name,
     fields:[...(counts?votes(u,d):[])],
-    footer: showAnon?{text:T.anon}:{text:fmt(T.postedBy,{name:S.author.name}), icon:S.author.name},
+    footer: showAnon?{text:T.anon}:{text:fmt(T.postedBy,{name:S.author.display+(S.author.display===S.author.handle?"":" (@"+S.author.handle+")")}), icon:S.author.name},
     ts:created
   });
 
@@ -200,7 +200,7 @@ function build(){
       color:COLORS[status], desc:body(status,S.content),
       thumb: rev?S.author.name:null,
       fields:[...votes()],
-      footer: rev?{text:fmt(T.postedBy,{name:S.author.name}), icon:S.author.name}:{text:T.anon},
+      footer: rev?{text:fmt(T.postedBy,{name:S.author.display+(S.author.display===S.author.handle?"":" (@"+S.author.handle+")")}), icon:S.author.name}:{text:T.anon},
       ts:created };
     const f=[];
     const reason = status==="approved"?S.reasonApproved:S.reasonRejected;

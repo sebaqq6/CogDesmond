@@ -46,6 +46,12 @@ def _status_label(status: str) -> str:
     return labels[status]
 
 
+def author_label(author: discord.abc.User) -> str:
+    """Display name plus the Discord @username, e.g. `Kasia (@kasia_pl)`."""
+    display = author.display_name
+    return display if display == author.name else f"{display} (@{author.name})"
+
+
 def quote(text: str) -> str:
     """Turn text into a Discord block quote (one `> ` per line)."""
     return "\n".join(f"> {line}" if line else ">" for line in text.splitlines()) or "> "
@@ -129,7 +135,7 @@ def build_pending_embed(
     else:
         avatar = author.display_avatar.url
         embed.set_thumbnail(url=avatar)
-        embed.set_footer(text=_("Posted by {}").format(author.name), icon_url=avatar)
+        embed.set_footer(text=_("Posted by {}").format(author_label(author)), icon_url=avatar)
     if show_votes:
         add_vote_fields(embed, bot, conf, suggestion)
     return embed
@@ -157,7 +163,7 @@ def build_decision_embeds(
     if reveal and author is not None:
         avatar = author.display_avatar.url
         proposal.set_thumbnail(url=avatar)
-        proposal.set_footer(text=_("Posted by {}").format(author.name), icon_url=avatar)
+        proposal.set_footer(text=_("Posted by {}").format(author_label(author)), icon_url=avatar)
     elif reveal:
         proposal.set_footer(text=_("Suggested by a user who is no longer in the server."))
     else:
