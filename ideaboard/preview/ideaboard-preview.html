@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IdeaBoard – podgląd wiadomości</title>
+<!--
+  Podgląd wszystkich wiadomości cogu IdeaBoard (bez serwera Discord).
+  Dane i teksty edytujesz w sekcji "SCENY" w <script> na dole – odśwież stronę (F5).
+  Źródła prawdy w kodzie:
+    embedy sugestii  -> common/embeds.py
+    przyciski        -> views/voteview.py
+    pozostałe        -> commands/user.py, adminbase.py, admin.py, common/listener.py
+  Po dopracowaniu wyglądu przenieś zmiany do kodu Pythona (+ pl-PL.po).
+-->
+<style>
+  :root { --bg:#313338; --bg2:#2b2d31; --bg3:#1e1f22; --text:#dbdee1; --muted:#949ba4; --link:#00a8fc;
+          --mention-bg:rgba(88,101,242,.3); --mention:#c9cdfb; --btn:#5865f2; --code:#1e1f22; --hr:#3f4147; }
+  body.light { --bg:#ffffff; --bg2:#f2f3f5; --bg3:#e3e5e8; --text:#313338; --muted:#5c5e66; --link:#006ce7;
+          --mention-bg:rgba(88,101,242,.15); --mention:#505cdc; --code:#f2f3f5; --hr:#d9dadd; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.375 "gg sans","Noto Sans","Helvetica Neue",Arial,sans-serif; }
+  header { position:sticky; top:0; z-index:5; background:var(--bg3); padding:10px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:16px; margin:0 8px 0 0; }
+  header label { font-size:13px; color:var(--muted); display:flex; gap:6px; align-items:center; }
+  header input[type=text], header select { background:var(--bg); color:var(--text); border:1px solid var(--hr); border-radius:4px; padding:3px 6px; }
+  main { max-width:760px; margin:0 auto; padding:20px 16px 80px; }
+  section { margin-top:36px; }
+  section > h2 { font-size:13px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); border-bottom:1px solid var(--hr); padding-bottom:4px; margin:0 0 4px; }
+  section > p.src { margin:0 0 10px; font-size:12px; color:var(--muted); }
+  .msg { display:flex; gap:16px; padding:6px 0; }
+  .avatar { width:40px; height:40px; border-radius:50%; flex:none; background:#5865f2; display:grid; place-items:center; font-weight:700; color:#fff; }
+  .avatar.me { background:#3ba55d; }
+  .body { min-width:0; flex:1; }
+  .head { display:flex; gap:8px; align-items:baseline; }
+  .name { font-weight:500; }
+  .bot { background:#5865f2; color:#fff; font-size:10px; padding:1px 4px; border-radius:3px; text-transform:uppercase; }
+  .time { font-size:12px; color:var(--muted); }
+  .tag { font-size:11px; color:var(--muted); margin:2px 0; }
+  .tag.eph::before { content:"👁 "; }
+  .content { white-space:pre-wrap; word-wrap:break-word; }
+  .slash { color:var(--muted); font-size:13px; margin-bottom:2px; }
+  .slash b { color:var(--link); font-weight:500; }
+  .embed { display:grid; grid-template-columns:auto; max-width:520px; margin-top:6px; background:var(--bg2); border-left:4px solid var(--c,#5865f2); border-radius:4px; padding:8px 16px 16px 12px; position:relative; }
+  .embed + .embed { margin-top:4px; }
+  .embed .author { display:flex; align-items:center; gap:8px; font-size:14px; font-weight:600; margin-top:8px; }
+  .embed .author img, .embed .footer img { width:24px; height:24px; border-radius:50%; }
+  .embed .title { font-size:16px; font-weight:600; margin-top:8px; }
+  .embed .desc { font-size:14px; margin-top:8px; white-space:pre-wrap; word-wrap:break-word; }
+  .embed .fields { display:grid; grid-template-columns:repeat(12,1fr); gap:8px; margin-top:8px; }
+  .embed .field { grid-column:1/13; min-width:0; }
+  .embed .field.inline { grid-column:span 4; }
+  .embed .fname { font-size:14px; font-weight:600; margin-bottom:2px; }
+  .embed .fval { font-size:14px; white-space:pre-wrap; word-wrap:break-word; }
+  .embed .footer { display:flex; align-items:center; gap:8px; margin-top:8px; font-size:12px; color:var(--muted); }
+  .embed .thumb { position:absolute; top:8px; right:16px; width:80px; height:80px; border-radius:4px; background:#5865f2; display:grid; place-items:center; color:#fff; font-size:28px; font-weight:700; }
+  .embed.hasthumb .desc, .embed.hasthumb .title { margin-right:96px; }
+  .embed.hasthumb .fields { }
+  .ava { width:24px; height:24px; border-radius:50%; background:#5865f2; color:#fff; font-size:11px; display:grid; place-items:center; flex:none; }
+  code { background:var(--code); border-radius:3px; padding:0 4px; font:85% Consolas,"DejaVu Sans Mono",monospace; }
+  pre { background:var(--code); border:1px solid var(--hr); border-radius:4px; padding:6px 8px; margin:4px 0; font:85% Consolas,"DejaVu Sans Mono",monospace; white-space:pre-wrap; }
+  .mention { background:var(--mention-bg); color:var(--mention); border-radius:3px; padding:0 2px; font-weight:500; }
+  a.l { color:var(--link); text-decoration:none; }
+  .buttons { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+  .button { background:var(--btn); color:#fff; border-radius:3px; padding:2px 16px; height:32px; font-size:14px; font-weight:500; display:inline-flex; align-items:center; gap:6px; cursor:default; }
+  .attach { margin-top:6px; background:var(--bg2); border:1px solid var(--hr); border-radius:6px; padding:8px 12px; display:inline-block; font-size:14px; color:var(--link); }
+  .thread { margin-top:6px; background:var(--bg2); border:1px solid var(--hr); border-radius:6px; padding:8px 12px; font-size:14px; max-width:520px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>💡 IdeaBoard – podgląd</h1>
+  <label>Motyw <select id="theme"><option value="dark">ciemny</option><option value="light">jasny</option></select></label>
+  <label>Anonimowo <input type="checkbox" id="anon" checked></label>
+  <label>Liczniki głosów <input type="checkbox" id="counts" checked></label>
+  <label>Reveal po odrzuceniu <input type="checkbox" id="reveal" checked></label>
+  <label>Górny emoji <input type="text" id="up" value="👍" size="3"></label>
+  <label>Dolny emoji <input type="text" id="down" value="👎" size="3"></label>
+</header>
+<main id="root"></main>
+
+<script>
+/* ======================= USTAWIENIA / DANE PRZYKŁADOWE ======================= */
+const COLORS = { pending:"#5865f2", approved:"#57f287", rejected:"#ed4245", deleted:"#607d8b", gold:"#f1c40f", blue:"#3498db" };
+const STATUS = { pending:["🕐","Pending Approval"], approved:["✅","Approved"], rejected:["❌","Rejected"], deleted:["🗑️","Deleted"] };
+
+// Teksty w PL (zgodnie z pl-PL.po) – podmień na własne, by zobaczyć efekt
+const T = {
+  suggestion:"Sugestia #{n}", postedBy:"Autor: {name}", anon:"Opublikowano anonimowo", status:"Status",
+  approvedBy:"Zatwierdził {name}", rejectedBy:"Odrzucił {name}", reason:"Powód", reasonRej:"Powód odrzucenia",
+  decisionDate:"Data decyzji", thread:"Wątek", discussion:"Dyskusja", gone:"Autor sugestii nie jest już na serwerze."
+};
+
+const SAMPLE = {
+  n: 42,
+  content: "Dodajmy kanał głosowy „Muzyka”, żeby można było słuchać razem muzyki bez zajmowania ogólnego voice'a.",
+  up: 14, down: 3,
+  author: { name:"Kasia", display:"Kasia" },
+  mod:    { name:"Desmond", display:"Desmond" },
+  reasonApproved: "Świetny pomysł, wdrażamy w tym tygodniu.",
+  reasonRejected: "Mamy już bota muzycznego na kanale #muzyka.",
+  voters: { up:["@Ania","@Bartek","@Celina","@Darek"], down:["@Ewa","@Filip"] },
+  time: "Dzisiaj o 14:32"
+};
+
+/* ============================ NARZĘDZIA RENDERU ============================ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const fmt = (s,o={}) => String(s).replace(/\{(\w+)\}/g,(_,k)=>o[k]);
+function md(src){
+  let s = esc(src);
+  s = s.replace(/```\n?([\s\S]*?)```/g,(_,c)=>`<pre>${c.replace(/\n$/,"")}</pre>`);
+  s = s.replace(/`([^`\n]+)`/g,"<code>$1</code>");
+  s = s.replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>");
+  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a class="l">$1</a>');
+  s = s.replace(/(&lt;[#@]&amp;?\w*&gt;)|(@[\wąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)|(#[\wąćęłńóśźż-]+)/g,m=>`<span class="mention">${m.replace(/&lt;.*&gt;/,"@mention")}</span>`);
+  return s;
+}
+const initial = n => n.trim()[0].toUpperCase();
+const ava = n => `<span class="ava">${esc(initial(n))}</span>`;
+
+function embed(e){
+  const thumb = e.thumb ? `<div class="thumb">${esc(initial(e.thumb))}</div>` : "";
+  return `<div class="embed ${e.thumb?"hasthumb":""}" style="--c:${e.color}">
+    ${thumb}
+    ${e.author?`<div class="author">${e.author.icon?ava(e.author.icon):""}<span>${md(e.author.name)}</span></div>`:""}
+    ${e.title?`<div class="title">${md(e.title)}</div>`:""}
+    ${e.desc?`<div class="desc">${md(e.desc)}</div>`:""}
+    ${e.fields?.length?`<div class="fields">${e.fields.map(f=>`<div class="field ${f.inline?"inline":""}"><div class="fname">${md(f.name)}</div><div class="fval">${md(f.value)}</div></div>`).join("")}</div>`:""}
+    ${e.footer?`<div class="footer">${e.footer.icon?ava(e.footer.icon):""}<span>${md(e.footer.text)}${e.ts?" • "+esc(e.ts):""}</span></div>`:(e.ts?`<div class="footer">${esc(e.ts)}</div>`:"")}
+  </div>`;
+}
+function buttons(list){
+  return `<div class="buttons">${list.map(b=>`<span class="button">${esc(b.emoji||"")}${b.label?" "+esc(b.label):""}</span>`).join("")}</div>`;
+}
+function message({user="IdeaBoard", bot=true, me=false, slash, tag, eph=false, content, embeds=[], components, attach, extra}){
+  return `<div class="msg">
+    <div class="avatar ${me?"me":""}">${esc(initial(user))}</div>
+    <div class="body">
+      ${slash?`<div class="slash"><b>${esc(me?SAMPLE.author.name:"")}</b> użył <b>${esc(slash)}</b></div>`:""}
+      <div class="head"><span class="name">${esc(user)}</span>${bot?'<span class="bot">APP</span>':""}<span class="time">${esc(SAMPLE.time)}</span></div>
+      ${eph?'<div class="tag eph">Widoczne tylko dla Ciebie</div>':""}
+      ${tag?`<div class="tag">${esc(tag)}</div>`:""}
+      ${content?`<div class="content">${md(content)}</div>`:""}
+      ${embeds.map(embed).join("")}
+      ${attach?`<div class="attach">📎 ${esc(attach)}</div>`:""}
+      ${extra||""}
+      ${components?buttons(components):""}
+    </div></div>`;
+}
+const section = (title, src, html) => `<section><h2>${esc(title)}</h2><p class="src">${esc(src)}</p>${html}</section>`;
+
+/* =============================== SCENY =============================== */
+function build(){
+  const S = SAMPLE, anon=$("#anon").checked, counts=$("#counts").checked, reveal=$("#reveal").checked;
+  const up=$("#up").value||"👍", down=$("#down").value||"👎";
+  const pct = (a,b)=> (a+b) ? Math.round(a/(a+b)*100) : 0;
+  const votes = (u=S.up,d=S.down)=>[
+    {name:up,   value:"```\n"+u+" ("+pct(u,d)+"%)\n```", inline:true},
+    {name:down, value:"```\n"+d+" ("+pct(d,u)+"%)\n```", inline:true}];
+  const statusField = k=>({name:T.status, value:STATUS[k][0]+" "+STATUS[k][1]});
+  const created = "Dzisiaj o 14:32";
+
+  // --- embed oczekującej sugestii (embeds.build_pending_embed)
+  const pending = (showAnon)=>({
+    color:COLORS.pending, desc:S.content,
+    author:{name:fmt(T.suggestion,{n:S.n})},
+    thumb: showAnon?null:S.author.name,
+    fields:[statusField("pending"), ...(counts?votes():[])],
+    footer: showAnon?{text:T.anon}:{text:fmt(T.postedBy,{name:S.author.name}), icon:S.author.name},
+    ts:created
+  });
+
+  // --- embedy decyzji (embeds.build_decision_embeds)
+  const decision = (status)=>{
+    const rev = status==="approved" || !anon || reveal;
+    const proposal = {
+      color:COLORS[status], desc:S.content, author:{name:fmt(T.suggestion,{n:S.n})},
+      thumb: rev?S.author.name:null,
+      fields:[statusField(status), ...votes()],
+      footer: rev?{text:fmt(T.postedBy,{name:S.author.name}), icon:S.author.name}:{text:T.anon},
+      ts:created };
+    const f=[];
+    const reason = status==="approved"?S.reasonApproved:S.reasonRejected;
+    f.push({name: status==="rejected"?T.reasonRej:T.reason, value:reason});
+    f.push({name:T.decisionDate, value:"za chwilę", inline:true});
+    f.push({name:T.thread, value:`[${T.discussion}](#)`, inline:true});
+    const details = {
+      color:COLORS[status],
+      author:{name: fmt(status==="approved"?T.approvedBy:T.rejectedBy,{name:S.mod.display}), icon:S.mod.name},
+      fields:f };
+    return [proposal, details];
+  };
+
+  const voteButtons = [
+    {emoji:up,   label: counts? String(S.up):""},
+    {emoji:down, label: counts? String(S.down):""}];
+
+  let h = "";
+
+  h += section("1. Nowa sugestia – kanał „pending”", "common/embeds.py → build_pending_embed + views/voteview.py",
+    message({embeds:[pending(anon)], components:voteButtons}) +
+    message({tag:"wariant: autor widoczny (anonymous = off)", embeds:[pending(false)], components:voteButtons}) +
+    message({tag:"wariant: bez liczników (show_vote_counts = off)", embeds:[{...pending(anon), fields:[statusField("pending")]}], components:[{emoji:up},{emoji:down}]}));
+
+  h += section("2. Potwierdzenie dla autora (/idea)", "commands/user.py → idea",
+    message({me:true,user:S.author.name,bot:false,content:"/idea content:"+S.content}) +
+    message({eph:true, slash:"/idea", me:false, content:"Twoja [sugestia #42](#) została opublikowana!", embeds:[pending(anon)]}));
+
+  h += section("3. Sugestia zatwierdzona – kanał „approved”", "commands/adminbase.py → approve + build_decision_embeds(status=approved)",
+    message({embeds:decision("approved")}) +
+    message({user:"IdeaBoard", content:"Wiadomość od `/approve`:\nSugestia #42 została zatwierdzona.", tag:"odpowiedź na komendę w kanale moderatora"}));
+
+  h += section("4. Sugestia odrzucona – kanał „rejected”", "commands/adminbase.py → reject + build_decision_embeds(status=rejected)",
+    message({embeds:decision("rejected")}) +
+    message({tag:"odpowiedź na komendę", content:"Sugestia #42 została odrzucona."}));
+
+  h += section("5. Wiadomość w wątku dyskusji (po decyzji, delete_threads = off)", "commands/adminbase.py → approve/reject; listener.on_message_delete (status=deleted)",
+    message({embeds:decision("approved")}) +
+    message({tag:"wątek zostaje zarchiwizowany i zablokowany, nazwa: „Sugestia #42 Dyskusja [Zatwierdzona]”", embeds:[{color:COLORS.deleted, desc:S.content, author:{name:fmt(T.suggestion,{n:S.n})}, fields:[statusField("deleted"), ...votes()], footer:{text:T.anon}, ts:created}]}));
+
+  h += section("6. Wiadomości prywatne (DM) do autora", "commands/adminbase.py (conf.dm)",
+    message({content:"Twoja [sugestia #42](#) została zatwierdzona!"}) +
+    message({content:"Twoja [sugestia #42](#) została odrzucona!\nPowód: "+S.reasonRejected}));
+
+  h += section("7. Odpowiedzi po kliknięciu przycisku (ephemeral, znikają po 60 s)", "views/voteview.py",
+    ["Oddałeś głos za tą sugestią.","Cofnąłeś swój głos za.","Zmieniłeś głos przeciw na głos za.","Nie możesz głosować na własną sugestię.",
+     "Nie masz żadnej z wymaganych ról, aby głosować.\n@Członek, @Weteran",
+     "Twoje konto jest zbyt nowe! Musisz poczekać `2 dni` zanim zagłosujesz.",
+     "Musisz mieć poziom 5 lub wyższy, aby głosować.",
+     "Ta sugestia już nie istnieje w konfiguracji!"].map(t=>message({eph:true,content:t})).join(""));
+
+  h += section("8. Błędy i walidacje /idea", "commands/user.py",
+    ["Kanał oczekujących sugestii nie został ustawiony!","Nie masz wymaganych ról, aby tworzyć sugestie.","Musisz odczekać `3 minuty`, zanim złożysz kolejną sugestię.",
+     "Brak ustawionych zatwierdzających! Admin musi użyć komendy `[p]ideaset approverole @rola`.","Jesteś na czarnej liście i nie możesz składać sugestii."]
+    .map(t=>message({eph:true,content:t})).join(""));
+
+  h += section("9. /ideastats – profil użytkownika", "commands/user.py → fetch_profile",
+    message({embeds:[{color:COLORS.gold, author:{name:"Statystyki: "+S.author.display, icon:S.author.name}, thumb:S.author.name, ts:"Dzisiaj o 14:35",
+      fields:[
+       {name:"Podsumowanie sugestii", value:"```\nZłożone sugestie: 12\nZatwierdzone: 5\nOdrzucone: 3\nKarma: 31 (40↑ 9↓)\n```"},
+       {name:"Podsumowanie głosów", value:"```\n"+up+" Oddane głosy za: 58\n"+down+" Oddane głosy przeciw: 7\nWygrane: 33\nPrzegrane: 9\n```"}]}]}));
+
+  h += section("10. /viewvotes – kto zagłosował (ephemeral)", "commands/adminbase.py → view_votes",
+    message({eph:true, embeds:[{color:COLORS.blue, title:"Głosy dla sugestii #42", desc:S.content, ts:created,
+      fields:[{name:"Głosy za ("+S.voters.up.length+")", value:S.voters.up.join(", ")}, {name:"Głosy przeciw ("+S.voters.down.length+")", value:S.voters.down.join(", ")}],
+      footer:{text:"Autor: "+S.author.name+" (123456789012345678)", icon:S.author.name}}]}) +
+    message({eph:true, content:"", embeds:[{color:COLORS.blue, title:"Głosy dla sugestii #42", desc:S.content, fields:[{name:"Głosy za (310)", value:"310"},{name:"Głosy przeciw (95)", value:"310"}], footer:{text:"Autor: Kasia (123456789012345678)", icon:"Kasia"}}], attach:"votes.txt", tag:"wariant: za dużo głosów → plik"}) +
+    message({content:"Nie mogę znaleźć wiadomości tej sugestii, czy mam ją opublikować ponownie? (t/n)"}));
+
+  h += section("11. /ideaset view – ustawienia", "commands/admin.py → view_settings",
+    message({embeds:[{color:"#b9bbbe", author:{name:"Ustawienia Ideaboard", icon:"S"},
+      desc:"`Approved Channel:   `#zatwierdzone\n`Rejected Channel:   `#odrzucone\n`Pending Channel:    `#sugestie\n`Anonymous:          `"+(anon?"✅":"❌")+"\n`Reveal Complete:    `"+(reveal?"✅":"❌")+"\n`DM Result:          `✅\n`Discussion Threads: `✅\n`Delete Threads:     `❌\n`Upvote Emoji:       `"+up+"\n`Downvote Emoji:     `"+down+"\n`Show Vote Counts:   `"+(counts?"✅":"❌")+"\n`Suggestions:        `7\n`Suggestion #:       `42",
+      fields:[
+       {name:"Cooldowny", value:"```\nBase: 300 seconds\nRole Cooldowns: @Booster: 60s\n```"},
+       {name:"Wiek konta", value:"```\nMinimum age of account to vote or suggest\nVote: 24 hours\nSuggest: 72 hours\n```"},
+       {name:"Czas na serwerze", value:"```\nMinimum time in server to vote or suggest\nVote: 0 hours\nSuggest: 24 hours\n```"},
+       {name:"Role głosujących", value:"Brak ustawień"},
+       {name:"Role sugerujących", value:"Brak ustawień"},
+       {name:"Zatwierdzający", value:"Roles required to approve suggestions\n@Moderator\n@Admin"},
+       {name:"Integracja LevelUp", value:"```\nMinimum level required to vote or make suggestions.\nVote: 3\nSuggest: 5\n```"}]}]}));
+
+  h += section("12. /ideaset insights – statystyki serwera", "commands/admin.py → view_insights",
+    message({embeds:[{color:COLORS.gold, title:"Statystyki serwera", thumb:"S", footer:{text:"Mój Serwer"}, ts:"Dzisiaj o 14:40",
+      fields:[
+       {name:"Średnia liczba sugestii na użytkownika", value:"2,4"},
+       {name:"Najwięcej sugestii", value:"🥇 @Kasia (12)\n🥈 @Ania (9)\n🥉 @Bartek (6)"},
+       {name:"Najbardziej skuteczni", value:"Ci użytkownicy mają najwięcej zatwierdzonych sugestii.\n🥇 @Kasia (5)\n🥈 @Ania (4)\n🥉 @Darek (2)"},
+       {name:"Najwyższy współczynnik zatwierdzeń", value:"🥇 @Kasia (1,67)\n🥈 @Ania (1,33)\n🥉 @Darek (1)"},
+       {name:"Najwyższa karma", value:"🥇 @Kasia 31 (40↑ 9↓)\n🥈 @Ania 22 (30↑ 8↓)\n🥉 @Darek 10 (12↑ 2↓)"},
+       {name:"Najniższa karma", value:"🥇 @Filip -4 (2↑ 6↓)\n🥈 @Ewa 0 (1↑ 1↓)\n🥉 @Celina 3 (5↑ 2↓)"}]}]}) +
+    `<p class="src">Pełny embed ma 12 pól (Least Successful, Lowest Approval Ratio, Most Wins/Losses, Most Optimistic/Negative…) – tu skrócono.</p>`);
+
+  h += section("13. Komendy konfiguracyjne `ideaset` – krótkie odpowiedzi", "commands/admin.py",
+    ["Anonimowe sugestie: **włączone**.","Kanał oczekujących ustawiony na #sugestie.","Emoji głosu za ustawione na 👍.","Cooldown ustawiony na 300 sekund.",
+     "Statystyki użytkownika Kasia zostały zresetowane.","Czy na pewno chcesz zresetować wszystkie statystyki użytkowników?",
+     "- Usunięto 2 profile użytkowników, którzy opuścili serwer.\n- Usunięto sugestię #17, ponieważ wiadomość już nie istnieje."]
+    .map(t=>message({content:t})).join(""));
+
+  h += section("14. Funkcja dla cogu Assistant (tekst zwracany do AI)", "common/listener.py → get_user_suggestion_stats",
+    message({content:"```\nSuggestion Stats for Kasia\nTotal suggestions that the user made: 12\nSuggestions user made that were approved: 5\nSuggestions user made that were denied: 3\nTotal upvotes: 58\nTotal downvotes: 7\nSuggestions user voted on that won in their favor: 33\nSuggestions user voted on that did not go in their favor: 9\n```", tag:"nie jest wysyłane na Discord – tylko do modelu AI"}));
+
+  $("#root").innerHTML = h;
+}
+
+/* ============================== INICJALIZACJA ============================== */
+document.querySelectorAll("header input, header select").forEach(el=>el.addEventListener("input",()=>{
+  document.body.classList.toggle("light", $("#theme").value==="light"); build(); }));
+build();
+</script>
+</body>
+</html>
