@@ -69,6 +69,7 @@
   .buttons { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
   .button { background:var(--btn); color:#fff; border-radius:3px; padding:2px 16px; height:32px; font-size:14px; font-weight:500; display:inline-flex; align-items:center; gap:6px; cursor:default; }
   .button.success { background:#248046; }
+  .button.danger { background:#da373c; }
   .button.secondary { background:#4e5058; }
   .field-box { background:var(--bg3); border-radius:4px; padding:8px 10px; font-size:14px; margin-top:4px; }
   .attach { margin-top:6px; background:var(--bg2); border:1px solid var(--hr); border-radius:6px; padding:8px 12px; display:inline-block; font-size:14px; color:var(--link); }
@@ -180,14 +181,14 @@ function build(){
     value: bar(u,d)+"\n"+up+" **"+u+"** ("+pct(u,d)+"%)  ・  "+down+" **"+d+"** ("+pct(d,u)+"%)"+((u+d)?"":"\n-# "+T.noVotes)}];
   const quote = t=>t.split("\n").map(l=>"> "+l).join("\n");
   const TITLE = {pending:"💡",approved:"✅",rejected:"❌",deleted:"🗑️"};
-  const body = (k,text)=>"## "+(threads&&k!=="deleted"?"[":"")+TITLE[k]+" "+fmt(T.suggestion,{n:S.n})+(threads&&k!=="deleted"?"](#)":"")+"\n-# "+STATUS[k][0]+" "+T.statusLabel[k]+"\n\n"+(S.title?"### "+S.title+"\n":"")+quote(text);
+  const body = (k,text)=>"## "+(threads&&k!=="deleted"?"[":"")+TITLE[k]+" "+(S.title?S.title+" #"+S.n:fmt(T.suggestion,{n:S.n}))+(threads&&k!=="deleted"?"](#)":"")+"\n-# "+STATUS[k][0]+" "+T.statusLabel[k]+"\n\n"+quote(text);
   const created = "Dzisiaj o 14:32";
 
   // --- pending suggestion embed (embeds.build_pending_embed)
-  const pending = (showAnon)=>({
+  const pending = (showAnon,u=S.up,d=S.down)=>({
     color:COLORS.pending, desc:body("pending",S.content),
     thumb: showAnon?null:S.author.name,
-    fields:[...(counts?votes():[])],
+    fields:[...(counts?votes(u,d):[])],
     footer: showAnon?{text:T.anon}:{text:fmt(T.postedBy,{name:S.author.name}), icon:S.author.name},
     ts:created
   });
@@ -213,9 +214,11 @@ function build(){
     return [proposal, details];
   };
 
-  const voteButtons = [
-    {emoji:up,   label: counts? String(S.up):""},
-    {emoji:down, label: counts? String(S.down):""}];
+  // like VoteView.update_labels: a zero count shows no label
+  const vb = (u=S.up,d=S.down)=>[
+    {emoji:up,   label: counts&&u? String(u):"", style:"success"},
+    {emoji:down, label: counts&&d? String(d):"", style:"danger"}];
+  const voteButtons = vb();
 
   // --- sticky "report a suggestion" message (always the last message in the pending channel)
   const sticky = {
@@ -252,7 +255,11 @@ function build(){
   h += section("1. New suggestion – pending channel", "common/embeds.py → build_pending_embed + views/voteview.py",
     message({embeds:[pending(anon)], components:voteButtons}) +
     message({tag:"variant: author visible (anonymous = off)", embeds:[pending(false)], components:voteButtons}) +
-    message({tag:"variant: no counters (show_vote_counts = off)", embeds:[{...pending(anon), fields:[]}], components:[{emoji:up},{emoji:down}]}));
+    message({tag:"variant: no counters (show_vote_counts = off)", embeds:[{...pending(anon), fields:[]}], components:[{emoji:up,style:"success"},{emoji:down,style:"danger"}]}));
+
+  h += section("1b. Vote variants (0/0, one-sided, tie)", "common/embeds.py → vote_bar / vote_field; views/voteview.py → update_labels",
+    [[0,0,"brak głosów (0/0)"],[1,0,"pierwszy głos za (1/0)"],[0,4,"same głosy przeciw (0/4)"],[5,5,"remis (5/5)"],[1,9,"1 za / 9 przeciw – pasek nie schodzi do zera"]]
+    .map(([u,d,t])=>message({tag:"wariant: "+t, embeds:[pending(anon,u,d)], components:vb(u,d)})).join(""));
 
   h += section("2. Confirmation to the author (/idea)", "commands/user.py → idea",
     message({me:true,user:S.author.name,bot:false,content:"/idea content:"+S.content}) +

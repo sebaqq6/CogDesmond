@@ -100,15 +100,13 @@ def thread_url(guild_id: int | None, suggestion: Suggestion) -> str | None:
 
 def suggestion_body(number: int, status: str, content: str, url: str | None = None, title: str = "") -> str:
     """Embed description: big title, small status line, quoted suggestion text."""
-    suggestion_title = title
-    title = f"{TITLE_EMOJI[status]} {_('Suggestion #{}').format(number)}"
+    # The suggestion's own title replaces the word "Suggestion"; the number stays (suggestions made via /idea have no title)
+    label = f"{title} #{number}" if title else _("Suggestion #{}").format(number)
+    title = f"{TITLE_EMOJI[status]} {label}"
     if url:
         title = f"[{title}]({url})"  # clickable title -> discussion thread
     status_line = f"{STATUS_EMOJI[status]} {_status_label(status)}"
-    heading = f"## {title}\n-# {status_line}\n\n"
-    if suggestion_title:
-        heading += f"### {suggestion_title}\n"
-    return heading + quote(content)
+    return f"## {title}\n-# {status_line}\n\n{quote(content)}"
 
 
 def build_pending_embed(

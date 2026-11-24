@@ -177,7 +177,7 @@ class VoteView(discord.ui.View):
 
         return True
 
-    @discord.ui.button(style=discord.ButtonStyle.primary)
+    @discord.ui.button(style=discord.ButtonStyle.success)
     async def upvote(self, interaction: discord.Interaction, buttons: discord.ui.Button):
         with suppress(discord.NotFound):
             await interaction.response.defer(ephemeral=True)
@@ -218,7 +218,7 @@ class VoteView(discord.ui.View):
 
         await self.cog.save()
 
-    @discord.ui.button(style=discord.ButtonStyle.primary)
+    @discord.ui.button(style=discord.ButtonStyle.danger)
     async def downvote(self, interaction: discord.Interaction, buttons: discord.ui.Button):
         with suppress(discord.NotFound):
             await interaction.response.defer(ephemeral=True)
